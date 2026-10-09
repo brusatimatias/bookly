@@ -24,7 +24,7 @@ bin/importmap audit            # JS dependency audit
 bin/ci                         # local CI pipeline defined in config/ci.rb
 ```
 
-Note: neither `bin/ci` (config/ci.rb) nor the GitHub workflow (.github/workflows/ci.yml) runs the RSpec suite — they only run lint and security scans. Run `bundle exec rspec` explicitly.
+`bin/ci` (config/ci.rb) mirrors the GitHub workflow (.github/workflows/ci.yml): RuboCop, bundler-audit, importmap audit, Brakeman, and RSpec. The GitHub `test` job runs against a Postgres service via `DATABASE_URL`.
 
 ## Stack / architecture
 
@@ -32,5 +32,5 @@ Note: neither `bin/ci` (config/ci.rb) nor the GitHub workflow (.github/workflows
 - **Background jobs, cache, websockets:** Solid Queue, Solid Cache, Solid Cable (DB-backed; no Redis).
 - **Frontend:** Hotwire (Turbo + Stimulus) via importmap — no Node/bundler. Stimulus controllers in `app/javascript/controllers` are auto-pinned. Add JS packages with `bin/importmap pin <pkg>`.
 - **CSS:** Tailwind via `tailwindcss-rails`; source is `app/assets/tailwind/application.css`, compiled to `app/assets/builds/` (gitignored). Assets served by Propshaft.
-- **Testing:** RSpec (`spec/`) with FactoryBot; Minitest railtie is disabled and system test generation is turned off. Transactional fixtures are on. FactoryBot syntax methods are not yet included in `rails_helper.rb` (use `FactoryBot.create` or add `config.include FactoryBot::Syntax::Methods`).
+- **Testing:** RSpec (`spec/`) with FactoryBot; Minitest railtie is disabled and system test generation is turned off. Transactional fixtures are on. `FactoryBot::Syntax::Methods` is included (call `create`/`build` directly). Specs run in random order; `spec/examples.txt` persists status for `--only-failures`.
 - **Deployment:** Kamal (`config/deploy.yml`, `.kamal/secrets`) building the `Dockerfile`, served through Thruster. `RAILS_MASTER_KEY` is read from `config/master.key` (gitignored); production DB password comes from `BOOKLY_DATABASE_PASSWORD`.
