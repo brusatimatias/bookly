@@ -13,6 +13,7 @@ Rails.application.routes.draw do
 
   resource :session, only: %i[ new create destroy ]
   resources :passwords, param: :token, only: %i[ new create edit update ]
+  resource :locale, only: :update
 
   # Public business pages. Keep this scope last so it never shadows app routes;
   # new top-level paths must also be added to Business::RESERVED_SLUGS.

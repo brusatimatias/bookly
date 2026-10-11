@@ -3,3 +3,5 @@ es:
     header:
       sign_in: "Iniciar sesión"
       sign_out: "Cerrar sesión"
+    locale_switcher:
+      label: "Idioma"

@@ -3,3 +3,5 @@ en:
     header:
       sign_in: "Sign in"
       sign_out: "Sign out"
+    locale_switcher:
+      label: "Language"
