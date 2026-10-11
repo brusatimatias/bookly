@@ -36,6 +36,12 @@ module Bookly
     # config.time_zone = "Central Time (US & Canada)"
     # config.eager_load_paths << Rails.root.join("extras")
 
+    # Spanish and English, Spanish by default. Each business picks its own locale.
+    # Translations live in per-locale folders (config/locales/{es,en}/**).
+    config.i18n.available_locales = %i[es en]
+    config.i18n.default_locale = :es
+    config.i18n.load_path += Dir[Rails.root.join("config/locales/**/*.yml")]
+
     # Don't generate system test files.
     config.generators.system_tests = nil
   end
