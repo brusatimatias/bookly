@@ -15,6 +15,8 @@ Rails.application.routes.draw do
   resources :passwords, param: :token, only: %i[ new create edit update ]
   resource :locale, only: :update
 
+  mount LetterOpenerWeb::Engine, at: "/letter_opener" if Rails.env.development?
+
   # Public business pages. Keep this scope last so it never shadows app routes;
   # new top-level paths must also be added to Business::RESERVED_SLUGS.
   scope ":business_slug", constraints: { business_slug: Business::SLUG_FORMAT } do
