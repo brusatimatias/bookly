@@ -48,6 +48,9 @@ RSpec.configure do |config|
   # Use `create(:user)` instead of `FactoryBot.create(:user)`.
   config.include FactoryBot::Syntax::Methods
 
+  # freeze_time, travel_to, etc.
+  config.include ActiveSupport::Testing::TimeHelpers
+
   # You can uncomment this line to turn off ActiveRecord support entirely.
   # config.use_active_record = false
 

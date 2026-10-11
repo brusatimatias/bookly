@@ -1,0 +1,33 @@
+es:
+  activerecord:
+    models:
+      business:
+        one: "Negocio"
+        other: "Negocios"
+    attributes:
+      business:
+        name: "Nombre"
+        slug: "Dirección web"
+        time_zone: "Zona horaria"
+        locale: "Idioma"
+        currency: "Moneda"
+        contact_email: "Email de contacto"
+        contact_phone: "Teléfono de contacto"
+        address: "Dirección"
+        slot_interval_minutes: "Intervalo de inicio de turnos (minutos)"
+        buffer_minutes: "Descanso entre turnos (minutos)"
+        cancellation_window_hours: "Ventana de cancelación (horas)"
+        request_expiration_hours: "Vencimiento de solicitudes (horas)"
+        min_booking_notice_hours: "Aviso mínimo de reserva (horas)"
+        booking_horizon_days: "Horizonte máximo de reserva (días)"
+        status: "Estado"
+        suspended_at: "Suspendido el"
+      business/status:
+        active: "Activo"
+        suspended: "Suspendido"
+    errors:
+      models:
+        business:
+          attributes:
+            slug:
+              reserved: "está reservada por el sistema"
