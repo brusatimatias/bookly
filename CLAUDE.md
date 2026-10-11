@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project state
 
-Bookly is a freshly generated Rails 8.1 app (no domain models, routes, or migrations yet beyond the Rails defaults). Expect to be creating the first models/controllers rather than modifying existing ones.
+Multi-tenant appointment booking app, built in stages. Done so far: `Business` model (booking configuration, locale, time zone, active/suspended), tenant context (`Current.business`, `BusinessScoped`), public business page at `/:business_slug`, and Spanish/English i18n. No users/authentication yet; no per-business tables yet (the first ones arrive with services and professionals).
 
 ## Commands
 
@@ -32,7 +32,8 @@ bin/ci                         # local CI pipeline defined in config/ci.rb
 - **Background jobs, cache, websockets:** Solid Queue, Solid Cache, Solid Cable (DB-backed; no Redis).
 - **Frontend:** Hotwire (Turbo + Stimulus) via importmap — no Node/bundler. Stimulus controllers in `app/javascript/controllers` are auto-pinned. Add JS packages with `bin/importmap pin <pkg>`.
 - **CSS:** Tailwind via `tailwindcss-rails`; source is `app/assets/tailwind/application.css`, compiled to `app/assets/builds/` (gitignored). Assets served by Propshaft.
-- **Testing:** RSpec (`spec/`) with FactoryBot; Minitest railtie is disabled and system test generation is turned off. Transactional fixtures are on. `FactoryBot::Syntax::Methods` is included (call `create`/`build` directly). Specs run in random order; `spec/examples.txt` persists status for `--only-failures`.
+- **Testing:** RSpec (`spec/`) with FactoryBot; Minitest railtie is disabled and system test generation is turned off. Transactional fixtures are on. `FactoryBot::Syntax::Methods` is included (call `create`/`build` directly). Specs run in random order; `spec/examples.txt` persists status for `--only-failures`. Spec type is declared explicitly (`type: :request`, `type: :controller`); it is not inferred from the folder. `ActiveSupport::Testing::TimeHelpers` (`freeze_time`, `travel_to`) is included, and `spec/support/**` is auto-loaded.
+- **i18n:** `es` (default) and `en`. Translations live in `config/locales/{es,en}/` — `app.yml`, `models/<model>.yml`, `views/<controller>.yml` — and every user-facing string (views, mailers, validation messages) goes through `t()`. Missing translations raise in development and test, and `spec/config/i18n_spec.rb` fails if `es` and `en` don't define the same keys.
 - **Deployment:** Kamal (`config/deploy.yml`, `.kamal/secrets`) building the `Dockerfile`, served through Thruster. `RAILS_MASTER_KEY` is read from `config/master.key` (gitignored); production DB password comes from `BOOKLY_DATABASE_PASSWORD`.
 
 ## Multi-tenancy
@@ -44,3 +45,10 @@ Single database, shared tables: every per-business table has a `business_id`, an
 - Anything outside a request — console, seeds, jobs, rake tasks, specs — must set the tenant explicitly: `Current.set(business: business) { ... }`. In specs use the `with_business(business) { ... }` helper (`spec/support/current_business_helpers.rb`).
 - Code that legitimately spans tenants (platform admin, maintenance) opts out with `BusinessScoped.across_businesses { ... }`. Never use `unscoped` to bypass tenancy; keep cross-tenant access greppable.
 - `Business` itself, and global tables (users, sessions, memberships, invitations), do not include `BusinessScoped`.
+
+## Routing
+
+- `/` is the landing page (`HomeController`). Public business pages live under `scope ":business_slug"` at the end of `config/routes.rb`, constrained by `Business::SLUG_FORMAT`.
+- Controllers under that scope `include SetCurrentBusiness`: it resolves the business from the slug (404 if unknown), sets `Current.business`, wraps the request in the business's locale and time zone, and renders `businesses/unavailable` (503) for suspended businesses.
+- Any new top-level path must be added to `Business::RESERVED_SLUGS` so no business can take it as a slug.
+- Times are stored in UTC and displayed in the business time zone (`Time.zone` is the business's inside a request; the app default is UTC).
