@@ -1,4 +1,7 @@
 class Business < ApplicationRecord
+  # Lowercase words joined by single dashes. Unanchored so routes can reuse it.
+  SLUG_FORMAT = /[a-z0-9]+(?:-[a-z0-9]+)*/
+
   # Slugs that would collide with the app's own top-level routes, since public
   # business pages live at /:business_slug.
   RESERVED_SLUGS = %w[
@@ -16,7 +19,7 @@ class Business < ApplicationRecord
   validates :name, presence: true
   validates :slug, presence: true,
     uniqueness: true,
-    format: { with: /\A[a-z0-9]+(-[a-z0-9]+)*\z/ },
+    format: { with: /\A#{SLUG_FORMAT}\z/ },
     exclusion: { in: RESERVED_SLUGS, message: :reserved }
   validates :time_zone, inclusion: { in: ->(_) { TZInfo::Timezone.all_identifiers } }
   validates :locale, inclusion: { in: ->(_) { I18n.available_locales.map(&:to_s) } }
