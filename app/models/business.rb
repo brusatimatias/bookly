@@ -5,8 +5,8 @@ class Business < ApplicationRecord
   # Slugs that would collide with the app's own top-level routes, since public
   # business pages live at /:business_slug.
   RESERVED_SLUGS = %w[
-    admin api assets cable invitations login logout new platform rails
-    session sessions signup up
+    admin api assets cable invitations login logout new passwords platform
+    rails session sessions signup up
   ].freeze
 
   enum :status, { active: "active", suspended: "suspended" }, default: :active, validate: true

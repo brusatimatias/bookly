@@ -1,0 +1,11 @@
+es:
+  sessions:
+    new:
+      title: "Iniciar sesión"
+      email_address: "Email"
+      password: "Contraseña"
+      submit: "Ingresar"
+      forgot_password: "¿Olvidaste tu contraseña?"
+    create:
+      invalid: "El email o la contraseña no son correctos."
+      rate_limited: "Demasiados intentos. Probá de nuevo en unos minutos."

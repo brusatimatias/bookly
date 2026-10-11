@@ -14,3 +14,14 @@ Business.find_or_create_by!(slug: "downtown-studio") do |business|
   business.currency = "USD"
   business.contact_email = "hello@downtownstudio.example"
 end
+
+# Users sign in with the password "password". They join their businesses in a later step.
+[
+  { name: "Lucía Fernández", email_address: "lucia@barberiacentro.example" },
+  { name: "Sam Carter", email_address: "sam@downtownstudio.example" }
+].each do |attributes|
+  User.find_or_create_by!(email_address: attributes[:email_address]) do |user|
+    user.name = attributes[:name]
+    user.password = "password"
+  end
+end

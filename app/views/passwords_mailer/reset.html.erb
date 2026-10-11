@@ -1,0 +1,10 @@
+<p><%= t(".greeting", name: @user.name) %></p>
+
+<p>
+  <%= t(".instructions") %>
+  <%= link_to t(".link"), edit_password_url(@user.password_reset_token) %>
+</p>
+
+<p><%= t(".expires", time: distance_of_time_in_words(0, @user.password_reset_token_expires_in)) %></p>
+
+<p><%= t(".ignore") %></p>

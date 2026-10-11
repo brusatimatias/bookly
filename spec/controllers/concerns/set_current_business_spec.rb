@@ -3,6 +3,7 @@ require "rails_helper"
 RSpec.describe SetCurrentBusiness, type: :controller do
   controller(ApplicationController) do
     include SetCurrentBusiness
+    allow_unauthenticated_access
 
     def index
       render plain: [ Current.business.slug, I18n.locale, Time.zone.name ].join(" ")

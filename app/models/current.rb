@@ -6,8 +6,11 @@ class Current < ActiveSupport::CurrentAttributes
     end
   end
 
+  attribute :session
   attribute :business
   attribute :across_businesses
+
+  delegate :user, to: :session, allow_nil: true
 
   def business!
     business || raise(MissingBusiness)
