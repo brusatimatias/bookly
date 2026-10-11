@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_10_11_031146) do
+ActiveRecord::Schema[8.1].define(version: 2026_10_11_212346) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -37,12 +37,24 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_11_031146) do
     t.check_constraint "booking_horizon_days > 0", name: "businesses_booking_horizon_positive"
     t.check_constraint "buffer_minutes >= 0", name: "businesses_buffer_non_negative"
     t.check_constraint "cancellation_window_hours >= 0", name: "businesses_cancellation_window_non_negative"
-    t.check_constraint "locale::text = ANY (ARRAY['es'::character varying, 'en'::character varying]::text[])", name: "businesses_locale_valid"
+    t.check_constraint "locale::text = ANY (ARRAY['es'::character varying::text, 'en'::character varying::text])", name: "businesses_locale_valid"
     t.check_constraint "min_booking_notice_hours >= 0", name: "businesses_min_booking_notice_non_negative"
     t.check_constraint "request_expiration_hours > 0", name: "businesses_request_expiration_positive"
     t.check_constraint "slot_interval_minutes > 0", name: "businesses_slot_interval_positive"
     t.check_constraint "slug::text ~ '^[a-z0-9]+(-[a-z0-9]+)*$'::text", name: "businesses_slug_format"
-    t.check_constraint "status::text = ANY (ARRAY['active'::character varying, 'suspended'::character varying]::text[])", name: "businesses_status_valid"
+    t.check_constraint "status::text = ANY (ARRAY['active'::character varying::text, 'suspended'::character varying::text])", name: "businesses_status_valid"
+  end
+
+  create_table "memberships", force: :cascade do |t|
+    t.bigint "business_id", null: false
+    t.bigint "user_id", null: false
+    t.string "role", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["business_id", "user_id"], name: "index_memberships_on_business_id_and_user_id", unique: true
+    t.index ["business_id"], name: "index_memberships_on_business_id_one_owner", unique: true, where: "((role)::text = 'owner'::text)"
+    t.index ["user_id"], name: "index_memberships_on_user_id"
+    t.check_constraint "role::text = ANY (ARRAY['owner'::character varying, 'admin'::character varying, 'professional'::character varying]::text[])", name: "memberships_role_valid"
   end
 
   create_table "sessions", force: :cascade do |t|
@@ -64,5 +76,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_11_031146) do
     t.index ["email_address"], name: "index_users_on_email_address", unique: true
   end
 
+  add_foreign_key "memberships", "businesses"
+  add_foreign_key "memberships", "users"
   add_foreign_key "sessions", "users"
 end

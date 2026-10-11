@@ -9,6 +9,11 @@ class Business < ApplicationRecord
     platform rails session sessions signup up
   ].freeze
 
+  has_many :memberships, dependent: :restrict_with_exception
+  has_many :members, through: :memberships, source: :user
+  has_one :owner_membership, -> { owner }, class_name: "Membership"
+  has_one :owner, through: :owner_membership, source: :user
+
   enum :status, { active: "active", suspended: "suspended" }, default: :active, validate: true
 
   normalizes :slug, with: ->(slug) { slug.strip.downcase }

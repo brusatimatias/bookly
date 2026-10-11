@@ -1,6 +1,8 @@
 class User < ApplicationRecord
   has_secure_password
   has_many :sessions, dependent: :destroy
+  has_many :memberships, dependent: :destroy
+  has_many :businesses, through: :memberships
 
   normalizes :email_address, with: ->(email) { email.strip.downcase }
 
@@ -9,4 +11,8 @@ class User < ApplicationRecord
     uniqueness: true,
     format: { with: URI::MailTo::EMAIL_REGEXP }
   validates :password, length: { minimum: 8 }, allow_nil: true
+
+  def membership_for(business)
+    memberships.find_by(business: business)
+  end
 end
