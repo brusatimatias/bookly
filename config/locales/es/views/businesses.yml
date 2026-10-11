@@ -1,0 +1,9 @@
+es:
+  businesses:
+    show:
+      phone: "Teléfono"
+      email: "Email"
+      booking_soon: "Muy pronto se podrán solicitar turnos online."
+    unavailable:
+      title: "Negocio no disponible"
+      message: "Este negocio no está disponible en este momento."

@@ -1,0 +1,30 @@
+<% content_for :title, @business.name %>
+
+<section class="w-full max-w-2xl mx-auto">
+  <h1 class="text-4xl font-bold text-gray-900"><%= @business.name %></h1>
+
+  <% if @business.address.present? || @business.contact_phone.present? || @business.contact_email.present? %>
+    <dl class="mt-6 space-y-2 text-gray-700">
+      <% if @business.address.present? %>
+        <div class="flex gap-2">
+          <dt class="font-medium"><%= Business.human_attribute_name(:address) %>:</dt>
+          <dd><%= @business.address %></dd>
+        </div>
+      <% end %>
+      <% if @business.contact_phone.present? %>
+        <div class="flex gap-2">
+          <dt class="font-medium"><%= t(".phone") %>:</dt>
+          <dd><%= link_to @business.contact_phone, "tel:#{@business.contact_phone.delete(" -")}", class: "underline" %></dd>
+        </div>
+      <% end %>
+      <% if @business.contact_email.present? %>
+        <div class="flex gap-2">
+          <dt class="font-medium"><%= t(".email") %>:</dt>
+          <dd><%= mail_to @business.contact_email, class: "underline" %></dd>
+        </div>
+      <% end %>
+    </dl>
+  <% end %>
+
+  <p class="mt-10 text-gray-500"><%= t(".booking_soon") %></p>
+</section>

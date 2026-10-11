@@ -1,0 +1,9 @@
+en:
+  businesses:
+    show:
+      phone: "Phone"
+      email: "Email"
+      booking_soon: "Online booking is coming soon."
+    unavailable:
+      title: "Business unavailable"
+      message: "This business is not available right now."

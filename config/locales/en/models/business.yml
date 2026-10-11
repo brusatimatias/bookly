@@ -1,0 +1,33 @@
+en:
+  activerecord:
+    models:
+      business:
+        one: "Business"
+        other: "Businesses"
+    attributes:
+      business:
+        name: "Name"
+        slug: "Web address"
+        time_zone: "Time zone"
+        locale: "Language"
+        currency: "Currency"
+        contact_email: "Contact email"
+        contact_phone: "Contact phone"
+        address: "Address"
+        slot_interval_minutes: "Appointment start interval (minutes)"
+        buffer_minutes: "Break between appointments (minutes)"
+        cancellation_window_hours: "Cancellation window (hours)"
+        request_expiration_hours: "Request expiration (hours)"
+        min_booking_notice_hours: "Minimum booking notice (hours)"
+        booking_horizon_days: "Maximum booking horizon (days)"
+        status: "Status"
+        suspended_at: "Suspended at"
+      business/status:
+        active: "Active"
+        suspended: "Suspended"
+    errors:
+      models:
+        business:
+          attributes:
+            slug:
+              reserved: "is reserved by the system"

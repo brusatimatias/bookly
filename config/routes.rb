@@ -9,6 +9,11 @@ Rails.application.routes.draw do
   # get "manifest" => "rails/pwa#manifest", as: :pwa_manifest
   # get "service-worker" => "rails/pwa#service_worker", as: :pwa_service_worker
 
-  # Defines the root path route ("/")
-  # root "posts#index"
+  root "home#show"
+
+  # Public business pages. Keep this scope last so it never shadows app routes;
+  # new top-level paths must also be added to Business::RESERVED_SLUGS.
+  scope ":business_slug", constraints: { business_slug: Business::SLUG_FORMAT } do
+    get "/", to: "businesses#show", as: :business
+  end
 end
