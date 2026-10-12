@@ -15,7 +15,7 @@ Rails.application.routes.draw do
   resources :passwords, param: :token, only: %i[ new create edit update ]
   resource :locale, only: :update
   resource :dashboard, only: :show
-  resources :invitations, param: :token, only: :show
+  resources :invitations, param: :token, only: %i[ show update ]
 
   mount LetterOpenerWeb::Engine, at: "/letter_opener" if Rails.env.development?
 

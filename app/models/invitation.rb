@@ -6,6 +6,10 @@
 class Invitation < ApplicationRecord
   VALID_FOR = 7.days
 
+  # Raised when accepting an invitation that was already used, expired or
+  # belongs to another email.
+  class NotAcceptable < StandardError; end
+
   belongs_to :business
   belongs_to :invited_by, class_name: "User"
 
@@ -31,6 +35,17 @@ class Invitation < ApplicationRecord
 
   def expired?
     expires_at.past?
+  end
+
+  # Adds the user to the business with the invited role. The lock keeps two
+  # simultaneous acceptances from both going through.
+  def accept!(user)
+    with_lock do
+      raise NotAcceptable unless pending? && !expired? && user.email_address == email
+
+      business.memberships.create!(user: user, role: role)
+      update!(accepted_at: Time.current)
+    end
   end
 
   # Gives the invitation a new term. The previous link stops working.

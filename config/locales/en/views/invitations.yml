@@ -1,0 +1,19 @@
+en:
+  invitations:
+    accepted: "Welcome! You're now part of %{business}."
+    show:
+      title: "Invitation to %{business}"
+      invited_by: "%{inviter} invited you to join as %{role}."
+      create_account: "Create your account for %{email} and accept the invitation."
+      join: "Create account and accept"
+      sign_in_to_accept: "You already have an account with %{email}. Sign in to accept the invitation."
+      sign_in: "Sign in"
+      accept: "Accept invitation"
+      other_account: "This invitation is for %{email}, but you're signed in as %{current}. Sign out and open the link again."
+      sign_out: "Sign out"
+    invalid:
+      title: "Invalid invitation"
+      message: "This invitation link isn't valid: it may have been used already or revoked."
+    expired:
+      title: "Expired invitation"
+      message: "This invitation has expired. Ask %{business} to send it again."

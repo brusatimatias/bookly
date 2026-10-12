@@ -115,6 +115,37 @@ RSpec.describe Invitation, type: :model do
     end
   end
 
+  describe "#accept!" do
+    let!(:invitation) { create(:invitation, business: business, email: "ana@example.com", role: :admin) }
+    let!(:user) { create(:user, email_address: "ana@example.com") }
+
+    it "adds the user to the business with the invited role" do
+      freeze_time do
+        invitation.accept!(user)
+
+        expect(user.membership_for(business)).to be_admin
+        expect(invitation.reload.accepted_at).to eq(Time.current)
+      end
+    end
+
+    it "cannot be accepted twice" do
+      invitation.accept!(user)
+
+      expect { invitation.accept!(user) }.to raise_error(Invitation::NotAcceptable)
+    end
+
+    it "cannot be accepted once expired" do
+      travel 8.days do
+        expect { invitation.accept!(user) }.to raise_error(Invitation::NotAcceptable)
+      end
+      expect(business.memberships).to be_empty
+    end
+
+    it "cannot be accepted by someone with another email" do
+      expect { invitation.accept!(create(:user)) }.to raise_error(Invitation::NotAcceptable)
+    end
+  end
+
   describe "#renew!" do
     it "extends the expiration by 7 days from now" do
       invitation = create(:invitation)
