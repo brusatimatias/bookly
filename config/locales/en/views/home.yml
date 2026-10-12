@@ -2,4 +2,18 @@ en:
   home:
     show:
       title: "Bookly — Online booking"
+      audience: "For barbershops, clinics, studios and courts"
+      headline: "Your schedule, always in order"
       tagline: "Online appointment booking for businesses that work by schedule."
+      sign_in: "Sign in to my business"
+      go_to_dashboard: "Go to my businesses"
+      features:
+        booking:
+          title: "Booking without an account"
+          description: "Your customers pick a service, professional and time, and request the appointment in a few steps."
+        schedule:
+          title: "An up-to-date schedule"
+          description: "Confirm or reject requests and see each professional's schedule updated instantly."
+        team:
+          title: "Your whole team"
+          description: "Invite your professionals: each one manages their schedule with their own access."

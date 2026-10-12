@@ -1,32 +1,25 @@
 <% content_for :title, t(".title") %>
 
-<section class="w-full max-w-xl mx-auto">
-  <h1 class="text-3xl font-bold text-gray-900"><%= t(".title") %></h1>
-  <p class="mt-2 text-gray-600"><%= t(".instructions", days: Invitation::VALID_FOR.in_days.to_i) %></p>
+<div class="mx-auto max-w-xl">
+  <%= render "shared/page_header", title: t(".title"), subtitle: t(".instructions", days: Invitation::VALID_FOR.in_days.to_i) %>
 
-  <%= form_with model: @invitation, url: admin_invitations_path, class: "contents" do |form| %>
-    <% if @invitation.errors.any? %>
-      <ul class="mt-5 py-2 px-3 bg-red-50 text-red-600 rounded-lg" id="errors">
-        <% @invitation.errors.full_messages.each do |message| %>
-          <li><%= message %></li>
-        <% end %>
-      </ul>
-    <% end %>
+  <%= form_with model: @invitation, url: admin_invitations_path, class: "card card-body space-y-5" do |form| %>
+    <%= render "shared/form_errors", record: @invitation %>
 
-    <div class="my-5">
-      <%= form.label :email, class: "font-medium" %>
-      <%= form.email_field :email, required: true, autofocus: true, class: "block shadow-sm rounded-md border border-gray-400 focus:outline-blue-600 px-3 py-2 mt-2 w-full" %>
+    <div class="field">
+      <%= form.label :email, class: "label" %>
+      <%= form.email_field :email, required: true, autofocus: true, class: "input" %>
     </div>
 
-    <div class="my-5">
-      <%= form.label :role, class: "font-medium" %>
-      <%= form.select :role, Invitation.roles.keys.map { |role| [ Invitation.human_attribute_name("role.#{role}"), role ] }, {},
-            class: "block shadow-sm rounded-md border border-gray-400 focus:outline-blue-600 px-3 py-2 mt-2 w-full" %>
+    <div class="field">
+      <%= form.label :role, class: "label" %>
+      <%= form.select :role, Invitation.roles.keys.map { |role| [ Invitation.human_attribute_name("role.#{role}"), role ] }, {}, class: "input" %>
+      <p class="hint"><%= t(".role_hint") %></p>
     </div>
 
-    <div class="flex items-center gap-4">
-      <%= form.submit t(".submit"), class: "rounded-md px-3.5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-medium cursor-pointer" %>
-      <%= link_to t(".cancel"), admin_team_path, class: "text-gray-700 underline hover:no-underline" %>
+    <div class="flex items-center justify-end gap-3 border-t border-gray-100 pt-5">
+      <%= link_to t(".cancel"), admin_team_path, class: "btn-ghost" %>
+      <%= form.submit t(".submit"), class: "btn-primary" %>
     </div>
   <% end %>
-</section>
+</div>

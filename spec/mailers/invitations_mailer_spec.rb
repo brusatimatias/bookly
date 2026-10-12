@@ -13,6 +13,8 @@ RSpec.describe InvitationsMailer, type: :mailer do
     expect(mail.subject).to eq("Te invitaron a sumarte a Barbería Centro en Bookly")
     expect(mail.text_part.body.to_s).to include("Lucía te invitó a sumarte a Barbería Centro como administrador.")
 
+    expect(mail.html_part.body.to_s).to include("Aceptar la invitación", MailerHelper::BRAND_COLOR)
+
     token = mail.text_part.body.to_s[%r{/invitations/([^\s]+)}, 1]
     expect(Invitation.find_by_token_for(:acceptance, token)).to eq(invitation)
   end

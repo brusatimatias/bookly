@@ -21,9 +21,8 @@ RSpec.describe "shared partials", type: :view do
 
   describe "page_header" do
     it "renders the title, subtitle and actions" do
-      render "shared/page_header", title: "Equipo", subtitle: "Miembros del negocio" do
-        "<a href='/new'>Invitar</a>".html_safe
-      end
+      render "shared/page_header", title: "Equipo", subtitle: "Miembros del negocio",
+        actions: "<a href='/new'>Invitar</a>".html_safe
 
       expect(rendered).to include("<h1", "Equipo", "Miembros del negocio", "Invitar")
     end
@@ -37,9 +36,8 @@ RSpec.describe "shared partials", type: :view do
 
   describe "empty_state" do
     it "renders the title, message and action" do
-      render "shared/empty_state", icon: "users", title: "Sin invitaciones", message: "Invitá a tu equipo." do
-        "<a href='/new'>Invitar</a>".html_safe
-      end
+      render "shared/empty_state", icon: "users", title: "Sin invitaciones", message: "Invitá a tu equipo.",
+        action: "<a href='/new'>Invitar</a>".html_safe
 
       expect(rendered).to include("Sin invitaciones", "Invitá a tu equipo.", "Invitar")
     end

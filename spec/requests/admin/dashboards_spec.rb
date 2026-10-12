@@ -51,4 +51,30 @@ RSpec.describe "Admin dashboard", type: :request do
 
     expect(response).to have_http_status(:service_unavailable)
   end
+
+  describe "team summary" do
+    before do
+      create(:membership, :owner, business: business, user: user)
+      create(:membership, business: business)
+      create(:invitation, business: business, invited_by: user)
+    end
+
+    it "shows managers the member and pending invitation counts" do
+      sign_in_as(user)
+
+      get admin_root_path(business)
+
+      expect(response.body).to match(%r{Miembros del equipo</p>\s*<p[^>]*>2</p>})
+      expect(response.body).to match(%r{Invitaciones pendientes</p>\s*<p[^>]*>1</p>})
+    end
+
+    it "is hidden from professionals" do
+      professional = business.memberships.professional.first.user
+      sign_in_as(professional)
+
+      get admin_root_path(business)
+
+      expect(response.body).not_to include("Miembros del equipo")
+    end
+  end
 end

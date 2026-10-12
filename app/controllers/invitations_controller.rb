@@ -31,7 +31,7 @@ class InvitationsController < ApplicationController
 
       I18n.with_locale(@business.locale) do
         if @business.suspended?
-          render "businesses/unavailable", status: :service_unavailable
+          render "businesses/unavailable", status: :service_unavailable, layout: "application"
         elsif @invitation.expired?
           render :expired, status: :gone
         else
