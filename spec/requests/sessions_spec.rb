@@ -16,7 +16,7 @@ RSpec.describe "Sessions", type: :request do
     it "signs in with valid credentials" do
       expect { sign_in_as(user) }.to change(user.sessions, :count).by(1)
 
-      expect(response).to redirect_to(root_url)
+      expect(response).to redirect_to(dashboard_url)
       expect(cookies[:session_id]).to be_present
     end
 
@@ -24,7 +24,7 @@ RSpec.describe "Sessions", type: :request do
       user
       post session_path, params: { email_address: "ANA@example.com", password: "password" }
 
-      expect(response).to redirect_to(root_url)
+      expect(response).to redirect_to(dashboard_url)
     end
 
     it "rejects a wrong password" do

@@ -1,0 +1,6 @@
+<% content_for :title, t(".title", business: Current.business.name) %>
+
+<section class="w-full max-w-4xl mx-auto">
+  <h1 class="text-3xl font-bold text-gray-900"><%= t(".heading", name: Current.user.name) %></h1>
+  <p class="mt-2 text-gray-600"><%= t(".coming_soon") %></p>
+</section>

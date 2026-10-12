@@ -10,6 +10,7 @@
       <% end %>
 
       <% if authenticated? %>
+        <%= link_to t(".dashboard"), dashboard_path, class: "text-gray-700 underline hover:no-underline" %>
         <span class="text-gray-600"><%= Current.user.name %></span>
         <%= button_to t(".sign_out"), session_path, method: :delete, class: "text-gray-700 underline hover:no-underline cursor-pointer" %>
       <% elsif Current.business.nil? %>

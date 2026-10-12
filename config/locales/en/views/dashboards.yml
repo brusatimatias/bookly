@@ -1,0 +1,5 @@
+en:
+  dashboards:
+    show:
+      title: "My businesses"
+      empty: "You're not part of any business yet."

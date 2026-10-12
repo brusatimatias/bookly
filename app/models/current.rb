@@ -8,6 +8,7 @@ class Current < ActiveSupport::CurrentAttributes
 
   attribute :session
   attribute :business
+  attribute :membership
   attribute :across_businesses
 
   delegate :user, to: :session, allow_nil: true

@@ -1,0 +1,23 @@
+<% content_for :title, t(".title") %>
+
+<section class="w-full max-w-2xl mx-auto">
+  <h1 class="text-4xl font-bold text-gray-900"><%= t(".title") %></h1>
+
+  <% if @memberships.any? %>
+    <ul class="mt-6 divide-y divide-gray-200 border-y border-gray-200">
+      <% @memberships.each do |membership| %>
+        <li class="py-4 flex items-center justify-between gap-4">
+          <div>
+            <%= link_to membership.business.name, admin_root_path(business_slug: membership.business), class: "font-medium text-gray-900 underline hover:no-underline" %>
+            <% if membership.business.suspended? %>
+              <span class="ml-2 text-sm text-red-600"><%= Business.human_attribute_name("status.suspended") %></span>
+            <% end %>
+          </div>
+          <span class="text-sm text-gray-600"><%= Membership.human_attribute_name("role.#{membership.role}") %></span>
+        </li>
+      <% end %>
+    </ul>
+  <% else %>
+    <p class="mt-6 text-gray-600"><%= t(".empty") %></p>
+  <% end %>
+</section>

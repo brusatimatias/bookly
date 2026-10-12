@@ -2,6 +2,7 @@ es:
   shared:
     header:
       sign_in: "Iniciar sesión"
+      dashboard: "Mis negocios"
       sign_out: "Cerrar sesión"
     locale_switcher:
       label: "Idioma"

@@ -24,7 +24,7 @@
   </head>
 
   <body>
-    <%= render "shared/header" %>
+    <%= content_for?(:header) ? yield(:header) : render("shared/header") %>
 
     <main class="container mx-auto mt-16 px-5 flex flex-col">
       <%= render "shared/flash" %>

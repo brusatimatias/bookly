@@ -14,6 +14,7 @@ Rails.application.routes.draw do
   resource :session, only: %i[ new create destroy ]
   resources :passwords, param: :token, only: %i[ new create edit update ]
   resource :locale, only: :update
+  resource :dashboard, only: :show
 
   mount LetterOpenerWeb::Engine, at: "/letter_opener" if Rails.env.development?
 
@@ -21,5 +22,10 @@ Rails.application.routes.draw do
   # new top-level paths must also be added to Business::RESERVED_SLUGS.
   scope ":business_slug", constraints: { business_slug: Business::SLUG_FORMAT } do
     get "/", to: "businesses#show", as: :business
+
+    # Business panel, for its members only.
+    namespace :admin do
+      root "dashboards#show"
+    end
   end
 end
