@@ -14,6 +14,9 @@ class Business < ApplicationRecord
   has_many :invitations, dependent: :restrict_with_exception
   has_one :owner_membership, -> { owner }, class_name: "Membership"
   has_one :owner, through: :owner_membership, source: :user
+  # BusinessScoped: reading these still needs Current.business.
+  has_many :services, dependent: :restrict_with_exception
+  has_many :professionals, dependent: :restrict_with_exception
 
   enum :status, { active: "active", suspended: "suspended" }, default: :active, validate: true
 

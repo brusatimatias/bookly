@@ -10,9 +10,47 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_10_12_034742) do
+ActiveRecord::Schema[8.1].define(version: 2026_10_12_224403) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
+
+  create_table "action_text_rich_texts", force: :cascade do |t|
+    t.string "name", null: false
+    t.text "body"
+    t.string "record_type", null: false
+    t.bigint "record_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["record_type", "record_id", "name"], name: "index_action_text_rich_texts_uniqueness", unique: true
+  end
+
+  create_table "active_storage_attachments", force: :cascade do |t|
+    t.string "name", null: false
+    t.string "record_type", null: false
+    t.bigint "record_id", null: false
+    t.bigint "blob_id", null: false
+    t.datetime "created_at", null: false
+    t.index ["blob_id"], name: "index_active_storage_attachments_on_blob_id"
+    t.index ["record_type", "record_id", "name", "blob_id"], name: "index_active_storage_attachments_uniqueness", unique: true
+  end
+
+  create_table "active_storage_blobs", force: :cascade do |t|
+    t.string "key", null: false
+    t.string "filename", null: false
+    t.string "content_type"
+    t.text "metadata"
+    t.string "service_name", null: false
+    t.bigint "byte_size", null: false
+    t.string "checksum"
+    t.datetime "created_at", null: false
+    t.index ["key"], name: "index_active_storage_blobs_on_key", unique: true
+  end
+
+  create_table "active_storage_variant_records", force: :cascade do |t|
+    t.bigint "blob_id", null: false
+    t.string "variation_digest", null: false
+    t.index ["blob_id", "variation_digest"], name: "index_active_storage_variant_records_uniqueness", unique: true
+  end
 
   create_table "businesses", force: :cascade do |t|
     t.string "name", null: false
@@ -54,9 +92,11 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_12_034742) do
     t.datetime "accepted_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.bigint "professional_id"
     t.index ["business_id", "email"], name: "index_invitations_on_business_id_and_email_pending", unique: true, where: "(accepted_at IS NULL)"
     t.index ["business_id"], name: "index_invitations_on_business_id"
     t.index ["invited_by_id"], name: "index_invitations_on_invited_by_id"
+    t.index ["professional_id"], name: "index_invitations_on_professional_id_pending", unique: true, where: "((accepted_at IS NULL) AND (professional_id IS NOT NULL))"
     t.check_constraint "role::text = ANY (ARRAY['admin'::character varying, 'professional'::character varying]::text[])", name: "invitations_role_valid"
   end
 
@@ -70,6 +110,43 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_12_034742) do
     t.index ["business_id"], name: "index_memberships_on_business_id_one_owner", unique: true, where: "((role)::text = 'owner'::text)"
     t.index ["user_id"], name: "index_memberships_on_user_id"
     t.check_constraint "role::text = ANY (ARRAY['owner'::character varying, 'admin'::character varying, 'professional'::character varying]::text[])", name: "memberships_role_valid"
+  end
+
+  create_table "professional_services", force: :cascade do |t|
+    t.bigint "business_id", null: false
+    t.bigint "professional_id", null: false
+    t.bigint "service_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["business_id", "service_id"], name: "index_professional_services_on_business_id_and_service_id"
+    t.index ["professional_id", "service_id"], name: "index_professional_services_on_professional_id_and_service_id", unique: true
+  end
+
+  create_table "professionals", force: :cascade do |t|
+    t.bigint "business_id", null: false
+    t.bigint "user_id"
+    t.string "name", null: false
+    t.boolean "active", default: true, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["business_id", "id"], name: "index_professionals_on_business_id_and_id", unique: true
+    t.index ["business_id", "user_id"], name: "index_professionals_on_business_id_and_user_id", unique: true, where: "(user_id IS NOT NULL)"
+  end
+
+  create_table "services", force: :cascade do |t|
+    t.bigint "business_id", null: false
+    t.string "name", null: false
+    t.integer "duration_minutes", null: false
+    t.integer "price_cents", default: 0, null: false
+    t.integer "buffer_minutes"
+    t.boolean "active", default: true, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index "business_id, lower((name)::text)", name: "index_services_on_business_id_and_lower_name", unique: true
+    t.index ["business_id", "id"], name: "index_services_on_business_id_and_id", unique: true
+    t.check_constraint "buffer_minutes >= 0", name: "services_buffer_non_negative"
+    t.check_constraint "duration_minutes > 0", name: "services_duration_positive"
+    t.check_constraint "price_cents >= 0", name: "services_price_non_negative"
   end
 
   create_table "sessions", force: :cascade do |t|
@@ -91,9 +168,18 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_12_034742) do
     t.index ["email_address"], name: "index_users_on_email_address", unique: true
   end
 
+  add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "invitations", "businesses"
+  add_foreign_key "invitations", "professionals", column: ["business_id", "professional_id"], primary_key: ["business_id", "id"]
   add_foreign_key "invitations", "users", column: "invited_by_id"
   add_foreign_key "memberships", "businesses"
   add_foreign_key "memberships", "users"
+  add_foreign_key "professional_services", "businesses"
+  add_foreign_key "professional_services", "professionals", column: ["business_id", "professional_id"], primary_key: ["business_id", "id"]
+  add_foreign_key "professional_services", "services", column: ["business_id", "service_id"], primary_key: ["business_id", "id"]
+  add_foreign_key "professionals", "businesses"
+  add_foreign_key "professionals", "memberships", column: ["business_id", "user_id"], primary_key: ["business_id", "user_id"]
+  add_foreign_key "services", "businesses"
   add_foreign_key "sessions", "users"
 end
