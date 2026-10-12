@@ -8,6 +8,7 @@ Multi-tenant appointment booking app, built in stages. Done so far:
 
 - `Business` model (booking configuration, locale, time zone, active/suspended), tenant context (`Current.business`, `BusinessScoped`) and public business page at `/:business_slug`.
 - Spanish/English i18n, with a language switcher on pages outside a business.
+- A shared UI layer (Tailwind theme, component classes, partials and three layouts) used by every page; see "UI conventions".
 - Users and authentication (Rails 8 generator), password reset, memberships with roles (`owner`/`admin`/`professional`), the business panel at `/:business_slug/admin`, and email invitations to join a business.
 
 No per-business tables yet (the first ones arrive with services and professionals). There is no public sign up: owners are created from seeds or the console for now, everyone else joins by invitation.
@@ -39,11 +40,28 @@ Seeds (`bin/rails db:seed`) create two businesses with members; every seeded use
 - **Database:** PostgreSQL (`bookly_development` / `bookly_test`, local socket, OS user). In production, Solid Cache/Queue/Cable each use a separate database (`bookly_production_cache`, `_queue`, `_cable`) with their own schemas in `db/*_schema.rb` and migration paths `db/{cache,queue,cable}_migrate`.
 - **Background jobs, cache, websockets:** Solid Queue, Solid Cache, Solid Cable (DB-backed; no Redis).
 - **Frontend:** Hotwire (Turbo + Stimulus) via importmap — no Node/bundler. Stimulus controllers in `app/javascript/controllers` are auto-pinned. Add JS packages with `bin/importmap pin <pkg>`.
-- **CSS:** Tailwind via `tailwindcss-rails`; source is `app/assets/tailwind/application.css`, compiled to `app/assets/builds/` (gitignored). Assets served by Propshaft.
+- **CSS:** Tailwind 4 via `tailwindcss-rails`; source is `app/assets/tailwind/application.css`, compiled to `app/assets/builds/` (gitignored). Only classes found in views/helpers end up in the build, so keep `bin/dev` running (or `bin/rails tailwindcss:build`) after adding classes. Assets served by Propshaft.
 - **Testing:** RSpec (`spec/`) with FactoryBot; Minitest railtie is disabled and system test generation is turned off. Transactional fixtures are on. `FactoryBot::Syntax::Methods` is included (call `create`/`build` directly). Specs run in random order; `spec/examples.txt` persists status for `--only-failures`. Spec type is declared explicitly (`type: :request`, `type: :controller`); it is not inferred from the folder. `ActiveSupport::Testing::TimeHelpers` (`freeze_time`, `travel_to`) is included, and `spec/support/**` is auto-loaded. Request specs sign in with `sign_in_as(user)` (password `"password"`, the factory default).
 - **i18n:** `es` (default) and `en`. Translations live in `config/locales/{es,en}/` — `app.yml`, `models/<model>.yml`, `views/<controller>.yml` (namespaced controllers in `views/admin/`), `mailers/<mailer>.yml` — and every user-facing string (views, mailers, validation messages, flash) goes through `t()`. Missing translations raise in development and test, and `spec/config/i18n_spec.rb` fails if `es` and `en` don't define the same keys. Enum values are translated as attributes (`membership/role`) and read with `Model.human_attribute_name("role.#{value}")`.
 - **Locale selection:** pages tied to a business (public page, panel, invitation) use the business's locale. Everywhere else `SetLocale` picks the language switcher's choice (`locale` cookie, set by `PATCH /locale`), then the browser's `Accept-Language`, then `es`. The switcher shows where `locale_switchable?` is true. Emails about a business are rendered in its locale (`I18n.with_locale(business.locale)` in the mailer).
 - **Deployment:** Kamal (`config/deploy.yml`, `.kamal/secrets`) building the `Dockerfile`, served through Thruster. `RAILS_MASTER_KEY` is read from `config/master.key` (gitignored); production DB password comes from `BOOKLY_DATABASE_PASSWORD`.
+
+## UI conventions
+
+Every page is built from the shared pieces below; don't hand-roll styles that already exist, and don't ship bare pages (use cards, page headers and empty states).
+
+- **Theme** (`@theme` in `app/assets/tailwind/application.css`): `brand-50…900` (indigo) for anything branded, Inter as `font-sans`, `shadow-card`. Use `brand-*`, not raw `indigo-*`, so the theme changes in one place. Light gray page background, white cards.
+- **Component classes** (declared with `@utility`, so they compose and take variants like `sm:`):
+  - Buttons: `btn-primary`, `btn-secondary`, `btn-danger`, `btn-ghost`; modifiers `btn-sm`, `btn-block`. Destructive inline actions: `btn-ghost btn-sm text-red-600 hover:bg-red-50`.
+  - Forms: wrap each field in `.field`, with `.label`, `.input` (also for `select`) and `.hint`. Forms sit in a `card card-body space-y-5`; actions go right-aligned at the bottom.
+  - Containers: `card`, `card-body`, `list-divided` (rows inside a card use `px-6 py-4`).
+  - Status and roles: `badge-gray`, `badge-brand`, `badge-green`, `badge-yellow`, `badge-red`.
+  - `link` for inline links, `avatar` for initials circles (`initials(name)`).
+- **Partials** (`app/views/shared/`): `page_header` (title, subtitle, `actions:`), `form_errors` (`record:`), `empty_state` (`icon:`, `title:`, `message:`, `action:`), `flash` and `locale_switcher` (rendered by the layouts). Build `actions:`/`action:` with `capture { ... }` in the calling view: a block yielded inside a partial would resolve lazy `t(".key")` lookups against the partial.
+- **Icons:** `icon("users", class: "size-4")` renders inline Heroicons (outline) from `IconsHelper::ICONS`; add new icons there.
+- **Layouts:** `application` (public header + footer: landing, business pages, business list), `auth` (centered card: sign in, password reset, invitation; set with `layout "auth"`), `admin` (sidebar panel, collapsible on mobile via the `sidebar` Stimulus controller). Add panel sections with `admin_nav_link(label, path, icon:, active:)` in `layouts/admin.html.erb`; translations for layouts live in `views/layouts.yml`.
+- **Emails:** the `mailer` layout and `email_button(label, url)` (`MailerHelper`) use inline styles only.
+- Check new screens at phone width too.
 
 ## Authentication and roles
 
