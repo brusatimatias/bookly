@@ -117,3 +117,28 @@
 @utility avatar {
   @apply inline-flex size-9 shrink-0 items-center justify-center rounded-full bg-brand-100 text-sm font-semibold text-brand-700;
 }
+
+/*
+ * Rich text (Action Text / Trix). The editor takes the .input class; these
+ * restore the list and heading styles that Tailwind's reset removes. File
+ * uploads are disabled (see application.js), so the attach button is hidden.
+ */
+@layer components {
+  .trix-content ul {
+    @apply list-disc pl-5;
+  }
+  .trix-content ol {
+    @apply list-decimal pl-5;
+  }
+  .trix-content h1 {
+    @apply text-lg font-semibold;
+  }
+  .trix-content a {
+    @apply link;
+  }
+}
+
+/* Unlayered so it wins over actiontext.css, which is unlayered too. */
+trix-toolbar .trix-button-group--file-tools {
+  display: none;
+}

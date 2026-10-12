@@ -1,0 +1,54 @@
+<% content_for :title, t(".title") %>
+
+<% new_service_button = capture do %>
+  <%= link_to new_admin_service_path, class: "btn-primary" do %>
+    <%= icon "plus", class: "size-4" %> <%= t(".new") %>
+  <% end %>
+<% end %>
+<%= render "shared/page_header", title: t(".title"), subtitle: t(".subtitle"),
+      actions: (new_service_button if Current.membership.manager?) %>
+
+<% if @services.any? %>
+  <ul class="card list-divided">
+    <% @services.each do |service| %>
+      <% professionals_count = service.professionals.count(&:active?) %>
+      <li class="flex flex-col gap-3 px-6 py-4 sm:flex-row sm:items-center sm:gap-4" id="<%= dom_id(service) %>">
+        <div class="flex min-w-0 flex-1 items-center gap-4">
+          <span class="flex size-10 shrink-0 items-center justify-center rounded-lg <%= service.active? ? "bg-brand-50 text-brand-600" : "bg-gray-100 text-gray-400" %>">
+            <%= icon "tag" %>
+          </span>
+          <div class="min-w-0 flex-1">
+            <p class="truncate font-medium <%= service.active? ? "text-gray-900" : "text-gray-500" %>"><%= service.name %></p>
+            <div class="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-gray-500">
+              <span class="inline-flex items-center gap-1"><%= icon "clock", class: "size-4" %><%= format_duration(service.duration_minutes) %></span>
+              <span class="font-medium text-gray-700"><%= format_price(service.price_cents) %></span>
+              <% if !service.active? %>
+                <span class="badge-gray"><%= t(".inactive") %></span>
+              <% elsif professionals_count.zero? %>
+                <span class="badge-yellow"><%= t(".no_professionals") %></span>
+              <% else %>
+                <span><%= t(".professionals", count: professionals_count) %></span>
+              <% end %>
+            </div>
+          </div>
+        </div>
+        <% if Current.membership.manager? %>
+          <div class="flex items-center gap-2 pl-14 sm:pl-0">
+            <%= link_to t(".edit"), edit_admin_service_path(service), class: "btn-secondary btn-sm" %>
+            <% if service.active? %>
+              <%= button_to t(".deactivate"), deactivate_admin_service_path(service), method: :patch,
+                    form: { data: { turbo_confirm: t(".deactivate_confirm", name: service.name) } },
+                    class: "btn-ghost btn-sm text-red-600 hover:bg-red-50 hover:text-red-700" %>
+            <% else %>
+              <%= button_to t(".reactivate"), reactivate_admin_service_path(service), method: :patch, class: "btn-ghost btn-sm" %>
+            <% end %>
+          </div>
+        <% end %>
+      </li>
+    <% end %>
+  </ul>
+<% else %>
+  <%= render "shared/empty_state", icon: "tag", title: t(".empty"),
+        message: t(Current.membership.manager? ? ".empty_hint" : ".empty_hint_member"),
+        action: (new_service_button if Current.membership.manager?) %>
+<% end %>

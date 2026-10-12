@@ -60,6 +60,8 @@ Every page is built from the shared pieces below; don't hand-roll styles that al
 - **Partials** (`app/views/shared/`): `page_header` (title, subtitle, `actions:`), `form_errors` (`record:`), `empty_state` (`icon:`, `title:`, `message:`, `action:`), `flash` and `locale_switcher` (rendered by the layouts). Build `actions:`/`action:` with `capture { ... }` in the calling view: a block yielded inside a partial would resolve lazy `t(".key")` lookups against the partial.
 - **Icons:** `icon("users", class: "size-4")` renders inline Heroicons (outline) from `IconsHelper::ICONS`; add new icons there.
 - **Layouts:** `application` (public header + footer: landing, business pages, business list), `auth` (centered card: sign in, password reset, invitation; set with `layout "auth"`), `admin` (sidebar panel, collapsible on mobile via the `sidebar` Stimulus controller). Add panel sections with `admin_nav_link(label, path, icon:, active:)` in `layouts/admin.html.erb`; translations for layouts live in `views/layouts.yml`.
+- **Prices and durations:** `format_price(cents)` (business currency, locale format, decimals only when there are cents) and `format_duration(minutes)` from `FormattingHelper`. Forms take prices in the main unit through a virtual attribute (`Service#price=`) and store cents.
+- **Rich text:** `form.rich_textarea :field, class: "input min-h-32"`. File uploads are disabled in the editor (`trix-file-accept` in `application.js`); Trix overrides that must beat `actiontext.css` go unlayered.
 - **Emails:** the `mailer` layout and `email_button(label, url)` (`MailerHelper`) use inline styles only.
 - Check new screens at phone width too.
 

@@ -8,8 +8,9 @@ es:
       service:
         name: "Nombre"
         description: "Descripción"
-        duration_minutes: "Duración (minutos)"
+        duration_minutes: "Duración"
         price_cents: "Precio"
-        buffer_minutes: "Descanso posterior (minutos)"
+        price: "Precio"
+        buffer_minutes: "Descanso"
         active: "Activo"
         professionals: "Profesionales"

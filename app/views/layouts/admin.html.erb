@@ -23,6 +23,7 @@
 
       <nav class="flex-1 space-y-1 overflow-y-auto px-3 py-4">
         <%= admin_nav_link t(".home"), admin_root_path, icon: "home", active: controller_name == "dashboards" %>
+        <%= admin_nav_link t(".services"), admin_services_path, icon: "tag", active: controller_name == "services" %>
         <% if Current.membership.manager? %>
           <%= admin_nav_link t(".team"), admin_team_path, icon: "users", active: controller_name.in?(%w[teams invitations]) %>
         <% end %>

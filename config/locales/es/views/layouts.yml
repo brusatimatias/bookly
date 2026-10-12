@@ -9,6 +9,7 @@ es:
     admin:
       navigation: "Panel del negocio"
       home: "Inicio"
+      services: "Servicios"
       team: "Equipo"
       public_page: "Página pública"
       my_businesses: "Mis negocios"

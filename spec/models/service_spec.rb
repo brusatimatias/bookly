@@ -89,6 +89,32 @@ RSpec.describe Service, type: :model do
     end
   end
 
+  describe "#price" do
+    it "reads the price in the currency's main unit" do
+      expect(build(:service, price_cents: 1_250).price).to eq(BigDecimal("12.5"))
+    end
+
+    it "stores the price in cents" do
+      expect(build(:service, price: "12000.50").price_cents).to eq(1_200_050)
+    end
+
+    it "accepts a decimal comma" do
+      expect(build(:service, price: "12,5").price_cents).to eq(1_250)
+    end
+
+    it "rounds to whole cents" do
+      expect(build(:service, price: "0.555").price_cents).to eq(56)
+    end
+
+    it "leaves a blank or invalid price for validation to catch" do
+      service = build(:service, price: "twelve")
+
+      expect(service.price_cents).to be_nil
+      expect(service).not_to be_valid
+      expect(service.errors).to be_of_kind(:price_cents, :not_a_number)
+    end
+  end
+
   describe "buffer" do
     it "is optional, falling back to the business's" do
       expect(build(:service, buffer_minutes: nil)).to be_valid

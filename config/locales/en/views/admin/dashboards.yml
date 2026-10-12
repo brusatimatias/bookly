@@ -6,6 +6,7 @@ en:
         heading: "Hi, %{name}"
         subtitle: "This is the %{business} panel."
         members: "Team members"
+        active_services: "Active services"
         pending_invitations: "Pending invitations"
         coming_soon_title: "Coming soon"
         coming_soon: "This is where you'll manage the business's team, services and schedule."

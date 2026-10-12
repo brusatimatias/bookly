@@ -8,8 +8,9 @@ en:
       service:
         name: "Name"
         description: "Description"
-        duration_minutes: "Duration (minutes)"
+        duration_minutes: "Duration"
         price_cents: "Price"
-        buffer_minutes: "Buffer after (minutes)"
+        price: "Price"
+        buffer_minutes: "Buffer"
         active: "Active"
         professionals: "Professionals"

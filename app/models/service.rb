@@ -18,4 +18,15 @@ class Service < ApplicationRecord
   validates :duration_minutes, numericality: { only_integer: true, greater_than: 0, less_than_or_equal_to: MAX_DURATION_MINUTES }
   validates :price_cents, numericality: { only_integer: true, greater_than_or_equal_to: 0 }
   validates :buffer_minutes, numericality: { only_integer: true, greater_than_or_equal_to: 0 }, allow_nil: true
+
+  # Price in the currency's main unit (12000.5), for forms. Stored in cents;
+  # anything that isn't a number leaves it blank so validation catches it.
+  def price
+    BigDecimal(price_cents) / 100 if price_cents
+  end
+
+  def price=(value)
+    amount = BigDecimal(value.to_s.strip.tr(",", "."), exception: false)
+    self.price_cents = amount && (amount * 100).round
+  end
 end
