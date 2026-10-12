@@ -1,0 +1,50 @@
+<% content_for :title, t(".title") %>
+
+<section class="w-full max-w-4xl mx-auto">
+  <div class="flex items-center justify-between gap-4">
+    <h1 class="text-3xl font-bold text-gray-900"><%= t(".title") %></h1>
+    <% if Current.membership.owner? %>
+      <%= link_to t(".invite"), new_admin_invitation_path, class: "rounded-md px-3.5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-medium" %>
+    <% end %>
+  </div>
+
+  <h2 class="mt-8 text-xl font-semibold text-gray-900"><%= t(".members") %></h2>
+  <ul class="mt-3 divide-y divide-gray-200 border-y border-gray-200">
+    <% @memberships.each do |membership| %>
+      <li class="py-3 flex items-center justify-between gap-4" id="<%= dom_id(membership) %>">
+        <div>
+          <p class="font-medium text-gray-900"><%= membership.user.name %></p>
+          <p class="text-sm text-gray-600"><%= membership.user.email_address %></p>
+        </div>
+        <span class="text-sm text-gray-700"><%= Membership.human_attribute_name("role.#{membership.role}") %></span>
+      </li>
+    <% end %>
+  </ul>
+
+  <h2 class="mt-8 text-xl font-semibold text-gray-900"><%= t(".pending_invitations") %></h2>
+  <% if @invitations.any? %>
+    <ul class="mt-3 divide-y divide-gray-200 border-y border-gray-200">
+      <% @invitations.each do |invitation| %>
+        <li class="py-3 flex flex-wrap items-center justify-between gap-4" id="<%= dom_id(invitation) %>">
+          <div>
+            <p class="font-medium text-gray-900"><%= invitation.email %></p>
+            <p class="text-sm <%= invitation.expired? ? "text-red-600" : "text-gray-600" %>">
+              <%= Invitation.human_attribute_name("role.#{invitation.role}") %> ·
+              <%= invitation.expired? ? t(".expired") : t(".expires", date: l(invitation.expires_at, format: :short)) %>
+            </p>
+          </div>
+          <% if Current.membership.owner? %>
+            <div class="flex items-center gap-4 text-sm">
+              <%= button_to t(".resend"), resend_admin_invitation_path(invitation), class: "text-gray-700 underline hover:no-underline cursor-pointer" %>
+              <%= button_to t(".revoke"), admin_invitation_path(invitation), method: :delete,
+                    form: { data: { turbo_confirm: t(".revoke_confirm", email: invitation.email) } },
+                    class: "text-red-600 underline hover:no-underline cursor-pointer" %>
+            </div>
+          <% end %>
+        </li>
+      <% end %>
+    </ul>
+  <% else %>
+    <p class="mt-3 text-gray-600"><%= t(".no_invitations") %></p>
+  <% end %>
+</section>

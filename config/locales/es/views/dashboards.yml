@@ -1,0 +1,5 @@
+es:
+  dashboards:
+    show:
+      title: "Mis negocios"
+      empty: "Todavía no formás parte de ningún negocio."

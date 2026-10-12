@@ -1,0 +1,9 @@
+es:
+  invitations_mailer:
+    invite:
+      subject: "Te invitaron a sumarte a %{business} en Bookly"
+      greeting: "¡Hola!"
+      body: "%{inviter} te invitó a sumarte a %{business} como %{role}."
+      accept: "Aceptar la invitación"
+      expires: "La invitación vence el %{date}."
+      ignore: "Si no esperabas esta invitación, podés ignorar este email."

@@ -4,7 +4,13 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project state
 
-Multi-tenant appointment booking app, built in stages. Done so far: `Business` model (booking configuration, locale, time zone, active/suspended), tenant context (`Current.business`, `BusinessScoped`), public business page at `/:business_slug`, and Spanish/English i18n. No users/authentication yet; no per-business tables yet (the first ones arrive with services and professionals).
+Multi-tenant appointment booking app, built in stages. Done so far:
+
+- `Business` model (booking configuration, locale, time zone, active/suspended), tenant context (`Current.business`, `BusinessScoped`) and public business page at `/:business_slug`.
+- Spanish/English i18n, with a language switcher on pages outside a business.
+- Users and authentication (Rails 8 generator), password reset, memberships with roles (`owner`/`admin`/`professional`), the business panel at `/:business_slug/admin`, and email invitations to join a business.
+
+No per-business tables yet (the first ones arrive with services and professionals). There is no public sign up: owners are created from seeds or the console for now, everyone else joins by invitation.
 
 ## Commands
 
@@ -24,6 +30,8 @@ bin/importmap audit            # JS dependency audit
 bin/ci                         # local CI pipeline defined in config/ci.rb
 ```
 
+Seeds (`bin/rails db:seed`) create two businesses with members; every seeded user's password is `password`. In development, sent emails are browsable at `/letter_opener`.
+
 `bin/ci` (config/ci.rb) mirrors the GitHub workflow (.github/workflows/ci.yml): RuboCop, bundler-audit, importmap audit, Brakeman, and RSpec. The GitHub `test` job runs against a Postgres service via `DATABASE_URL`.
 
 ## Stack / architecture
@@ -32,9 +40,30 @@ bin/ci                         # local CI pipeline defined in config/ci.rb
 - **Background jobs, cache, websockets:** Solid Queue, Solid Cache, Solid Cable (DB-backed; no Redis).
 - **Frontend:** Hotwire (Turbo + Stimulus) via importmap — no Node/bundler. Stimulus controllers in `app/javascript/controllers` are auto-pinned. Add JS packages with `bin/importmap pin <pkg>`.
 - **CSS:** Tailwind via `tailwindcss-rails`; source is `app/assets/tailwind/application.css`, compiled to `app/assets/builds/` (gitignored). Assets served by Propshaft.
-- **Testing:** RSpec (`spec/`) with FactoryBot; Minitest railtie is disabled and system test generation is turned off. Transactional fixtures are on. `FactoryBot::Syntax::Methods` is included (call `create`/`build` directly). Specs run in random order; `spec/examples.txt` persists status for `--only-failures`. Spec type is declared explicitly (`type: :request`, `type: :controller`); it is not inferred from the folder. `ActiveSupport::Testing::TimeHelpers` (`freeze_time`, `travel_to`) is included, and `spec/support/**` is auto-loaded.
-- **i18n:** `es` (default) and `en`. Translations live in `config/locales/{es,en}/` — `app.yml`, `models/<model>.yml`, `views/<controller>.yml` — and every user-facing string (views, mailers, validation messages) goes through `t()`. Missing translations raise in development and test, and `spec/config/i18n_spec.rb` fails if `es` and `en` don't define the same keys.
+- **Testing:** RSpec (`spec/`) with FactoryBot; Minitest railtie is disabled and system test generation is turned off. Transactional fixtures are on. `FactoryBot::Syntax::Methods` is included (call `create`/`build` directly). Specs run in random order; `spec/examples.txt` persists status for `--only-failures`. Spec type is declared explicitly (`type: :request`, `type: :controller`); it is not inferred from the folder. `ActiveSupport::Testing::TimeHelpers` (`freeze_time`, `travel_to`) is included, and `spec/support/**` is auto-loaded. Request specs sign in with `sign_in_as(user)` (password `"password"`, the factory default).
+- **i18n:** `es` (default) and `en`. Translations live in `config/locales/{es,en}/` — `app.yml`, `models/<model>.yml`, `views/<controller>.yml` (namespaced controllers in `views/admin/`), `mailers/<mailer>.yml` — and every user-facing string (views, mailers, validation messages, flash) goes through `t()`. Missing translations raise in development and test, and `spec/config/i18n_spec.rb` fails if `es` and `en` don't define the same keys. Enum values are translated as attributes (`membership/role`) and read with `Model.human_attribute_name("role.#{value}")`.
+- **Locale selection:** pages tied to a business (public page, panel, invitation) use the business's locale. Everywhere else `SetLocale` picks the language switcher's choice (`locale` cookie, set by `PATCH /locale`), then the browser's `Accept-Language`, then `es`. The switcher shows where `locale_switchable?` is true. Emails about a business are rendered in its locale (`I18n.with_locale(business.locale)` in the mailer).
 - **Deployment:** Kamal (`config/deploy.yml`, `.kamal/secrets`) building the `Dockerfile`, served through Thruster. `RAILS_MASTER_KEY` is read from `config/master.key` (gitignored); production DB password comes from `BOOKLY_DATABASE_PASSWORD`.
+
+## Authentication and roles
+
+- Users, sessions and password reset come from the Rails 8 authentication generator (`Authentication` concern, `Current.session`/`Current.user`). Sign in at `/session/new`.
+- Authentication is required **by default** for every controller; public ones opt out with `allow_unauthenticated_access`.
+- `users`, `sessions`, `memberships` and `invitations` are global tables (not `BusinessScoped`). Always reach invitations and memberships through `Current.business` (`Current.business.invitations.find(...)`) so a request can't touch another business's records.
+- `Membership` links a user to a business with a role: `owner` (exactly one per business, enforced by a partial unique index), `admin` or `professional`. One role per user and business. `manager?` is true for owners and admins.
+- After signing in, users land on `/dashboard`: straight into their business panel if they belong to a single one, otherwise a list to pick.
+
+### Business panel
+
+- Lives under `/:business_slug/admin` (`namespace :admin` inside the business scope). Controllers inherit from `Admin::BaseController`, which includes `SetCurrentBusiness`, uses the `admin` layout and sets `Current.membership`. Non-members get a 404; suspended businesses get the 503 page.
+- Restrict actions with `before_action :require_owner` or `:require_manager`; users without the role are redirected to the panel home with an alert.
+- Route helpers inside the panel fill `business_slug` automatically (`default_url_options`).
+
+### Invitations
+
+- Only the owner invites, resends and revokes (`Admin::InvitationsController`); owners and admins see the team page. Invitations are for `admin` or `professional` and expire after `Invitation::VALID_FOR` (7 days). One pending invitation per email and business.
+- The acceptance token is not stored: `generates_token_for :acceptance` embeds `accepted_at` and `expires_at`, so the link is single use, resending (`renew!`) voids the previous link, and revoking deletes the record.
+- `/invitations/:token` (`InvitationsController`, in the business's locale): without an account the person signs up there (user and membership in one transaction); with an account they must be signed in as the invited email. `Invitation#accept!` locks the row and raises `Invitation::NotAcceptable` if it was used, expired or the email doesn't match.
 
 ## Multi-tenancy
 
@@ -44,11 +73,11 @@ Single database, shared tables: every per-business table has a `business_id`, an
 - It **fails closed**: with no current business, any query or `new` raises `Current::MissingBusiness`. This also applies through associations (`business.services` still needs `Current.business`).
 - Anything outside a request — console, seeds, jobs, rake tasks, specs — must set the tenant explicitly: `Current.set(business: business) { ... }`. In specs use the `with_business(business) { ... }` helper (`spec/support/current_business_helpers.rb`).
 - Code that legitimately spans tenants (platform admin, maintenance) opts out with `BusinessScoped.across_businesses { ... }`. Never use `unscoped` to bypass tenancy; keep cross-tenant access greppable.
-- `Business` itself, and global tables (users, sessions, memberships, invitations), do not include `BusinessScoped`.
+- `Business` itself, and global tables (users, sessions, memberships, invitations), do not include `BusinessScoped`. `Current.membership` holds the signed in user's membership inside the business panel.
 
 ## Routing
 
-- `/` is the landing page (`HomeController`). Public business pages live under `scope ":business_slug"` at the end of `config/routes.rb`, constrained by `Business::SLUG_FORMAT`.
-- Controllers under that scope `include SetCurrentBusiness`: it resolves the business from the slug (404 if unknown), sets `Current.business`, wraps the request in the business's locale and time zone, and renders `businesses/unavailable` (503) for suspended businesses.
+- `/` is the landing page (`HomeController`). Global app routes (`/session`, `/passwords`, `/locale`, `/dashboard`, `/invitations`, `/letter_opener` in development) come before the business scope. Public business pages live under `scope ":business_slug"` at the end of `config/routes.rb`, constrained by `Business::SLUG_FORMAT`.
+- Controllers under that scope `include SetCurrentBusiness`: it resolves the business from the slug (404 if unknown), sets `Current.business`, wraps the request in the business's locale and time zone, and renders `businesses/unavailable` (503, always with the public layout) for suspended businesses.
 - Any new top-level path must be added to `Business::RESERVED_SLUGS` so no business can take it as a slug.
 - Times are stored in UTC and displayed in the business time zone (`Time.zone` is the business's inside a request; the app default is UTC).

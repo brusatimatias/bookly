@@ -1,0 +1,24 @@
+en:
+  activerecord:
+    models:
+      membership:
+        one: "Member"
+        other: "Members"
+    attributes:
+      membership:
+        business: "Business"
+        user: "User"
+        user_id: "User"
+        role: "Role"
+      membership/role:
+        owner: "Owner"
+        admin: "Admin"
+        professional: "Professional"
+    errors:
+      models:
+        membership:
+          attributes:
+            user_id:
+              taken: "is already a member of this business"
+            role:
+              owner_taken: "of owner is already taken in this business"

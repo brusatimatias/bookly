@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_10_11_001906) do
+ActiveRecord::Schema[8.1].define(version: 2026_10_12_034742) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -44,4 +44,56 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_11_001906) do
     t.check_constraint "slug::text ~ '^[a-z0-9]+(-[a-z0-9]+)*$'::text", name: "businesses_slug_format"
     t.check_constraint "status::text = ANY (ARRAY['active'::character varying, 'suspended'::character varying]::text[])", name: "businesses_status_valid"
   end
+
+  create_table "invitations", force: :cascade do |t|
+    t.bigint "business_id", null: false
+    t.string "email", null: false
+    t.string "role", null: false
+    t.bigint "invited_by_id", null: false
+    t.datetime "expires_at", null: false
+    t.datetime "accepted_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["business_id", "email"], name: "index_invitations_on_business_id_and_email_pending", unique: true, where: "(accepted_at IS NULL)"
+    t.index ["business_id"], name: "index_invitations_on_business_id"
+    t.index ["invited_by_id"], name: "index_invitations_on_invited_by_id"
+    t.check_constraint "role::text = ANY (ARRAY['admin'::character varying, 'professional'::character varying]::text[])", name: "invitations_role_valid"
+  end
+
+  create_table "memberships", force: :cascade do |t|
+    t.bigint "business_id", null: false
+    t.bigint "user_id", null: false
+    t.string "role", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["business_id", "user_id"], name: "index_memberships_on_business_id_and_user_id", unique: true
+    t.index ["business_id"], name: "index_memberships_on_business_id_one_owner", unique: true, where: "((role)::text = 'owner'::text)"
+    t.index ["user_id"], name: "index_memberships_on_user_id"
+    t.check_constraint "role::text = ANY (ARRAY['owner'::character varying, 'admin'::character varying, 'professional'::character varying]::text[])", name: "memberships_role_valid"
+  end
+
+  create_table "sessions", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.string "ip_address"
+    t.string "user_agent"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["user_id"], name: "index_sessions_on_user_id"
+  end
+
+  create_table "users", force: :cascade do |t|
+    t.string "name", null: false
+    t.string "email_address", null: false
+    t.string "password_digest", null: false
+    t.boolean "platform_admin", default: false, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["email_address"], name: "index_users_on_email_address", unique: true
+  end
+
+  add_foreign_key "invitations", "businesses"
+  add_foreign_key "invitations", "users", column: "invited_by_id"
+  add_foreign_key "memberships", "businesses"
+  add_foreign_key "memberships", "users"
+  add_foreign_key "sessions", "users"
 end

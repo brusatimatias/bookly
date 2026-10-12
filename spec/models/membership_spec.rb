@@ -1,0 +1,113 @@
+require "rails_helper"
+
+RSpec.describe Membership, type: :model do
+  let(:business) { create(:business) }
+
+  it "is valid with the factory defaults" do
+    expect(build(:membership)).to be_valid
+  end
+
+  describe "role" do
+    it "rejects unknown roles" do
+      membership = build(:membership, role: "guest")
+
+      expect(membership).not_to be_valid
+      expect(membership.errors).to be_of_kind(:role, :inclusion)
+    end
+
+    it "is checked in the database" do
+      membership = create(:membership)
+
+      expect { membership.update_column(:role, "guest") }.to raise_error(ActiveRecord::StatementInvalid, /memberships_role_valid/)
+    end
+  end
+
+  describe "one role per person and business" do
+    it "rejects a second membership for the same user" do
+      user = create(:user)
+      create(:membership, business: business, user: user, role: :admin)
+      duplicate = build(:membership, business: business, user: user, role: :professional)
+
+      expect(duplicate).not_to be_valid
+      expect(duplicate.errors).to be_of_kind(:user_id, :taken)
+    end
+
+    it "is enforced in the database" do
+      user = create(:user)
+      create(:membership, business: business, user: user)
+      duplicate = build(:membership, business: business, user: user)
+
+      expect { duplicate.save(validate: false) }.to raise_error(ActiveRecord::RecordNotUnique)
+    end
+
+    it "allows the same user in another business" do
+      user = create(:user)
+      create(:membership, business: business, user: user, role: :owner)
+
+      expect(build(:membership, user: user, role: :professional)).to be_valid
+    end
+  end
+
+  describe "a single owner per business" do
+    before { create(:membership, :owner, business: business) }
+
+    it "rejects a second owner" do
+      second = build(:membership, :owner, business: business)
+
+      expect(second).not_to be_valid
+      expect(second.errors).to be_of_kind(:role, :taken)
+    end
+
+    it "translates the error" do
+      second = build(:membership, :owner, business: business)
+      second.validate
+
+      expect(second.errors.full_messages).to include("Rol de dueño ya está asignado en este negocio")
+    end
+
+    it "is enforced in the database" do
+      second = build(:membership, :owner, business: business)
+
+      expect { second.save(validate: false) }.to raise_error(ActiveRecord::RecordNotUnique)
+    end
+
+    it "allows several admins and professionals" do
+      create(:membership, :admin, business: business)
+      create(:membership, :admin, business: business)
+      create(:membership, business: business)
+
+      expect(business.memberships.count).to eq(4)
+    end
+  end
+
+  describe "#manager?" do
+    it "is true for owners and admins only" do
+      expect(build(:membership, :owner)).to be_manager
+      expect(build(:membership, :admin)).to be_manager
+      expect(build(:membership)).not_to be_manager
+    end
+  end
+
+  describe "associations" do
+    it "exposes the owner and members of a business" do
+      owner = create(:membership, :owner, business: business).user
+      professional = create(:membership, business: business).user
+
+      expect(business.owner).to eq(owner)
+      expect(business.members).to contain_exactly(owner, professional)
+    end
+
+    it "finds the membership of a user in a business" do
+      membership = create(:membership, business: business)
+
+      expect(membership.user.membership_for(business)).to eq(membership)
+      expect(membership.user.membership_for(create(:business))).to be_nil
+    end
+
+    it "removes the memberships of a deleted user" do
+      membership = create(:membership, business: business)
+
+      expect { membership.user.destroy }.to change(described_class, :count).by(-1)
+    end
+  end
+end

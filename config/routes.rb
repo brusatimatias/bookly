@@ -11,9 +11,27 @@ Rails.application.routes.draw do
 
   root "home#show"
 
+  resource :session, only: %i[ new create destroy ]
+  resources :passwords, param: :token, only: %i[ new create edit update ]
+  resource :locale, only: :update
+  resource :dashboard, only: :show
+  resources :invitations, param: :token, only: %i[ show update ]
+
+  mount LetterOpenerWeb::Engine, at: "/letter_opener" if Rails.env.development?
+
   # Public business pages. Keep this scope last so it never shadows app routes;
   # new top-level paths must also be added to Business::RESERVED_SLUGS.
   scope ":business_slug", constraints: { business_slug: Business::SLUG_FORMAT } do
     get "/", to: "businesses#show", as: :business
+
+    # Business panel, for its members only.
+    namespace :admin do
+      root "dashboards#show"
+
+      resource :team, only: :show
+      resources :invitations, only: %i[new create destroy] do
+        post :resend, on: :member
+      end
+    end
   end
 end

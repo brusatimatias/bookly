@@ -1,0 +1,13 @@
+en:
+  activerecord:
+    models:
+      user:
+        one: "User"
+        other: "Users"
+    attributes:
+      user:
+        name: "Name"
+        email_address: "Email"
+        password: "Password"
+        password_confirmation: "Password confirmation"
+        platform_admin: "Platform admin"

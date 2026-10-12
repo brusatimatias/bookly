@@ -1,0 +1,19 @@
+es:
+  invitations:
+    accepted: "¡Te damos la bienvenida! Ya formás parte de %{business}."
+    show:
+      title: "Invitación a %{business}"
+      invited_by: "%{inviter} te invitó a sumarte como %{role}."
+      create_account: "Creá tu cuenta para %{email} y aceptá la invitación."
+      join: "Crear cuenta y aceptar"
+      sign_in_to_accept: "Ya tenés una cuenta con %{email}. Iniciá sesión para aceptar la invitación."
+      sign_in: "Iniciar sesión"
+      accept: "Aceptar invitación"
+      other_account: "Esta invitación es para %{email}, pero iniciaste sesión como %{current}. Cerrá sesión y volvé a abrir el link."
+      sign_out: "Cerrar sesión"
+    invalid:
+      title: "Invitación no válida"
+      message: "Este link de invitación no es válido: puede que ya se haya usado o que haya sido revocado."
+    expired:
+      title: "Invitación vencida"
+      message: "Esta invitación venció. Pedile a %{business} que te la reenvíe."

@@ -1,0 +1,14 @@
+en:
+  admin:
+    invitations:
+      new:
+        title: "Invite to the team"
+        instructions: "We'll email them a link to join. The link expires in %{days} days."
+        submit: "Send invitation"
+        cancel: "Cancel"
+      create:
+        sent: "We've sent the invitation to %{email}."
+      resend:
+        sent: "We've resent the invitation to %{email}."
+      destroy:
+        revoked: "We've revoked the invitation to %{email}."

@@ -16,7 +16,7 @@ module SetCurrentBusiness
       I18n.with_locale(Current.business.locale) do
         Time.use_zone(Current.business.time_zone) do
           if Current.business.suspended?
-            render "businesses/unavailable", status: :service_unavailable
+            render "businesses/unavailable", status: :service_unavailable, layout: "application"
           else
             action.call
           end

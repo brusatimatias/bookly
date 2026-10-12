@@ -1,0 +1,11 @@
+en:
+  admin:
+    access_denied: "You don't have permission to access that section."
+    shared:
+      header:
+        navigation: "Business panel"
+        home: "Home"
+        team: "Team"
+        public_page: "Public page"
+        my_businesses: "My businesses"
+        sign_out: "Sign out"

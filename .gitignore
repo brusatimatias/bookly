@@ -39,3 +39,5 @@
 
 # RSpec example status persistence
 /spec/examples.txt
+
+.ruby-gemset

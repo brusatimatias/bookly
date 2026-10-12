@@ -1,0 +1,7 @@
+en:
+  admin:
+    dashboards:
+      show:
+        title: "Panel · %{business}"
+        heading: "Hi, %{name}"
+        coming_soon: "This is where you'll manage the business's team, services and schedule."

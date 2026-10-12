@@ -1,2 +1,6 @@
 en:
   app_name: "Bookly"
+  # Each language is named in itself, so both files hold the same values.
+  locale_names:
+    es: "Español"
+    en: "English"
