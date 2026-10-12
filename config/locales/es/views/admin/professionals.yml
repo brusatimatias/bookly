@@ -5,6 +5,8 @@ es:
         title: "Profesionales"
         subtitle: "Quiénes atienden en el negocio y qué servicios ofrece cada uno."
         new: "Nuevo profesional"
+        invite: "Invitar"
+        invited: "Invitación enviada a %{email}"
         edit: "Editar"
         deactivate: "Desactivar"
         deactivate_confirm: "¿Desactivar a %{name}? Deja de recibir turnos, pero conserva su historial y sus servicios."

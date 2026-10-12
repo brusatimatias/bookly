@@ -4,6 +4,7 @@ es:
       new:
         title: "Invitar al equipo"
         instructions: "Le enviaremos un email con un link para sumarse. El link vence en %{days} días."
+        for_profile_html: "La persona invitada va a tomar el perfil de %{name}, con sus servicios."
         role_hint: "Los administradores gestionan el negocio y ven todas las agendas; los profesionales, solo la suya."
         submit: "Enviar invitación"
         cancel: "Cancelar"

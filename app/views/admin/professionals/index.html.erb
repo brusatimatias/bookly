@@ -21,7 +21,15 @@
                 <span class="ml-1 text-sm font-normal text-gray-500"><%= t(".you") %></span>
               <% end %>
             </p>
-            <p class="truncate text-sm text-gray-500"><%= professional.user ? professional.user.email_address : t(".no_account") %></p>
+            <p class="truncate text-sm text-gray-500">
+              <% if professional.user %>
+                <%= professional.user.email_address %>
+              <% elsif (invitation = @pending_invitations[professional.id]) %>
+                <%= t(".invited", email: invitation.email) %>
+              <% else %>
+                <%= t(".no_account") %>
+              <% end %>
+            </p>
             <div class="mt-1.5 flex flex-wrap items-center gap-1.5">
               <% if !professional.active? %>
                 <span class="badge-gray"><%= t(".inactive") %></span>
@@ -35,7 +43,12 @@
           </div>
         </div>
         <% if Current.membership.manager? %>
-          <div class="flex items-center gap-2 pl-14 sm:pl-0">
+          <div class="flex flex-wrap items-center gap-2 pl-14 sm:pl-0">
+            <% if Current.membership.owner? && professional.active? && professional.user.nil? && !@pending_invitations[professional.id] %>
+              <%= link_to new_admin_invitation_path(professional_id: professional), class: "btn-secondary btn-sm" do %>
+                <%= icon "envelope", class: "size-4" %> <%= t(".invite") %>
+              <% end %>
+            <% end %>
             <%= link_to t(".edit"), edit_admin_professional_path(professional), class: "btn-secondary btn-sm" %>
             <% if professional.active? %>
               <%= button_to t(".deactivate"), deactivate_admin_professional_path(professional), method: :patch,

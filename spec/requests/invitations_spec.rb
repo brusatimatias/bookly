@@ -29,6 +29,15 @@ RSpec.describe "Invitations", type: :request do
       expect(response.body).to include("Ya formás parte de Barbería Centro")
     end
 
+    it "gives the new professional their invited profile" do
+      profile = with_business(business) { create(:professional, name: "Ana Torres") }
+      invitation.update!(professional: profile)
+
+      patch invitation_path(invitation.generate_token_for(:acceptance)), params: new_user_params
+
+      expect(with_business(business) { profile.reload.user }).to eq(User.find_by!(email_address: "ana@example.com"))
+    end
+
     it "keeps everything unchanged when the account is invalid" do
       params = { user: { name: "", password: "secret-password", password_confirmation: "other-password" } }
 

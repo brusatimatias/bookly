@@ -12,6 +12,9 @@ class Invitation < ApplicationRecord
 
   belongs_to :business
   belongs_to :invited_by, class_name: "User"
+  # Optional profile the new member takes over. Professional is BusinessScoped,
+  # so reading it needs Current.business (accept! sets it).
+  belongs_to :professional, optional: true
 
   enum :role, { admin: "admin", professional: "professional" }, validate: true
 
@@ -31,6 +34,8 @@ class Invitation < ApplicationRecord
   validates :email, presence: true, format: { with: URI::MailTo::EMAIL_REGEXP }
   validates :email, uniqueness: { scope: :business_id, conditions: -> { pending }, message: :already_invited }, if: :pending?
   validate :email_not_a_member, on: :create
+  validates :professional_id, uniqueness: { conditions: -> { pending }, message: :already_invited }, allow_nil: true, if: :pending?
+  validate :professional_not_linked, on: :create, if: :professional_id
 
   def pending?
     accepted_at.nil?
@@ -40,13 +45,15 @@ class Invitation < ApplicationRecord
     expires_at.past?
   end
 
-  # Adds the user to the business with the invited role. The lock keeps two
-  # simultaneous acceptances from both going through.
+  # Adds the user to the business with the invited role, and gives them their
+  # professional profile: the invited one, or a new one for professionals. The
+  # lock keeps two simultaneous acceptances from both going through.
   def accept!(user)
     with_lock do
       raise NotAcceptable unless pending? && !expired? && user.email_address == email
 
       business.memberships.create!(user: user, role: role)
+      Current.set(business: business) { link_professional_profile(user) }
       update!(accepted_at: Time.current)
     end
   end
@@ -57,6 +64,21 @@ class Invitation < ApplicationRecord
   end
 
   private
+    # A profile linked to someone else in the meantime is left alone: the new
+    # member then gets a profile of their own, like any invited professional
+    # (professional? is the role).
+    def link_professional_profile(user)
+      if professional && professional.user_id.nil?
+        professional.update!(user: user)
+      elsif professional?
+        business.professionals.create!(user: user)
+      end
+    end
+
+    def professional_not_linked
+      errors.add(:professional, :already_linked) if professional.user_id
+    end
+
     def email_not_a_member
       if business && business.members.exists?(email_address: email)
         errors.add(:email, :already_member)

@@ -8,6 +8,7 @@ class Admin::ProfessionalsController < Admin::BaseController
   def index
     @professionals = Current.business.professionals.includes(:user, :services, photo_attachment: :blob)
       .order(active: :desc).order(Professional.arel_table[:name].lower)
+    @pending_invitations = Current.business.invitations.pending.where.not(professional_id: nil).index_by(&:professional_id)
   end
 
   def new

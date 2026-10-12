@@ -35,6 +35,14 @@ RSpec.describe "Admin professionals", type: :request do
       expect(response.body.index("Sofía Torres")).to be < response.body.index("Ana Ruiz")
     end
 
+    it "only lets the owner invite profiles without an account" do
+      in_business { create(:professional, name: "Sofía Torres") }
+
+      get admin_professionals_path(business)
+
+      expect(response.body).not_to include("professional_id=")
+    end
+
     it "shows an empty state" do
       get admin_professionals_path(business)
 
@@ -169,6 +177,25 @@ RSpec.describe "Admin professionals", type: :request do
       patch deactivate_admin_professional_path(business, other)
       expect(response).to have_http_status(:not_found)
       expect(other.reload).to be_active
+    end
+  end
+
+  describe "as the owner" do
+    let(:owner) { member(:owner) }
+
+    before { sign_in_as(owner) }
+
+    it "offers to invite profiles without an account or pending invitation" do
+      free, invited, linked = in_business do
+        [ create(:professional), create(:professional), create(:professional, user: member(:professional)) ]
+      end
+      create(:invitation, business: business, invited_by: owner, professional: invited, email: "invited@example.com")
+
+      get admin_professionals_path(business)
+
+      expect(response.body).to include(new_admin_invitation_path(business, professional_id: free.id), "Invitación enviada a invited@example.com")
+      expect(response.body).not_to include(new_admin_invitation_path(business, professional_id: invited.id))
+      expect(response.body).not_to include(new_admin_invitation_path(business, professional_id: linked.id))
     end
   end
 
