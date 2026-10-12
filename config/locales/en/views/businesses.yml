@@ -3,6 +3,10 @@ en:
     show:
       phone: "Phone"
       email: "Email"
+      services: "Services"
+      professionals: "Professionals"
+      no_services: "No services published yet."
+      no_services_hint: "Please check back soon."
       booking_soon: "Online booking is coming soon."
     unavailable:
       title: "Business unavailable"

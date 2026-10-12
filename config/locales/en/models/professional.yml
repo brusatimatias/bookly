@@ -1,0 +1,32 @@
+en:
+  activerecord:
+    models:
+      professional:
+        one: "Professional"
+        other: "Professionals"
+      professional_service:
+        one: "Professional service"
+        other: "Professional services"
+    attributes:
+      professional:
+        name: "Name"
+        user: "Member"
+        user_id: "Member"
+        photo: "Photo"
+        active: "Active"
+        services: "Services"
+      professional_service:
+        professional: "Professional"
+        service: "Service"
+        service_id: "Service"
+    errors:
+      models:
+        professional:
+          attributes:
+            user:
+              not_a_member: "is not a member of this business"
+            user_id:
+              already_linked: "already has a professional profile"
+            photo:
+              invalid_content_type: "must be a JPG, PNG or WebP image"
+              too_large: "can't be larger than %{count} MB"

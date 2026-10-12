@@ -1,0 +1,69 @@
+<% content_for :title, t(".title") %>
+
+<% new_professional_button = capture do %>
+  <%= link_to new_admin_professional_path, class: "btn-primary" do %>
+    <%= icon "plus", class: "size-4" %> <%= t(".new") %>
+  <% end %>
+<% end %>
+<%= render "shared/page_header", title: t(".title"), subtitle: t(".subtitle"),
+      actions: (new_professional_button if Current.membership.manager?) %>
+
+<% if @professionals.any? %>
+  <ul class="card list-divided">
+    <% @professionals.each do |professional| %>
+      <li class="flex flex-col gap-3 px-6 py-4 sm:flex-row sm:items-center sm:gap-4" id="<%= dom_id(professional) %>">
+        <div class="flex min-w-0 flex-1 items-center gap-4">
+          <div class="<%= "opacity-50 grayscale" unless professional.active? %>"><%= professional_avatar(professional) %></div>
+          <div class="min-w-0 flex-1">
+            <p class="truncate font-medium <%= professional.active? ? "text-gray-900" : "text-gray-500" %>">
+              <%= professional.name %>
+              <% if professional.user == Current.user %>
+                <span class="ml-1 text-sm font-normal text-gray-500"><%= t(".you") %></span>
+              <% end %>
+            </p>
+            <p class="truncate text-sm text-gray-500">
+              <% if professional.user %>
+                <%= professional.user.email_address %>
+              <% elsif (invitation = @pending_invitations[professional.id]) %>
+                <%= t(".invited", email: invitation.email) %>
+              <% else %>
+                <%= t(".no_account") %>
+              <% end %>
+            </p>
+            <div class="mt-1.5 flex flex-wrap items-center gap-1.5">
+              <% if !professional.active? %>
+                <span class="badge-gray"><%= t(".inactive") %></span>
+              <% elsif !professional.bookable? %>
+                <span class="badge-yellow"><%= t(".no_services") %></span>
+              <% end %>
+              <% professional.services.select(&:active?).sort_by { |service| service.name.downcase }.each do |service| %>
+                <span class="badge-brand"><%= service.name %></span>
+              <% end %>
+            </div>
+          </div>
+        </div>
+        <% if Current.membership.manager? %>
+          <div class="flex flex-wrap items-center gap-2 pl-14 sm:pl-0">
+            <% if Current.membership.owner? && professional.active? && professional.user.nil? && !@pending_invitations[professional.id] %>
+              <%= link_to new_admin_invitation_path(professional_id: professional), class: "btn-secondary btn-sm" do %>
+                <%= icon "envelope", class: "size-4" %> <%= t(".invite") %>
+              <% end %>
+            <% end %>
+            <%= link_to t(".edit"), edit_admin_professional_path(professional), class: "btn-secondary btn-sm" %>
+            <% if professional.active? %>
+              <%= button_to t(".deactivate"), deactivate_admin_professional_path(professional), method: :patch,
+                    form: { data: { turbo_confirm: t(".deactivate_confirm", name: professional.name) } },
+                    class: "btn-ghost btn-sm text-red-600 hover:bg-red-50 hover:text-red-700" %>
+            <% else %>
+              <%= button_to t(".reactivate"), reactivate_admin_professional_path(professional), method: :patch, class: "btn-ghost btn-sm" %>
+            <% end %>
+          </div>
+        <% end %>
+      </li>
+    <% end %>
+  </ul>
+<% else %>
+  <%= render "shared/empty_state", icon: "user", title: t(".empty"),
+        message: t(Current.membership.manager? ? ".empty_hint" : ".empty_hint_member"),
+        action: (new_professional_button if Current.membership.manager?) %>
+<% end %>

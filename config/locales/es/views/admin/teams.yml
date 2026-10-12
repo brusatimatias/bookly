@@ -9,6 +9,7 @@ es:
         no_invitations: "No hay invitaciones pendientes."
         expires: "vence el %{date}"
         expired: "vencida"
+        profile: "Perfil: %{name}"
         resend: "Reenviar"
         revoke: "Revocar"
         revoke_confirm: "¿Revocar la invitación a %{email}? El link dejará de funcionar."

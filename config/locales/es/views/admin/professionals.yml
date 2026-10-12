@@ -1,0 +1,46 @@
+es:
+  admin:
+    professionals:
+      index:
+        title: "Profesionales"
+        subtitle: "Quiénes atienden en el negocio y qué servicios ofrece cada uno."
+        new: "Nuevo profesional"
+        invite: "Invitar"
+        invited: "Invitación enviada a %{email}"
+        edit: "Editar"
+        deactivate: "Desactivar"
+        deactivate_confirm: "¿Desactivar a %{name}? Deja de recibir turnos, pero conserva su historial y sus servicios."
+        reactivate: "Reactivar"
+        you: "(vos)"
+        no_account: "Sin cuenta vinculada"
+        inactive: "Inactivo"
+        no_services: "Sin servicios"
+        empty: "Todavía no hay profesionales."
+        empty_hint: "Cargá a las personas que atienden para que los clientes puedan elegirlas."
+        empty_hint_member: "Cuando el negocio cargue a sus profesionales, los vas a ver acá."
+      form:
+        photo_hint: "JPG, PNG o WebP, hasta %{size} MB."
+        name_hint: "Si lo dejás vacío y vinculás una cuenta, se usa el nombre de esa persona."
+        user: "Cuenta vinculada"
+        no_user: "Sin cuenta"
+        user_hint: "Elegí a la persona del equipo dueña de este perfil, para que pueda gestionar su agenda."
+        services_hint: "Solo se puede reservar con un profesional que ofrezca al menos un servicio activo."
+        inactive_service: "Inactivo"
+        no_services_html: "Todavía no hay servicios. %{link} para asignárselos."
+        create_services: "Creá los servicios"
+        cancel: "Cancelar"
+        create: "Crear profesional"
+        update: "Guardar cambios"
+      new:
+        title: "Nuevo profesional"
+        subtitle: "Los clientes lo van a poder elegir al pedir un turno."
+      edit:
+        title: "Editar %{name}"
+      create:
+        created: "Creamos el perfil de %{name}."
+      update:
+        updated: "Guardamos los cambios en %{name}."
+      deactivate:
+        deactivated: "Desactivamos a %{name}."
+      reactivate:
+        reactivated: "Reactivamos a %{name}."

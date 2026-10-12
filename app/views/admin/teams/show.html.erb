@@ -41,6 +41,9 @@
             <p class="truncate font-medium text-gray-900"><%= invitation.email %></p>
             <div class="mt-1 flex flex-wrap items-center gap-2">
               <span class="badge-gray"><%= Invitation.human_attribute_name("role.#{invitation.role}") %></span>
+              <% if invitation.professional %>
+                <span class="badge-brand"><%= t(".profile", name: invitation.professional.name) %></span>
+              <% end %>
               <% if invitation.expired? %>
                 <span class="badge-red"><%= t(".expired") %></span>
               <% else %>

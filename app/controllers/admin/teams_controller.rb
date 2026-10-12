@@ -4,6 +4,6 @@ class Admin::TeamsController < Admin::BaseController
 
   def show
     @memberships = Current.business.memberships.includes(:user).order(:created_at)
-    @invitations = Current.business.invitations.pending.order(:created_at)
+    @invitations = Current.business.invitations.pending.includes(:professional).order(:created_at)
   end
 end

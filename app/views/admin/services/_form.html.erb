@@ -1,0 +1,37 @@
+<%= form_with model: service, url: (service.new_record? ? admin_services_path : admin_service_path(service)), class: "card card-body space-y-5" do |form| %>
+  <%= render "shared/form_errors", record: service %>
+
+  <div class="field">
+    <%= form.label :name, class: "label" %>
+    <%= form.text_field :name, required: true, autofocus: service.new_record?, class: "input" %>
+  </div>
+
+  <div class="grid gap-5 sm:grid-cols-3">
+    <div class="field">
+      <%= form.label :duration_minutes, t(".duration"), class: "label" %>
+      <%= form.number_field :duration_minutes, required: true, min: 1, max: Service::MAX_DURATION_MINUTES, class: "input" %>
+    </div>
+
+    <div class="field">
+      <%= form.label :price, t(".price", currency: Current.business.currency), class: "label" %>
+      <%= form.number_field :price, value: (format("%.2f", service.price) if service.price), required: true, min: 0, step: 0.01, class: "input" %>
+    </div>
+
+    <div class="field">
+      <%= form.label :buffer_minutes, t(".buffer"), class: "label" %>
+      <%= form.number_field :buffer_minutes, min: 0, placeholder: Current.business.buffer_minutes, class: "input" %>
+    </div>
+  </div>
+  <p class="hint -mt-3"><%= t(".buffer_hint", minutes: Current.business.buffer_minutes) %></p>
+
+  <div class="field">
+    <%= form.label :description, class: "label" %>
+    <%= form.rich_textarea :description, class: "input min-h-32" %>
+    <p class="hint"><%= t(".description_hint") %></p>
+  </div>
+
+  <div class="flex items-center justify-end gap-3 border-t border-gray-100 pt-5">
+    <%= link_to t(".cancel"), admin_services_path, class: "btn-ghost" %>
+    <%= form.submit t(service.new_record? ? ".create" : ".update"), class: "btn-primary" %>
+  </div>
+<% end %>

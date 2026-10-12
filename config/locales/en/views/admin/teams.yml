@@ -9,6 +9,7 @@ en:
         no_invitations: "There are no pending invitations."
         expires: "expires %{date}"
         expired: "expired"
+        profile: "Profile: %{name}"
         resend: "Resend"
         revoke: "Revoke"
         revoke_confirm: "Revoke the invitation to %{email}? The link will stop working."

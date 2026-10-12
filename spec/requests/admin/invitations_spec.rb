@@ -24,6 +24,43 @@ RSpec.describe "Admin invitations", type: :request do
       expect(response).to redirect_to(admin_team_path(business))
     end
 
+    describe "for a professional profile" do
+      let(:profile) { with_business(business) { create(:professional, name: "Sofía Torres") } }
+
+      it "shows the profile in the form" do
+        get new_admin_invitation_path(business, professional_id: profile.id)
+
+        expect(response.body).to include("Sofía Torres", "va a tomar el perfil", %(value="#{profile.id}"))
+      end
+
+      it "invites to take over the profile and goes back to the professionals" do
+        post admin_invitations_path(business), params: { invitation: { email: "sofia@example.com", role: "professional", professional_id: profile.id } }
+
+        expect(business.invitations.last.professional_id).to eq(profile.id)
+        expect(response).to redirect_to(admin_professionals_path(business))
+
+        follow_redirect!
+        expect(response.body).to include("Invitación enviada a sofia@example.com")
+      end
+
+      it "shows the profile on the team page" do
+        create(:invitation, business: business, invited_by: owner, professional: profile)
+
+        get admin_team_path(business)
+
+        expect(response.body).to include("Perfil: Sofía Torres")
+      end
+
+      it "cannot use a profile of another business" do
+        other = with_business(create(:business)) { create(:professional) }
+
+        post admin_invitations_path(business), params: { invitation: { email: "x@example.com", role: "professional", professional_id: other.id } }
+
+        expect(response).to have_http_status(:not_found)
+        expect(business.invitations).to be_empty
+      end
+    end
+
     it "shows errors for an invalid invitation" do
       post admin_invitations_path(business), params: { invitation: { email: "not-an-email", role: "professional" } }
 

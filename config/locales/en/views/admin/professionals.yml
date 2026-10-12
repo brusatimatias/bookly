@@ -1,0 +1,46 @@
+en:
+  admin:
+    professionals:
+      index:
+        title: "Professionals"
+        subtitle: "Who works at the business and which services each one offers."
+        new: "New professional"
+        invite: "Invite"
+        invited: "Invitation sent to %{email}"
+        edit: "Edit"
+        deactivate: "Deactivate"
+        deactivate_confirm: "Deactivate %{name}? They stop taking appointments, but keep their history and services."
+        reactivate: "Reactivate"
+        you: "(you)"
+        no_account: "No linked account"
+        inactive: "Inactive"
+        no_services: "No services"
+        empty: "No professionals yet."
+        empty_hint: "Add the people who see customers so they can be booked."
+        empty_hint_member: "Once the business adds its professionals, you'll see them here."
+      form:
+        photo_hint: "JPG, PNG or WebP, up to %{size} MB."
+        name_hint: "Leave it blank when linking an account to use that person's name."
+        user: "Linked account"
+        no_user: "No account"
+        user_hint: "Pick the team member this profile belongs to, so they can manage their schedule."
+        services_hint: "A professional can only be booked when they offer at least one active service."
+        inactive_service: "Inactive"
+        no_services_html: "There are no services yet. %{link} to assign them."
+        create_services: "Create the services"
+        cancel: "Cancel"
+        create: "Create professional"
+        update: "Save changes"
+      new:
+        title: "New professional"
+        subtitle: "Customers will be able to pick them when requesting an appointment."
+      edit:
+        title: "Edit %{name}"
+      create:
+        created: "Created %{name}'s profile."
+      update:
+        updated: "Saved the changes to %{name}."
+      deactivate:
+        deactivated: "Deactivated %{name}."
+      reactivate:
+        reactivated: "Reactivated %{name}."

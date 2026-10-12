@@ -1,0 +1,16 @@
+es:
+  activerecord:
+    models:
+      service:
+        one: "Servicio"
+        other: "Servicios"
+    attributes:
+      service:
+        name: "Nombre"
+        description: "Descripción"
+        duration_minutes: "Duración"
+        price_cents: "Precio"
+        price: "Precio"
+        buffer_minutes: "Descanso"
+        active: "Activo"
+        professionals: "Profesionales"

@@ -57,15 +57,23 @@ RSpec.describe "Admin dashboard", type: :request do
       create(:membership, :owner, business: business, user: user)
       create(:membership, business: business)
       create(:invitation, business: business, invited_by: user)
+      with_business(business) do
+        create(:service)
+        create(:service, :inactive)
+        create(:professional)
+        create(:professional, :inactive)
+      end
     end
 
-    it "shows managers the member and pending invitation counts" do
+    it "shows managers the team, invitation, service and professional counts" do
       sign_in_as(user)
 
       get admin_root_path(business)
 
       expect(response.body).to match(%r{Miembros del equipo</p>\s*<p[^>]*>2</p>})
       expect(response.body).to match(%r{Invitaciones pendientes</p>\s*<p[^>]*>1</p>})
+      expect(response.body).to match(%r{Servicios activos</p>\s*<p[^>]*>1</p>})
+      expect(response.body).to match(%r{Profesionales activos</p>\s*<p[^>]*>1</p>})
     end
 
     it "is hidden from professionals" do

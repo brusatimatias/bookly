@@ -1,8 +1,8 @@
 require "rails_helper"
 
 RSpec.describe BusinessScoped do
-  # No real tenant model exists yet, so the concern is exercised through a
-  # throwaway table and model that only live during this spec.
+  # Exercised through a throwaway table and model that only live during this
+  # spec, so the concern is tested on its own.
   before(:all) do
     ActiveRecord::Base.connection.create_table :scoped_widgets, force: true do |t|
       t.references :business, null: false, foreign_key: true

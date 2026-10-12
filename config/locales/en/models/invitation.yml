@@ -12,6 +12,8 @@ en:
         invited_by: "Invited by"
         expires_at: "Expires at"
         accepted_at: "Accepted at"
+        professional: "Professional profile"
+        professional_id: "Professional profile"
       invitation/role:
         admin: "Admin"
         professional: "Professional"
@@ -22,3 +24,7 @@ en:
             email:
               already_invited: "already has a pending invitation; you can resend it from the team page"
               already_member: "is already a member of the business"
+            professional_id:
+              already_invited: "already has a pending invitation; you can resend it from the team page"
+            professional:
+              already_linked: "already has a linked account"

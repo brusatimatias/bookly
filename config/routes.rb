@@ -32,6 +32,18 @@ Rails.application.routes.draw do
       resources :invitations, only: %i[new create destroy] do
         post :resend, on: :member
       end
+      resources :services, only: %i[index new create edit update] do
+        member do
+          patch :deactivate
+          patch :reactivate
+        end
+      end
+      resources :professionals, only: %i[index new create edit update] do
+        member do
+          patch :deactivate
+          patch :reactivate
+        end
+      end
     end
   end
 end

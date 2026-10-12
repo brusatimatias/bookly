@@ -4,3 +4,12 @@ es:
   locale_names:
     es: "Español"
     en: "English"
+  formatting:
+    duration:
+      hours: "%{count} h"
+      minutes: "%{count} min"
+  number:
+    currency:
+      format:
+        # rails-i18n uses "12.000 $"; Argentina writes "$ 12.000".
+        format: "%u %n"

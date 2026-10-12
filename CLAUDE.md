@@ -10,8 +10,9 @@ Multi-tenant appointment booking app, built in stages. Done so far:
 - Spanish/English i18n, with a language switcher on pages outside a business.
 - A shared UI layer (Tailwind theme, component classes, partials and three layouts) used by every page; see "UI conventions".
 - Users and authentication (Rails 8 generator), password reset, memberships with roles (`owner`/`admin`/`professional`), the business panel at `/:business_slug/admin`, and email invitations to join a business.
+- Services and professionals (the first per-business tables), managed from the panel and listed on the public page; see "Services and professionals".
 
-No per-business tables yet (the first ones arrive with services and professionals). There is no public sign up: owners are created from seeds or the console for now, everyone else joins by invitation.
+There is no public sign up: owners are created from seeds or the console for now, everyone else joins by invitation.
 
 ## Commands
 
@@ -60,6 +61,8 @@ Every page is built from the shared pieces below; don't hand-roll styles that al
 - **Partials** (`app/views/shared/`): `page_header` (title, subtitle, `actions:`), `form_errors` (`record:`), `empty_state` (`icon:`, `title:`, `message:`, `action:`), `flash` and `locale_switcher` (rendered by the layouts). Build `actions:`/`action:` with `capture { ... }` in the calling view: a block yielded inside a partial would resolve lazy `t(".key")` lookups against the partial.
 - **Icons:** `icon("users", class: "size-4")` renders inline Heroicons (outline) from `IconsHelper::ICONS`; add new icons there.
 - **Layouts:** `application` (public header + footer: landing, business pages, business list), `auth` (centered card: sign in, password reset, invitation; set with `layout "auth"`), `admin` (sidebar panel, collapsible on mobile via the `sidebar` Stimulus controller). Add panel sections with `admin_nav_link(label, path, icon:, active:)` in `layouts/admin.html.erb`; translations for layouts live in `views/layouts.yml`.
+- **Prices and durations:** `format_price(cents)` (business currency, locale format, decimals only when there are cents) and `format_duration(minutes)` from `FormattingHelper`. Forms take prices in the main unit through a virtual attribute (`Service#price=`) and store cents.
+- **Rich text:** `form.rich_textarea :field, class: "input min-h-32"`. File uploads are disabled in the editor (`trix-file-accept` in `application.js`); Trix overrides that must beat `actiontext.css` go unlayered.
 - **Emails:** the `mailer` layout and `email_button(label, url)` (`MailerHelper`) use inline styles only.
 - Check new screens at phone width too.
 
@@ -81,11 +84,23 @@ Every page is built from the shared pieces below; don't hand-roll styles that al
 
 - Only the owner invites, resends and revokes (`Admin::InvitationsController`); owners and admins see the team page. Invitations are for `admin` or `professional` and expire after `Invitation::VALID_FOR` (7 days). One pending invitation per email and business.
 - The acceptance token is not stored: `generates_token_for :acceptance` embeds `accepted_at` and `expires_at`, so the link is single use, resending (`renew!`) voids the previous link, and revoking deletes the record.
+- An invitation can carry a `professional_id`: a profile without an account that the new member takes over on acceptance (invite button on the professionals page, owner only; one pending invitation per profile). Accepting a `professional` invitation without one creates a profile with the user's name. `accept!` sets `Current.business` itself, since `/invitations` is outside the business scope.
 - `/invitations/:token` (`InvitationsController`, in the business's locale): without an account the person signs up there (user and membership in one transaction); with an account they must be signed in as the invited email. `Invitation#accept!` locks the row and raises `Invitation::NotAcceptable` if it was used, expired or the email doesn't match.
+
+## Services and professionals
+
+- `Service` (duration, price in cents, optional `buffer_minutes` that falls back to the business's, Action Text `description`), `Professional` (optional `user`, Active Storage `photo`) and the `ProfessionalService` join. All three are `BusinessScoped`.
+- They are never deleted: `Deactivatable` adds `active`/`inactive` scopes and `deactivate!`/`reactivate!`. Inactive services keep their professionals.
+- `bookable` (scope) and `bookable?`: active services offered by an active professional, and active professionals offering an active service. The public page only lists bookable ones.
+- A professional's `user` must be a member of the same business (validation plus a composite foreign key to `memberships`), and each member has at most one profile. While a profile is linked, the membership can't be deleted.
+- Panel: `Admin::ServicesController` and `Admin::ProfessionalsController`. Every member sees the lists; owners and admins manage them (`require_manager`).
+- Photos: JPG/PNG/WebP up to 5 MB, shown with `professional_avatar` (initials when there is none). No image variants yet (libvips isn't required), so images are cropped with CSS.
 
 ## Multi-tenancy
 
 Single database, shared tables: every per-business table has a `business_id`, and the current tenant lives in `Current.business`.
+
+- Per-business tables have a unique `(business_id, id)` index, and child tables reference them with composite foreign keys (`add_foreign_key ..., column: %i[business_id x_id], primary_key: %i[business_id id]`), so the database rejects rows that mix businesses.
 
 - Per-business models `include BusinessScoped`. It adds `belongs_to :business` (read-only after create), filters every query by `Current.business` and assigns it to new records.
 - It **fails closed**: with no current business, any query or `new` raises `Current::MissingBusiness`. This also applies through associations (`business.services` still needs `Current.business`).
