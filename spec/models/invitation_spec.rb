@@ -85,6 +85,13 @@ RSpec.describe Invitation, type: :model do
       expect(find_by_token(acceptance_token(invitation))).to eq(invitation)
     end
 
+    it "finds the invitation from a token generated in another time zone" do
+      invitation = create(:invitation)
+      token = Time.use_zone("America/Argentina/Buenos_Aires") { acceptance_token(invitation) }
+
+      expect(Time.use_zone("UTC") { find_by_token(token) }).to eq(invitation)
+    end
+
     it "stops working once the invitation is accepted" do
       invitation = create(:invitation)
       token = acceptance_token(invitation)

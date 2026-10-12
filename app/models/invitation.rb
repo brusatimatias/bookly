@@ -19,8 +19,11 @@ class Invitation < ApplicationRecord
 
   normalizes :email, with: ->(email) { email.strip.downcase }
 
+  # In UTC: the payload is compared as JSON, and times serialize with the
+  # current zone's offset. Emails are rendered in the business's zone while
+  # the link is checked in UTC, so zoned times would never match.
   generates_token_for :acceptance do
-    [ accepted_at, expires_at ]
+    [ accepted_at&.utc, expires_at.utc ]
   end
 
   scope :pending, -> { where(accepted_at: nil) }
