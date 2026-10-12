@@ -2,6 +2,7 @@
 # business's language. Without an account the person creates one here; with
 # one, they sign in with the invited email and then accept.
 class InvitationsController < ApplicationController
+  layout "auth"
   allow_unauthenticated_access
   before_action :resume_session
   around_action :set_invitation

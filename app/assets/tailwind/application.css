@@ -76,7 +76,7 @@
 }
 @utility input {
   @apply block w-full rounded-lg border-0 bg-white px-3 py-2 text-gray-900 shadow-sm ring-1 ring-gray-300 ring-inset
-    placeholder:text-gray-400 focus:ring-2 focus:ring-brand-600 focus:ring-inset sm:text-sm;
+    placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-brand-600 focus:ring-inset sm:text-sm;
 }
 @utility hint {
   @apply text-sm text-gray-500;

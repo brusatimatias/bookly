@@ -1,9 +1,5 @@
 en:
   shared:
-    header:
-      sign_in: "Sign in"
-      dashboard: "My businesses"
-      sign_out: "Sign out"
     locale_switcher:
       label: "Language"
     form_errors:
