@@ -1,0 +1,141 @@
+require "rails_helper"
+
+RSpec.describe Invitation, type: :model do
+  let(:business) { create(:business) }
+
+  def acceptance_token(invitation)
+    invitation.generate_token_for(:acceptance)
+  end
+
+  def find_by_token(token)
+    described_class.find_by_token_for(:acceptance, token)
+  end
+
+  it "is valid with the factory defaults" do
+    expect(build(:invitation)).to be_valid
+  end
+
+  it "expires in 7 days" do
+    freeze_time do
+      expect(create(:invitation).expires_at).to eq(7.days.from_now)
+    end
+  end
+
+  it "normalizes the email" do
+    expect(build(:invitation, email: "  Ana@Example.COM ").email).to eq("ana@example.com")
+  end
+
+  describe "role" do
+    it "only allows admins and professionals" do
+      invitation = build(:invitation, role: "owner")
+
+      expect(invitation).not_to be_valid
+      expect(invitation.errors).to be_of_kind(:role, :inclusion)
+    end
+
+    it "is checked in the database" do
+      invitation = create(:invitation)
+
+      expect { invitation.update_column(:role, "owner") }.to raise_error(ActiveRecord::StatementInvalid, /invitations_role_valid/)
+    end
+  end
+
+  describe "email" do
+    it "cannot have two pending invitations in the same business" do
+      create(:invitation, business: business, email: "ana@example.com")
+      duplicate = build(:invitation, business: business, email: "ANA@example.com")
+
+      expect(duplicate).not_to be_valid
+      expect(duplicate.errors).to be_of_kind(:email, :taken)
+      expect(duplicate.errors.full_messages.first).to include("ya tiene una invitación pendiente")
+    end
+
+    it "is unique among pending invitations in the database" do
+      create(:invitation, business: business, email: "ana@example.com")
+      duplicate = build(:invitation, business: business, email: "ana@example.com")
+
+      expect { duplicate.save(validate: false) }.to raise_error(ActiveRecord::RecordNotUnique)
+    end
+
+    it "can be invited again once the previous invitation was accepted" do
+      create(:invitation, business: business, email: "ana@example.com", accepted_at: Time.current)
+
+      expect(build(:invitation, business: business, email: "ana@example.com")).to be_valid
+    end
+
+    it "can be invited to another business" do
+      create(:invitation, business: business, email: "ana@example.com")
+
+      expect(build(:invitation, email: "ana@example.com")).to be_valid
+    end
+
+    it "cannot belong to a member of the business" do
+      create(:membership, business: business, user: create(:user, email_address: "ana@example.com"))
+      invitation = build(:invitation, business: business, email: "ana@example.com")
+
+      expect(invitation).not_to be_valid
+      expect(invitation.errors).to be_of_kind(:email, :already_member)
+    end
+  end
+
+  describe "acceptance token" do
+    it "finds the invitation" do
+      invitation = create(:invitation)
+
+      expect(find_by_token(acceptance_token(invitation))).to eq(invitation)
+    end
+
+    it "stops working once the invitation is accepted" do
+      invitation = create(:invitation)
+      token = acceptance_token(invitation)
+
+      invitation.update!(accepted_at: Time.current)
+
+      expect(find_by_token(token)).to be_nil
+    end
+
+    it "stops working when the invitation is renewed" do
+      invitation = create(:invitation)
+      token = acceptance_token(invitation)
+
+      travel 1.minute
+      invitation.renew!
+
+      expect(find_by_token(token)).to be_nil
+      expect(find_by_token(acceptance_token(invitation))).to eq(invitation)
+    end
+
+    it "stops working when the invitation is revoked" do
+      invitation = create(:invitation)
+      token = acceptance_token(invitation)
+
+      invitation.destroy!
+
+      expect(find_by_token(token)).to be_nil
+    end
+  end
+
+  describe "#renew!" do
+    it "extends the expiration by 7 days from now" do
+      invitation = create(:invitation)
+
+      travel 10.days do
+        invitation.renew!
+
+        expect(invitation.expires_at).to be_within(1.second).of(7.days.from_now)
+        expect(invitation).not_to be_expired
+      end
+    end
+  end
+
+  describe "#expired?" do
+    it "is true after the expiration date" do
+      invitation = create(:invitation)
+
+      expect(invitation).not_to be_expired
+      travel 8.days do
+        expect(invitation).to be_expired
+      end
+    end
+  end
+end

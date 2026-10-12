@@ -1,0 +1,14 @@
+es:
+  admin:
+    invitations:
+      new:
+        title: "Invitar al equipo"
+        instructions: "Le enviaremos un email con un link para sumarse. El link vence en %{days} días."
+        submit: "Enviar invitación"
+        cancel: "Cancelar"
+      create:
+        sent: "Enviamos la invitación a %{email}."
+      resend:
+        sent: "Reenviamos la invitación a %{email}."
+      destroy:
+        revoked: "Revocamos la invitación a %{email}."

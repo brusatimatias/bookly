@@ -1,0 +1,14 @@
+en:
+  admin:
+    teams:
+      show:
+        title: "Team"
+        invite: "Invite"
+        members: "Members"
+        pending_invitations: "Pending invitations"
+        no_invitations: "There are no pending invitations."
+        expires: "expires %{date}"
+        expired: "expired"
+        resend: "Resend"
+        revoke: "Revoke"
+        revoke_confirm: "Revoke the invitation to %{email}? The link will stop working."

@@ -5,6 +5,7 @@ en:
       header:
         navigation: "Business panel"
         home: "Home"
+        team: "Team"
         public_page: "Public page"
         my_businesses: "My businesses"
         sign_out: "Sign out"

@@ -1,0 +1,24 @@
+es:
+  activerecord:
+    models:
+      invitation:
+        one: "Invitación"
+        other: "Invitaciones"
+    attributes:
+      invitation:
+        business: "Negocio"
+        email: "Email"
+        role: "Rol"
+        invited_by: "Invitado por"
+        expires_at: "Vence el"
+        accepted_at: "Aceptada el"
+      invitation/role:
+        admin: "Administrador"
+        professional: "Profesional"
+    errors:
+      models:
+        invitation:
+          attributes:
+            email:
+              already_invited: "ya tiene una invitación pendiente; podés reenviarla desde el equipo"
+              already_member: "ya es miembro del negocio"

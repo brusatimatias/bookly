@@ -5,6 +5,9 @@
 
       <nav class="flex items-center gap-4 text-sm" aria-label="<%= t(".navigation") %>">
         <%= link_to t(".home"), admin_root_path, class: "text-gray-700 hover:text-gray-900" %>
+        <% if Current.membership.manager? %>
+          <%= link_to t(".team"), admin_team_path, class: "text-gray-700 hover:text-gray-900" %>
+        <% end %>
         <%= link_to t(".public_page"), business_path(Current.business), class: "text-gray-700 hover:text-gray-900" %>
       </nav>
     </div>

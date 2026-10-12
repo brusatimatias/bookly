@@ -5,6 +5,7 @@ es:
       header:
         navigation: "Panel del negocio"
         home: "Inicio"
+        team: "Equipo"
         public_page: "Página pública"
         my_businesses: "Mis negocios"
         sign_out: "Cerrar sesión"

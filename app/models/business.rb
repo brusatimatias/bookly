@@ -11,6 +11,7 @@ class Business < ApplicationRecord
 
   has_many :memberships, dependent: :restrict_with_exception
   has_many :members, through: :memberships, source: :user
+  has_many :invitations, dependent: :restrict_with_exception
   has_one :owner_membership, -> { owner }, class_name: "Membership"
   has_one :owner, through: :owner_membership, source: :user
 

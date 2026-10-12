@@ -15,6 +15,7 @@ Rails.application.routes.draw do
   resources :passwords, param: :token, only: %i[ new create edit update ]
   resource :locale, only: :update
   resource :dashboard, only: :show
+  resources :invitations, param: :token, only: :show
 
   mount LetterOpenerWeb::Engine, at: "/letter_opener" if Rails.env.development?
 
@@ -26,6 +27,11 @@ Rails.application.routes.draw do
     # Business panel, for its members only.
     namespace :admin do
       root "dashboards#show"
+
+      resource :team, only: :show
+      resources :invitations, only: %i[new create destroy] do
+        post :resend, on: :member
+      end
     end
   end
 end
