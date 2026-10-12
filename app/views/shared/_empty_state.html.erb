@@ -1,0 +1,15 @@
+<%# Placeholder for an empty list:
+      render "shared/empty_state", icon: "users", title: "...", message: "..." do
+        link_to ..., class: "btn-primary"
+      end %>
+<% action = yield.presence if block_given? %>
+<div class="rounded-xl border-2 border-dashed border-gray-200 px-6 py-10 text-center">
+  <%= icon local_assigns.fetch(:icon, "plus"), class: "mx-auto size-10 text-gray-400" %>
+  <p class="mt-3 font-semibold text-gray-900"><%= title %></p>
+  <% if local_assigns[:message].present? %>
+    <p class="mt-1 text-sm text-gray-500"><%= message %></p>
+  <% end %>
+  <% if action %>
+    <div class="mt-5"><%= action %></div>
+  <% end %>
+</div>

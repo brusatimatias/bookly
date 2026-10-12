@@ -6,3 +6,7 @@ en:
       sign_out: "Sign out"
     locale_switcher:
       label: "Language"
+    form_errors:
+      title:
+        one: "There is 1 error to fix:"
+        other: "There are %{count} errors to fix:"

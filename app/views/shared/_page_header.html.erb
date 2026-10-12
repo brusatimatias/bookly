@@ -1,0 +1,16 @@
+<%# Page title with optional subtitle and actions:
+      render "shared/page_header", title: t(".title"), subtitle: "..." do
+        link_to ..., class: "btn-primary"
+      end %>
+<% actions = yield.presence if block_given? %>
+<div class="mb-8 flex flex-wrap items-end justify-between gap-4">
+  <div class="min-w-0">
+    <h1 class="text-2xl font-bold tracking-tight text-gray-900 sm:text-3xl"><%= title %></h1>
+    <% if local_assigns[:subtitle].present? %>
+      <p class="mt-1 text-gray-600"><%= subtitle %></p>
+    <% end %>
+  </div>
+  <% if actions %>
+    <div class="flex items-center gap-3"><%= actions %></div>
+  <% end %>
+</div>

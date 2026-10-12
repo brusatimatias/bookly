@@ -6,3 +6,7 @@ es:
       sign_out: "Cerrar sesión"
     locale_switcher:
       label: "Idioma"
+    form_errors:
+      title:
+        one: "Hay 1 error para corregir:"
+        other: "Hay %{count} errores para corregir:"
