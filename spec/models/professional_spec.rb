@@ -21,6 +21,13 @@ RSpec.describe Professional, type: :model do
   end
 
   describe "linked member" do
+    it "lends its name to a profile without one" do
+      user = member
+      user.update!(name: "Martín Gómez")
+
+      expect(create(:professional, name: "", user: user).name).to eq("Martín Gómez")
+    end
+
     it "is optional" do
       expect(build(:professional, user: nil)).to be_valid
     end
@@ -126,6 +133,24 @@ RSpec.describe Professional, type: :model do
 
       expect(professional).not_to be_valid
       expect(professional.errors).to be_of_kind(:photo, :too_large)
+    end
+  end
+
+  describe "#bookable?" do
+    it "is true for an active professional offering an active service" do
+      expect(create(:professional, services: [ create(:service) ])).to be_bookable
+    end
+
+    it "is false without services" do
+      expect(create(:professional)).not_to be_bookable
+    end
+
+    it "is false when all their services are inactive" do
+      expect(create(:professional, services: [ create(:service, :inactive) ])).not_to be_bookable
+    end
+
+    it "is false when inactive" do
+      expect(create(:professional, :inactive, services: [ create(:service) ])).not_to be_bookable
     end
   end
 

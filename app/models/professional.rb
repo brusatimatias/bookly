@@ -17,12 +17,23 @@ class Professional < ApplicationRecord
 
   normalizes :name, with: ->(name) { name.squish }
 
+  before_validation :take_name_from_user, if: -> { name.blank? && user }
+
   validates :name, presence: true
   validates :user_id, uniqueness: { scope: :business_id, message: :already_linked }, allow_nil: true
   validate :user_is_member, if: -> { user_id.present? && user_id_changed? }
   validate :photo_is_an_image, if: -> { photo.attached? }
 
+  # Customers can only book active professionals that offer an active service.
+  def bookable?
+    active? && services.any?(&:active?)
+  end
+
   private
+    def take_name_from_user
+      self.name = user.name
+    end
+
     # Mirrors the composite foreign key to memberships with a readable error.
     def user_is_member
       errors.add(:user, :not_a_member) unless Membership.exists?(business_id: business_id, user_id: user_id)

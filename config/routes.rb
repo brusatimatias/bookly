@@ -38,6 +38,12 @@ Rails.application.routes.draw do
           patch :reactivate
         end
       end
+      resources :professionals, only: %i[index new create edit update] do
+        member do
+          patch :deactivate
+          patch :reactivate
+        end
+      end
     end
   end
 end

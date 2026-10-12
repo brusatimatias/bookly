@@ -3,7 +3,7 @@
 <%= render "shared/page_header", title: t(".heading", name: Current.user.name), subtitle: t(".subtitle", business: Current.business.name) %>
 
 <% if Current.membership.manager? %>
-  <div class="grid gap-4 sm:grid-cols-3">
+  <div class="grid gap-4 sm:grid-cols-2">
     <%= link_to admin_team_path, class: "card card-body flex items-center gap-4 transition hover:ring-brand-600/40" do %>
       <span class="flex size-12 items-center justify-center rounded-lg bg-brand-50 text-brand-600"><%= icon "users", class: "size-6" %></span>
       <div>
@@ -23,6 +23,13 @@
       <div>
         <p class="text-sm text-gray-600"><%= t(".active_services") %></p>
         <p class="text-2xl font-bold text-gray-900"><%= @active_services_count %></p>
+      </div>
+    <% end %>
+    <%= link_to admin_professionals_path, class: "card card-body flex items-center gap-4 transition hover:ring-brand-600/40" do %>
+      <span class="flex size-12 items-center justify-center rounded-lg bg-sky-50 text-sky-600"><%= icon "user", class: "size-6" %></span>
+      <div>
+        <p class="text-sm text-gray-600"><%= t(".active_professionals") %></p>
+        <p class="text-2xl font-bold text-gray-900"><%= @active_professionals_count %></p>
       </div>
     <% end %>
   </div>
