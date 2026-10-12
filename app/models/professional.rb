@@ -15,6 +15,9 @@ class Professional < ApplicationRecord
 
   has_one_attached :photo
 
+  # Active and offering at least one active service: who customers can book.
+  scope :bookable, -> { active.where(id: ProfessionalService.joins(:service).merge(Service.active).select(:professional_id)) }
+
   normalizes :name, with: ->(name) { name.squish }
 
   before_validation :take_name_from_user, if: -> { name.blank? && user }

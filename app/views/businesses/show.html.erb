@@ -31,8 +31,47 @@
     </div>
   </div>
 
-  <div class="card card-body text-center">
-    <%= icon "calendar", class: "mx-auto size-10 text-brand-600" %>
-    <p class="mt-3 font-semibold text-gray-900"><%= t(".booking_soon") %></p>
+  <% if @services.any? %>
+    <section aria-labelledby="services">
+      <h2 id="services" class="mb-4 text-lg font-semibold text-gray-900"><%= t(".services") %></h2>
+      <div class="grid gap-4 sm:grid-cols-2">
+        <% @services.each do |service| %>
+          <article class="card card-body flex flex-col gap-3" id="<%= dom_id(service) %>">
+            <div class="flex items-start justify-between gap-4">
+              <h3 class="font-semibold text-gray-900"><%= service.name %></h3>
+              <span class="shrink-0 font-semibold text-brand-700"><%= format_price(service.price_cents) %></span>
+            </div>
+            <p class="inline-flex items-center gap-1 text-sm text-gray-500"><%= icon "clock", class: "size-4" %><%= format_duration(service.duration_minutes) %></p>
+            <% if service.description.present? %>
+              <div class="text-sm text-gray-600"><%= service.description %></div>
+            <% end %>
+          </article>
+        <% end %>
+      </div>
+    </section>
+  <% else %>
+    <%= render "shared/empty_state", icon: "tag", title: t(".no_services"), message: t(".no_services_hint") %>
+  <% end %>
+
+  <% if @professionals.any? %>
+    <section aria-labelledby="professionals">
+      <h2 id="professionals" class="mb-4 text-lg font-semibold text-gray-900"><%= t(".professionals") %></h2>
+      <div class="grid gap-4 sm:grid-cols-2">
+        <% @professionals.each do |professional| %>
+          <article class="card card-body flex items-center gap-4" id="<%= dom_id(professional) %>">
+            <%= professional_avatar(professional, size: "size-14") %>
+            <div class="min-w-0">
+              <h3 class="truncate font-semibold text-gray-900"><%= professional.name %></h3>
+              <p class="text-sm text-gray-500"><%= professional.services.select(&:active?).map(&:name).sort_by(&:downcase).to_sentence %></p>
+            </div>
+          </article>
+        <% end %>
+      </div>
+    </section>
+  <% end %>
+
+  <div class="flex items-center gap-4 rounded-xl bg-brand-50 px-6 py-5 ring-1 ring-brand-600/20 ring-inset">
+    <%= icon "calendar", class: "size-8 text-brand-600" %>
+    <p class="font-medium text-brand-900"><%= t(".booking_soon") %></p>
   </div>
 </section>

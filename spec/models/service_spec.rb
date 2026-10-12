@@ -134,6 +134,20 @@ RSpec.describe Service, type: :model do
     expect(service.reload.description.to_plain_text).to eq("Includes a wash")
   end
 
+  describe ".bookable" do
+    it "includes active services offered by an active professional" do
+      offered = create(:service)
+      create(:professional, services: [ offered ])
+      only_inactive = create(:service)
+      create(:professional, :inactive, services: [ only_inactive ])
+      inactive = create(:service, :inactive)
+      create(:professional, services: [ inactive ])
+      create(:service)
+
+      expect(described_class.bookable).to contain_exactly(offered)
+    end
+  end
+
   describe "deactivation" do
     it "is active by default" do
       expect(create(:service)).to be_active

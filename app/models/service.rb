@@ -12,6 +12,9 @@ class Service < ApplicationRecord
 
   has_rich_text :description
 
+  # Active and offered by at least one active professional: what customers can book.
+  scope :bookable, -> { active.where(id: ProfessionalService.joins(:professional).merge(Professional.active).select(:service_id)) }
+
   normalizes :name, with: ->(name) { name.squish }
 
   validates :name, presence: true, uniqueness: { scope: :business_id, case_sensitive: false }

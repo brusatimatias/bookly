@@ -136,6 +136,17 @@ RSpec.describe Professional, type: :model do
     end
   end
 
+  describe ".bookable" do
+    it "includes active professionals offering an active service" do
+      bookable = create(:professional, services: [ create(:service) ])
+      create(:professional, :inactive, services: [ create(:service) ])
+      create(:professional, services: [ create(:service, :inactive) ])
+      create(:professional)
+
+      expect(described_class.bookable).to contain_exactly(bookable)
+    end
+  end
+
   describe "#bookable?" do
     it "is true for an active professional offering an active service" do
       expect(create(:professional, services: [ create(:service) ])).to be_bookable
