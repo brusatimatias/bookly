@@ -2,7 +2,7 @@
 
 Online appointment booking for businesses that work by schedule (barbershops, clinics, studios, sports courts). Each business gets its own public page with its services, professionals and hours; customers request appointments without creating an account, and the business confirms them. A single app serves many businesses (multi-tenant) without mixing their data.
 
-Built with Rails 8.1, Ruby 3.4, PostgreSQL, Hotwire and Tailwind.
+Built with Rails 8.1, Ruby 3.4, PostgreSQL, Hotwire and Tailwind 4 (no Node required).
 
 ## Status
 
@@ -14,12 +14,14 @@ Early development. What works today:
 - **Accounts:** sign in, sign out and password reset by email.
 - **Business panel** at `/:business_slug/admin` for the business's members, with roles: owner, admin and professional.
 - **Team invitations:** the owner invites admins and professionals by email; the link (valid for 7 days, single use) lets them create their account or join with an existing one. Invitations can be resent or revoked.
+- **Consistent, responsive UI:** a landing page, public business pages, sign in screens and a business panel with sidebar navigation that collapses into a menu on phones.
 - **Spanish and English** throughout, Spanish by default. Pages outside a business follow the browser's language and offer a language switcher; business pages and emails use the business's language.
 
 ## Roadmap
 
 - [x] Businesses and tenant context
 - [x] Users, authentication, roles and professional invitations
+- [x] UI foundation: theme, components and layouts
 - [ ] Services and professionals
 - [ ] Working hours and schedule blocks
 - [ ] Availability calculation

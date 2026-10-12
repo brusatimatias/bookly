@@ -1,34 +1,45 @@
+<%# Public layout: landing page, business pages and the user's business list. %>
 <!DOCTYPE html>
-<html lang="<%= I18n.locale %>">
-  <head>
-    <title><%= content_for(:title) || t("app_name") %></title>
-    <meta name="viewport" content="width=device-width,initial-scale=1">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="application-name" content="Bookly">
-    <meta name="mobile-web-app-capable" content="yes">
-    <%= csrf_meta_tags %>
-    <%= csp_meta_tag %>
+<html lang="<%= I18n.locale %>" class="h-full">
+  <%= render "layouts/shared/head" %>
 
-    <%= yield :head %>
+  <body class="flex min-h-full flex-col">
+    <header class="border-b border-gray-200 bg-white">
+      <div class="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-3 sm:px-6">
+        <%= render "layouts/shared/logo" %>
 
-    <%# Enable PWA manifest for installable apps (make sure to enable in config/routes.rb too!) %>
-    <%#= tag.link rel: "manifest", href: pwa_manifest_path(format: :json) %>
+        <div class="flex items-center gap-2 sm:gap-4">
+          <% if locale_switchable? %>
+            <%= render "shared/locale_switcher" %>
+          <% end %>
 
-    <link rel="icon" href="/icon.png" type="image/png">
-    <link rel="icon" href="/icon.svg" type="image/svg+xml">
-    <link rel="apple-touch-icon" href="/icon.png">
+          <% if authenticated? %>
+            <%= link_to t(".dashboard"), dashboard_path, class: "btn-ghost btn-sm" %>
+            <span class="hidden items-center gap-2 text-sm text-gray-700 sm:flex">
+              <span class="avatar size-8 text-xs"><%= initials(Current.user.name) %></span>
+              <%= Current.user.name %>
+            </span>
+            <%= button_to session_path, method: :delete, class: "btn-ghost btn-sm", title: t(".sign_out") do %>
+              <%= icon "logout", class: "size-4" %>
+              <span class="sr-only sm:not-sr-only"><%= t(".sign_out") %></span>
+            <% end %>
+          <% elsif Current.business.nil? %>
+            <%# The sign in link stays off the pages that face a business's customers. %>
+            <%= link_to t(".sign_in"), new_session_path, class: "btn-secondary btn-sm" %>
+          <% end %>
+        </div>
+      </div>
+    </header>
 
-    <%# Includes all stylesheet files in app/assets/stylesheets %>
-    <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
-    <%= javascript_importmap_tags %>
-  </head>
-
-  <body>
-    <%= content_for?(:header) ? yield(:header) : render("shared/header") %>
-
-    <main class="container mx-auto mt-16 px-5 flex flex-col">
+    <main class="mx-auto w-full max-w-6xl flex-1 px-4 py-10 sm:px-6">
       <%= render "shared/flash" %>
       <%= yield %>
     </main>
+
+    <footer class="border-t border-gray-200 bg-white">
+      <div class="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-6 text-sm text-gray-500 sm:px-6">
+        <p><%= Current.business ? t(".powered_by") : t(".footer", year: Date.current.year) %></p>
+      </div>
+    </footer>
   </body>
 </html>

@@ -1,0 +1,17 @@
+en:
+  layouts:
+    application:
+      sign_in: "Sign in"
+      dashboard: "My businesses"
+      sign_out: "Sign out"
+      footer: "© %{year} Bookly · Online appointment booking"
+      powered_by: "Online booking by Bookly"
+    admin:
+      navigation: "Business panel"
+      home: "Home"
+      team: "Team"
+      public_page: "Public page"
+      my_businesses: "My businesses"
+      sign_out: "Sign out"
+      open_menu: "Open menu"
+      close_menu: "Close menu"

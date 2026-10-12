@@ -4,6 +4,7 @@ en:
       new:
         title: "Invite to the team"
         instructions: "We'll email them a link to join. The link expires in %{days} days."
+        role_hint: "Admins manage the business and see every schedule; professionals only see their own."
         submit: "Send invitation"
         cancel: "Cancel"
       create:

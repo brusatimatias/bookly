@@ -1,50 +1,47 @@
 <% content_for :title, t(".title", business: @business.name) %>
 
-<section class="mx-auto md:w-1/2 w-full">
-  <h1 class="font-bold text-3xl text-gray-900"><%= t(".title", business: @business.name) %></h1>
-  <p class="mt-2 text-gray-600">
+<div class="text-center">
+  <span class="avatar size-12 text-base"><%= initials(@business.name) %></span>
+  <h1 class="mt-4 text-xl font-bold text-gray-900"><%= t(".title", business: @business.name) %></h1>
+  <p class="mt-2 text-sm text-gray-600">
     <%= t(".invited_by", inviter: @invitation.invited_by.name, role: Invitation.human_attribute_name("role.#{@invitation.role}").downcase) %>
   </p>
+</div>
 
+<div class="mt-6">
   <% if authenticated? && Current.user.email_address != @invitation.email %>
-    <p class="mt-6 text-gray-700"><%= t(".other_account", email: @invitation.email, current: Current.user.email_address) %></p>
-    <%= button_to t(".sign_out"), session_path, method: :delete, class: "mt-4 rounded-md px-3.5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-medium cursor-pointer" %>
+    <p class="text-sm text-gray-700"><%= t(".other_account", email: @invitation.email, current: Current.user.email_address) %></p>
+    <%= button_to t(".sign_out"), session_path, method: :delete, class: "btn-secondary btn-block mt-5", form_class: "block" %>
 
   <% elsif @existing_user && authenticated? %>
-    <%= button_to t(".accept"), invitation_path(params[:token]), method: :patch, class: "mt-6 rounded-md px-3.5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-medium cursor-pointer" %>
+    <%= button_to t(".accept"), invitation_path(params[:token]), method: :patch, class: "btn-primary btn-block", form_class: "block" %>
 
   <% elsif @existing_user %>
-    <p class="mt-6 text-gray-700"><%= t(".sign_in_to_accept", email: @invitation.email) %></p>
-    <%= link_to t(".sign_in"), new_session_path(email_address: @invitation.email), class: "mt-4 inline-block rounded-md px-3.5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-medium" %>
+    <p class="text-sm text-gray-700"><%= t(".sign_in_to_accept", email: @invitation.email) %></p>
+    <%= link_to t(".sign_in"), new_session_path(email_address: @invitation.email), class: "btn-primary btn-block mt-5" %>
 
   <% else %>
-    <p class="mt-6 text-gray-700"><%= t(".create_account", email: @invitation.email) %></p>
+    <p class="text-sm text-gray-700"><%= t(".create_account", email: @invitation.email) %></p>
 
-    <%= form_with model: @user || User.new, url: invitation_path(params[:token]), method: :patch, class: "contents" do |form| %>
-      <% if form.object.errors.any? %>
-        <ul class="mt-5 py-2 px-3 bg-red-50 text-red-600 rounded-lg" id="errors">
-          <% form.object.errors.full_messages.each do |message| %>
-            <li><%= message %></li>
-          <% end %>
-        </ul>
-      <% end %>
+    <%= form_with model: @user || User.new, url: invitation_path(params[:token]), method: :patch, class: "mt-5 space-y-5" do |form| %>
+      <%= render "shared/form_errors", record: form.object %>
 
-      <div class="my-5">
-        <%= form.label :name, class: "font-medium" %>
-        <%= form.text_field :name, required: true, autofocus: true, autocomplete: "name", class: "block shadow-sm rounded-md border border-gray-400 focus:outline-blue-600 px-3 py-2 mt-2 w-full" %>
+      <div class="field">
+        <%= form.label :name, class: "label" %>
+        <%= form.text_field :name, required: true, autofocus: true, autocomplete: "name", class: "input" %>
       </div>
 
-      <div class="my-5">
-        <%= form.label :password, class: "font-medium" %>
-        <%= form.password_field :password, required: true, autocomplete: "new-password", minlength: 8, maxlength: 72, class: "block shadow-sm rounded-md border border-gray-400 focus:outline-blue-600 px-3 py-2 mt-2 w-full" %>
+      <div class="field">
+        <%= form.label :password, class: "label" %>
+        <%= form.password_field :password, required: true, autocomplete: "new-password", minlength: 8, maxlength: 72, class: "input" %>
       </div>
 
-      <div class="my-5">
-        <%= form.label :password_confirmation, class: "font-medium" %>
-        <%= form.password_field :password_confirmation, required: true, autocomplete: "new-password", minlength: 8, maxlength: 72, class: "block shadow-sm rounded-md border border-gray-400 focus:outline-blue-600 px-3 py-2 mt-2 w-full" %>
+      <div class="field">
+        <%= form.label :password_confirmation, class: "label" %>
+        <%= form.password_field :password_confirmation, required: true, autocomplete: "new-password", minlength: 8, maxlength: 72, class: "input" %>
       </div>
 
-      <%= form.submit t(".join"), class: "rounded-md px-3.5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-medium cursor-pointer" %>
+      <%= form.submit t(".join"), class: "btn-primary btn-block" %>
     <% end %>
   <% end %>
-</section>
+</div>

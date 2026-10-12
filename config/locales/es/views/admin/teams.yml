@@ -12,3 +12,6 @@ es:
         resend: "Reenviar"
         revoke: "Revocar"
         revoke_confirm: "¿Revocar la invitación a %{email}? El link dejará de funcionar."
+        subtitle: "Las personas que trabajan en el negocio y sus roles."
+        you: "(vos)"
+        no_invitations_hint: "Invitá a tus profesionales para que gestionen su agenda."

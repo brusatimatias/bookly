@@ -1,23 +1,30 @@
 <% content_for :title, t(".title") %>
 
-<section class="w-full max-w-2xl mx-auto">
-  <h1 class="text-4xl font-bold text-gray-900"><%= t(".title") %></h1>
+<section class="mx-auto max-w-3xl">
+  <%= render "shared/page_header", title: t(".title"), subtitle: (t(".subtitle") if @memberships.any?) %>
 
   <% if @memberships.any? %>
-    <ul class="mt-6 divide-y divide-gray-200 border-y border-gray-200">
+    <ul class="grid gap-4 sm:grid-cols-2">
       <% @memberships.each do |membership| %>
-        <li class="py-4 flex items-center justify-between gap-4">
-          <div>
-            <%= link_to membership.business.name, admin_root_path(business_slug: membership.business), class: "font-medium text-gray-900 underline hover:no-underline" %>
-            <% if membership.business.suspended? %>
-              <span class="ml-2 text-sm text-red-600"><%= Business.human_attribute_name("status.suspended") %></span>
-            <% end %>
-          </div>
-          <span class="text-sm text-gray-600"><%= Membership.human_attribute_name("role.#{membership.role}") %></span>
+        <% business = membership.business %>
+        <li>
+          <%= link_to admin_root_path(business_slug: business), class: "card card-body group flex items-center gap-4 transition hover:ring-brand-600/40" do %>
+            <span class="avatar size-12 text-base"><%= initials(business.name) %></span>
+            <div class="min-w-0 flex-1">
+              <p class="truncate font-semibold text-gray-900"><%= business.name %></p>
+              <div class="mt-1 flex flex-wrap gap-2">
+                <span class="badge-brand"><%= Membership.human_attribute_name("role.#{membership.role}") %></span>
+                <% if business.suspended? %>
+                  <span class="badge-red"><%= Business.human_attribute_name("status.suspended") %></span>
+                <% end %>
+              </div>
+            </div>
+            <%= icon "arrow-right", class: "text-gray-400 transition group-hover:text-brand-600" %>
+          <% end %>
         </li>
       <% end %>
     </ul>
   <% else %>
-    <p class="mt-6 text-gray-600"><%= t(".empty") %></p>
+    <%= render "shared/empty_state", icon: "building", title: t(".empty"), message: t(".empty_hint") %>
   <% end %>
 </section>

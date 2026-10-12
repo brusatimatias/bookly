@@ -2,6 +2,7 @@
 # business's language. Without an account the person creates one here; with
 # one, they sign in with the invited email and then accept.
 class InvitationsController < ApplicationController
+  layout "auth"
   allow_unauthenticated_access
   before_action :resume_session
   around_action :set_invitation
@@ -30,7 +31,7 @@ class InvitationsController < ApplicationController
 
       I18n.with_locale(@business.locale) do
         if @business.suspended?
-          render "businesses/unavailable", status: :service_unavailable
+          render "businesses/unavailable", status: :service_unavailable, layout: "application"
         elsif @invitation.expired?
           render :expired, status: :gone
         else

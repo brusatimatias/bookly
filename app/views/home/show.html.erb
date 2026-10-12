@@ -1,6 +1,30 @@
 <% content_for :title, t(".title") %>
 
-<section class="w-full max-w-2xl mx-auto text-center">
-  <h1 class="text-4xl font-bold text-gray-900"><%= t("app_name") %></h1>
-  <p class="mt-4 text-lg text-gray-600"><%= t(".tagline") %></p>
+<section class="mx-auto max-w-3xl py-8 text-center sm:py-16">
+  <span class="badge-brand"><%= t(".audience") %></span>
+  <h1 class="mt-6 text-4xl font-bold tracking-tight text-gray-900 sm:text-5xl"><%= t(".headline") %></h1>
+  <p class="mt-6 text-lg text-gray-600"><%= t(".tagline") %></p>
+  <div class="mt-10 flex justify-center gap-3">
+    <% if authenticated? %>
+      <%= link_to dashboard_path, class: "btn-primary" do %>
+        <%= t(".go_to_dashboard") %> <%= icon "arrow-right", class: "size-4" %>
+      <% end %>
+    <% else %>
+      <%= link_to new_session_path, class: "btn-primary" do %>
+        <%= t(".sign_in") %> <%= icon "arrow-right", class: "size-4" %>
+      <% end %>
+    <% end %>
+  </div>
+</section>
+
+<section class="mx-auto grid max-w-5xl gap-6 pb-8 sm:grid-cols-3">
+  <% [ %w[calendar booking], %w[clock schedule], %w[users team] ].each do |icon_name, feature| %>
+    <div class="card card-body">
+      <span class="flex size-10 items-center justify-center rounded-lg bg-brand-50 text-brand-600">
+        <%= icon icon_name %>
+      </span>
+      <h2 class="mt-4 font-semibold text-gray-900"><%= t(".features.#{feature}.title") %></h2>
+      <p class="mt-2 text-sm text-gray-600"><%= t(".features.#{feature}.description") %></p>
+    </div>
+  <% end %>
 </section>

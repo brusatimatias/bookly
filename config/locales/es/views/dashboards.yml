@@ -3,3 +3,5 @@ es:
     show:
       title: "Mis negocios"
       empty: "Todavía no formás parte de ningún negocio."
+      subtitle: "Elegí el negocio con el que querés trabajar."
+      empty_hint: "Cuando un negocio te invite, lo vas a ver acá."
