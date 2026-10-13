@@ -22,3 +22,4 @@ en:
               taken: "is already a member of this business"
             role:
               owner_taken: "of owner is already taken in this business"
+              owner_unchangeable: "can't be changed from or to owner"

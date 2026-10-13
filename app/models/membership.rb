@@ -11,6 +11,7 @@ class Membership < ApplicationRecord
 
   validates :user_id, uniqueness: { scope: :business_id }
   validates :role, uniqueness: { scope: :business_id, message: :owner_taken }, if: :owner?
+  validate :owner_role_unchanged, on: :update, if: :role_changed?
 
   # Owners and admins manage the business; professionals only their own schedule.
   def manager?
@@ -34,4 +35,24 @@ class Membership < ApplicationRecord
       destroy!
     end
   end
+
+  # Switches the member between admin and professional. New professionals get
+  # a profile, like invited ones; admins keep theirs, since they can be
+  # bookable too. Returns false when the role can't change (owners).
+  def change_role(new_role)
+    self.role = new_role
+    return false unless valid?
+
+    transaction do
+      save!
+      Current.set(business: business) { business.professionals.create!(user: user) } if professional? && !professional_profile
+    end
+    true
+  end
+
+  private
+    # Ownership isn't transferred: nobody becomes or stops being the owner.
+    def owner_role_unchanged
+      errors.add(:role, :owner_unchangeable) if owner? || role_was == "owner"
+    end
 end

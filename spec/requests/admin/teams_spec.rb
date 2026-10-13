@@ -60,6 +60,15 @@ RSpec.describe "Admin team", type: :request do
       expect(response.body).not_to include(admin_membership_path(business, owner.membership_for(business)))
     end
 
+    it "offers the owner to switch members between admin and professional" do
+      create(:membership, :admin, business: business)
+      sign_in_as(owner)
+
+      get admin_team_path(business)
+
+      expect(response.body).to include("Hacer administrador", "Hacer profesional")
+    end
+
     it "warns when the member's professional profile will become inactive" do
       with_business(business) { create(:professional, user: member.user) }
       sign_in_as(owner)

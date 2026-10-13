@@ -149,4 +149,58 @@ RSpec.describe Membership, type: :model do
       expect(described_class.exists?(owner.id)).to be(true)
     end
   end
+
+  describe "#change_role" do
+    let(:membership) { create(:membership, :admin, business: business) }
+
+    it "switches an admin to professional, creating their profile" do
+      membership.user.update!(name: "Ana Pérez")
+
+      expect(membership.change_role("professional")).to be(true)
+
+      expect(membership.reload).to be_professional
+      expect(membership.professional_profile).to have_attributes(name: "Ana Pérez", active: true)
+    end
+
+    it "keeps the existing profile when switching to professional" do
+      profile = with_business(business) { create(:professional, user: membership.user) }
+
+      membership.change_role("professional")
+
+      expect(membership.professional_profile).to eq(profile)
+      expect(with_business(business) { Professional.count }).to eq(1)
+    end
+
+    it "lets a professional become an admin, keeping their profile" do
+      membership = create(:membership, business: business)
+      profile = with_business(business) { create(:professional, user: membership.user) }
+
+      expect(membership.change_role("admin")).to be(true)
+
+      expect(membership.reload).to be_admin
+      expect(membership.professional_profile).to eq(profile)
+    end
+
+    it "does not make anyone the owner" do
+      expect(membership.change_role("owner")).to be(false)
+
+      expect(membership.errors).to be_of_kind(:role, :owner_unchangeable)
+      expect(membership.reload).to be_admin
+    end
+
+    it "does not change the owner's role" do
+      owner = create(:membership, :owner, business: business)
+
+      expect(owner.change_role("admin")).to be(false)
+
+      expect(owner.reload).to be_owner
+      expect(with_business(business) { Professional.count }).to eq(0)
+    end
+
+    it "rejects unknown roles" do
+      expect(membership.change_role("guest")).to be(false)
+
+      expect(membership.errors).to be_of_kind(:role, :inclusion)
+    end
+  end
 end

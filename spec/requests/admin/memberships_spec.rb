@@ -67,4 +67,45 @@ RSpec.describe "Admin memberships", type: :request do
       expect(Membership.exists?(other.id)).to be(true)
     end
   end
+
+  describe "changing a role" do
+    it "lets the owner make a professional an admin" do
+      sign_in_as(owner)
+
+      patch admin_membership_path(business, member), params: { role: "admin" }
+
+      expect(response).to redirect_to(admin_team_path(business))
+      expect(flash[:notice]).to eq("Ana ahora tiene el rol Administrador.")
+      expect(member.reload).to be_admin
+    end
+
+    it "gives a new professional a profile" do
+      admin = create(:membership, :admin, business: business)
+      sign_in_as(owner)
+
+      patch admin_membership_path(business, admin), params: { role: "professional" }
+
+      expect(admin.reload).to be_professional
+      expect(admin.professional_profile).to be_present
+    end
+
+    it "does not hand over ownership" do
+      sign_in_as(owner)
+
+      patch admin_membership_path(business, member), params: { role: "owner" }
+
+      expect(flash[:alert]).to eq("El rol de dueño no se puede asignar ni cambiar.")
+      expect(member.reload).to be_professional
+    end
+
+    it "is only available to the owner" do
+      admin = create(:membership, :admin, business: business).user
+      sign_in_as(admin)
+
+      patch admin_membership_path(business, member), params: { role: "admin" }
+
+      expect(response).to redirect_to(admin_root_path(business))
+      expect(member.reload).to be_professional
+    end
+  end
 end

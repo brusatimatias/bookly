@@ -4,3 +4,6 @@ en:
       destroy:
         removed: "%{name} was removed from the team."
         owner: "The owner can't be removed from the team."
+      update:
+        changed: "%{name}'s role is now %{role}."
+        not_changed: "The owner role can't be assigned or changed."
