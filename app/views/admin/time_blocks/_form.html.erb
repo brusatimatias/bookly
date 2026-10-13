@@ -1,0 +1,55 @@
+<%= form_with model: time_block, url: (time_block.new_record? ? admin_time_blocks_path : admin_time_block_path(time_block)),
+      class: "card card-body space-y-5", data: { controller: "time-block-form" } do |form| %>
+  <%= render "shared/form_errors", record: time_block %>
+
+  <% if Current.membership.manager? %>
+    <div class="field">
+      <%= form.label :professional_id, TimeBlock.human_attribute_name(:professional), class: "label" %>
+      <%= form.collection_select :professional_id, professionals, :id, :name, { include_blank: t(".choose_professional") }, required: true, class: "input" %>
+    </div>
+  <% end %>
+
+  <label class="flex items-start gap-3">
+    <%= form.check_box :all_day, class: "mt-0.5 size-4 rounded border-gray-300 text-brand-600 focus:ring-brand-600",
+          data: { action: "time-block-form#toggle", time_block_form_target: "allDay" } %>
+    <span>
+      <span class="block text-sm font-medium text-gray-900"><%= TimeBlock.human_attribute_name(:all_day) %></span>
+      <span class="hint"><%= t(".all_day_hint") %></span>
+    </span>
+  </label>
+
+  <div class="grid gap-5 sm:grid-cols-2" data-time-block-form-target="days" <%= "hidden" unless time_block.all_day %>>
+    <div class="field">
+      <%= form.label :start_date, class: "label" %>
+      <%= form.date_field :start_date, class: "input", data: { time_block_form_target: "startDate" } %>
+    </div>
+    <div class="field">
+      <%= form.label :end_date, class: "label" %>
+      <%= form.date_field :end_date, class: "input", data: { time_block_form_target: "endDate" } %>
+      <p class="hint"><%= t(".single_day_hint") %></p>
+    </div>
+  </div>
+
+  <div class="grid gap-5 sm:grid-cols-2" data-time-block-form-target="times" <%= "hidden" if time_block.all_day %>>
+    <div class="field">
+      <%= form.label :starts_at, class: "label" %>
+      <%= form.datetime_local_field :starts_at, step: 300, class: "input", data: { time_block_form_target: "startsAt" } %>
+    </div>
+    <div class="field">
+      <%= form.label :ends_at, class: "label" %>
+      <%= form.datetime_local_field :ends_at, step: 300, class: "input", data: { time_block_form_target: "endsAt" } %>
+    </div>
+  </div>
+  <p class="hint -mt-3"><%= t(".time_zone_hint", zone: time_zone_label) %></p>
+
+  <div class="field">
+    <%= form.label :reason, class: "label" %>
+    <%= form.text_field :reason, maxlength: 100, placeholder: t(".reason_placeholder"), class: "input" %>
+    <p class="hint"><%= t(".reason_hint") %></p>
+  </div>
+
+  <div class="flex items-center justify-end gap-3 border-t border-gray-100 pt-5">
+    <%= link_to t(".cancel"), admin_time_blocks_path, class: "btn-ghost" %>
+    <%= form.submit t(time_block.new_record? ? ".create" : ".update"), class: "btn-primary" %>
+  </div>
+<% end %>

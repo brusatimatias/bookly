@@ -12,11 +12,15 @@ class Professional < ApplicationRecord
 
   has_many :professional_services, dependent: :restrict_with_exception
   has_many :services, through: :professional_services
+  has_many :working_hours, dependent: :restrict_with_exception
+  has_many :time_blocks, dependent: :restrict_with_exception
 
   has_one_attached :photo
 
-  # Active and offering at least one active service: who customers can book.
-  scope :bookable, -> { active.where(id: ProfessionalService.joins(:service).merge(Service.active).select(:professional_id)) }
+  scope :with_working_hours, -> { where(id: WorkingHour.select(:professional_id)) }
+  # Active, offering at least one active service and with weekly hours: who
+  # customers can book.
+  scope :bookable, -> { active.with_working_hours.where(id: ProfessionalService.joins(:service).merge(Service.active).select(:professional_id)) }
 
   normalizes :name, with: ->(name) { name.squish }
 
@@ -27,9 +31,10 @@ class Professional < ApplicationRecord
   validate :user_is_member, if: -> { user_id.present? && user_id_changed? }
   validate :photo_is_an_image, if: -> { photo.attached? }
 
-  # Customers can only book active professionals that offer an active service.
+  # Customers can only book active professionals that offer an active service
+  # and have weekly hours.
   def bookable?
-    active? && services.any?(&:active?)
+    active? && services.any?(&:active?) && working_hours.any?
   end
 
   private

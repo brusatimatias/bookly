@@ -1,0 +1,6 @@
+<% content_for :title, t(".title") %>
+
+<div class="mx-auto max-w-2xl">
+  <%= render "shared/page_header", title: t(".title"), subtitle: @time_block.professional.name %>
+  <%= render "form", time_block: @time_block, professionals: @professionals %>
+</div>

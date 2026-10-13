@@ -1,0 +1,26 @@
+es:
+  activerecord:
+    models:
+      time_block:
+        one: "Bloqueo"
+        other: "Bloqueos"
+    attributes:
+      time_block:
+        professional: "Profesional"
+        starts_at: "Desde"
+        ends_at: "Hasta"
+        reason: "Motivo"
+        all_day: "Día completo"
+        start_date: "Desde"
+        end_date: "Hasta"
+    errors:
+      models:
+        time_block:
+          attributes:
+            ends_at:
+              after_start: "debe ser posterior al inicio"
+            end_date:
+              before_start: "no puede ser anterior al primer día"
+            base:
+              overlap: "Se superpone con otro bloqueo del mismo profesional"
+              over: "El bloqueo ya terminó: elegí un período que no haya pasado"

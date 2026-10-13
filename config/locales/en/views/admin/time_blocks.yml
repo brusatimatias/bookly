@@ -1,0 +1,43 @@
+en:
+  admin:
+    time_blocks:
+      no_profile: "You need a professional profile to add blocks."
+      index:
+        title: "Blocks"
+        subtitle: "Periods in which a professional can't be booked: vacations, errands, the unexpected."
+        subtitle_own: "Periods in which you can't be booked: vacations, errands, the unexpected."
+        new: "New block"
+        filter: "Professional"
+        all_professionals: "All"
+        apply: "Filter"
+        ongoing: "Ongoing"
+        whole_days: "Whole days"
+        edit: "Edit"
+        destroy: "Delete"
+        destroy_confirm: "Delete the block on %{period}? That period becomes available again."
+        empty: "There are no upcoming blocks."
+        empty_hint: "Block the periods that can't be booked, like a vacation or an errand."
+        no_profile: "You don't have a professional profile."
+        no_profile_hint: "Once the business links you to a profile, you'll be able to block your schedule here."
+      form:
+        choose_professional: "Choose a professional"
+        all_day_hint: "Blocks whole days, like a vacation."
+        single_day_hint: "For a single day, leave “To” empty."
+        time_zone_hint: "In %{zone} time."
+        reason_placeholder: "Vacation, errand, training…"
+        reason_hint: "Optional. Only the team sees it."
+        cancel: "Cancel"
+        create: "Create block"
+        update: "Save changes"
+      new:
+        title: "New block"
+        subtitle: "Nobody can book that professional during the block."
+        subtitle_own: "Nobody can book you during the block."
+      edit:
+        title: "Edit block"
+      create:
+        created: "%{name}'s schedule was blocked."
+      update:
+        updated: "%{name}'s block was updated."
+      destroy:
+        destroyed: "%{name}'s block was deleted."

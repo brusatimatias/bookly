@@ -137,31 +137,36 @@ RSpec.describe Professional, type: :model do
   end
 
   describe ".bookable" do
-    it "includes active professionals offering an active service" do
-      bookable = create(:professional, services: [ create(:service) ])
-      create(:professional, :inactive, services: [ create(:service) ])
-      create(:professional, services: [ create(:service, :inactive) ])
-      create(:professional)
+    it "includes active professionals offering an active service, with weekly hours" do
+      bookable = create(:professional, :with_hours, services: [ create(:service) ])
+      create(:professional, :inactive, :with_hours, services: [ create(:service) ])
+      create(:professional, :with_hours, services: [ create(:service, :inactive) ])
+      create(:professional, :with_hours)
+      create(:professional, services: [ create(:service) ])
 
       expect(described_class.bookable).to contain_exactly(bookable)
     end
   end
 
   describe "#bookable?" do
-    it "is true for an active professional offering an active service" do
-      expect(create(:professional, services: [ create(:service) ])).to be_bookable
+    it "is true for an active professional offering an active service, with weekly hours" do
+      expect(create(:professional, :with_hours, services: [ create(:service) ])).to be_bookable
     end
 
     it "is false without services" do
-      expect(create(:professional)).not_to be_bookable
+      expect(create(:professional, :with_hours)).not_to be_bookable
     end
 
     it "is false when all their services are inactive" do
-      expect(create(:professional, services: [ create(:service, :inactive) ])).not_to be_bookable
+      expect(create(:professional, :with_hours, services: [ create(:service, :inactive) ])).not_to be_bookable
+    end
+
+    it "is false without weekly hours" do
+      expect(create(:professional, services: [ create(:service) ])).not_to be_bookable
     end
 
     it "is false when inactive" do
-      expect(create(:professional, :inactive, services: [ create(:service) ])).not_to be_bookable
+      expect(create(:professional, :inactive, :with_hours, services: [ create(:service) ])).not_to be_bookable
     end
   end
 

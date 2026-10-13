@@ -39,7 +39,7 @@ RSpec.describe "Layouts", type: :request do
 
       get admin_root_path(business)
 
-      expect(response.body).to include("Barbería Centro", "Dueño", "Lucía Fernández", "LF", "Inicio", "Servicios", "Profesionales", "Equipo", "Página pública")
+      expect(response.body).to include("Barbería Centro", "Dueño", "Lucía Fernández", "LF", "Inicio", "Servicios", "Profesionales", "Bloqueos", "Equipo", "Página pública")
       expect(response.body).to include('data-controller="sidebar"')
     end
 
@@ -51,13 +51,22 @@ RSpec.describe "Layouts", type: :request do
       expect(response.body).to match(/<a[^>]*aria-current="page"[^>]*href="#{admin_team_path(business)}"|<a[^>]*href="#{admin_team_path(business)}"[^>]*aria-current="page"/)
     end
 
-    it "hides the team section from professionals, but not services and professionals" do
+    it "keeps professionals highlighted while editing a professional's hours" do
+      sign_in_with_role(:owner)
+      professional = with_business(business) { create(:professional) }
+
+      get edit_admin_professional_schedule_path(business, professional)
+
+      expect(response.body).to match(/<a[^>]*aria-current="page"[^>]*href="#{admin_professionals_path(business)}"|<a[^>]*href="#{admin_professionals_path(business)}"[^>]*aria-current="page"/)
+    end
+
+    it "hides the team section from professionals, but not services, professionals and blocks" do
       sign_in_with_role(:professional)
 
       get admin_root_path(business)
 
       expect(response.body).not_to include(admin_team_path(business))
-      expect(response.body).to include(admin_services_path(business), admin_professionals_path(business))
+      expect(response.body).to include(admin_services_path(business), admin_professionals_path(business), admin_time_blocks_path(business))
     end
   end
 end

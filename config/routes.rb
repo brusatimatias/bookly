@@ -44,7 +44,9 @@ Rails.application.routes.draw do
           patch :deactivate
           patch :reactivate
         end
+        resource :schedule, only: %i[edit update]
       end
+      resources :time_blocks, only: %i[index new create edit update destroy]
     end
   end
 end

@@ -35,6 +35,19 @@ RSpec.describe "Admin professionals", type: :request do
       expect(response.body.index("Sofía Torres")).to be < response.body.index("Ana Ruiz")
     end
 
+    it "links to each professional's hours and marks those without any" do
+      sofia, pablo = in_business do
+        sofia = create(:professional, name: "Sofía Torres")
+        create(:working_hour, professional: sofia)
+        [ sofia, create(:professional, name: "Pablo Paz") ]
+      end
+
+      get admin_professionals_path(business)
+
+      expect(response.body).to include(edit_admin_professional_schedule_path(business, sofia), edit_admin_professional_schedule_path(business, pablo))
+      expect(response.body.scan("Sin horario").size).to eq(1)
+    end
+
     it "only lets the owner invite profiles without an account" do
       in_business { create(:professional, name: "Sofía Torres") }
 
@@ -210,7 +223,8 @@ RSpec.describe "Admin professionals", type: :request do
       get admin_professionals_path(business)
 
       expect(response.body).to include(professional.name, "(vos)")
-      expect(response.body).not_to include("Nuevo profesional", edit_admin_professional_path(business, professional))
+      expect(response.body).not_to include("Nuevo profesional", edit_admin_professional_path(business, professional),
+        edit_admin_professional_schedule_path(business, professional))
     end
 
     it "cannot create, edit or deactivate professionals" do

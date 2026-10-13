@@ -18,4 +18,10 @@ module FormattingHelper
     parts << t("formatting.duration.minutes", count: minutes) if minutes.positive? || hours.zero?
     parts.join(" ")
   end
+
+  # "America/Argentina/Buenos_Aires" -> "Buenos Aires": the friendly Rails name
+  # when there is one, the identifier otherwise.
+  def time_zone_label(zone = Current.business.time_zone)
+    ActiveSupport::TimeZone::MAPPING.key(zone) || zone
+  end
 end

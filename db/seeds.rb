@@ -48,6 +48,29 @@ end
 def seed_professional(name, services:, user: nil)
   professional = Professional.find_or_create_by!(name: name) { |new_professional| new_professional.user = user }
   professional.update!(services: services)
+  professional
+end
+
+# Weekly hours, only for professionals that have none yet: { days => ranges },
+# with days as Date#wday (0 = Sunday) and ranges as "HH:MM" pairs.
+def seed_working_hours(professional, schedule)
+  return if professional.working_hours.exists?
+
+  schedule.each do |days, ranges|
+    Array(days).each do |day|
+      ranges.each { |start_time, end_time| professional.working_hours.create!(day_of_week: day, start_time: start_time, end_time: end_time) }
+    end
+  end
+end
+
+# A block between two [days from today, "HH:MM"] points in the business's
+# time zone, only if the professional has no upcoming one (the dates move with
+# each run).
+def seed_time_block(professional, from:, to:, reason: nil)
+  zone = Time.find_zone!(Current.business.time_zone)
+  starts_at, ends_at = [ from, to ].map { |days, time| zone.parse("#{zone.today + days} #{time}") }
+
+  professional.time_blocks.create!(starts_at: starts_at, ends_at: ends_at, reason: reason) unless professional.time_blocks.upcoming.exists?
 end
 
 Current.set(business: barberia) do
@@ -60,17 +83,30 @@ Current.set(business: barberia) do
     service.active = false
   end
 
-  seed_professional("Martín Gómez", services: [ haircut, beard, combo ], user: User.find_by!(email_address: "martin@barberiacentro.example"))
+  martin = seed_professional("Martín Gómez", services: [ haircut, beard, combo ], user: User.find_by!(email_address: "martin@barberiacentro.example"))
   # The owner also takes appointments.
-  seed_professional("Lucía Fernández", services: [ haircut ], user: User.find_by!(email_address: "lucia@barberiacentro.example"))
+  lucia = seed_professional("Lucía Fernández", services: [ haircut ], user: User.find_by!(email_address: "lucia@barberiacentro.example"))
   # Not invited yet: a profile without an account.
-  seed_professional("Sofía Torres", services: [ haircut, beard ])
+  sofia = seed_professional("Sofía Torres", services: [ haircut, beard ])
+
+  seed_working_hours(martin, (1..5) => [ %w[09:00 13:00], %w[14:00 19:00] ], 6 => [ %w[09:00 14:00] ])
+  seed_working_hours(lucia, (2..6) => [ %w[10:00 18:00] ])
+  seed_working_hours(sofia, [ 1, 3, 5 ] => [ %w[14:00 20:00] ])
+
+  seed_time_block(martin, from: [ 2, "16:00" ], to: [ 2, "19:00" ], reason: "Trámite")
+  # Whole days: from midnight to midnight.
+  seed_time_block(lucia, from: [ 7, "00:00" ], to: [ 12, "00:00" ], reason: "Vacaciones")
 end
 
 Current.set(business: studio) do
   cut = seed_service("Haircut", duration_minutes: 45, price: 40, description: "Wash, cut and style.")
   color = seed_service("Color", duration_minutes: 120, price: 110, buffer_minutes: 15, description: "Full color with a gloss finish.")
 
-  seed_professional("Martín Gómez", services: [ cut ], user: User.find_by!(email_address: "martin@barberiacentro.example"))
-  seed_professional("Alex Kim", services: [ cut, color ])
+  martin = seed_professional("Martín Gómez", services: [ cut ], user: User.find_by!(email_address: "martin@barberiacentro.example"))
+  alex = seed_professional("Alex Kim", services: [ cut, color ])
+
+  seed_working_hours(martin, 6 => [ %w[10:00 16:00] ])
+  seed_working_hours(alex, (1..5) => [ %w[10:00 18:00] ])
+
+  seed_time_block(alex, from: [ 3, "12:00" ], to: [ 3, "13:00" ], reason: "Dentist")
 end

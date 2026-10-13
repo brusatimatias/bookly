@@ -24,7 +24,8 @@
       <nav class="flex-1 space-y-1 overflow-y-auto px-3 py-4">
         <%= admin_nav_link t(".home"), admin_root_path, icon: "home", active: controller_name == "dashboards" %>
         <%= admin_nav_link t(".services"), admin_services_path, icon: "tag", active: controller_name == "services" %>
-        <%= admin_nav_link t(".professionals"), admin_professionals_path, icon: "user", active: controller_name == "professionals" %>
+        <%= admin_nav_link t(".professionals"), admin_professionals_path, icon: "user", active: controller_name.in?(%w[professionals schedules]) %>
+        <%= admin_nav_link t(".time_blocks"), admin_time_blocks_path, icon: "no-symbol", active: controller_name == "time_blocks" %>
         <% if Current.membership.manager? %>
           <%= admin_nav_link t(".team"), admin_team_path, icon: "users", active: controller_name.in?(%w[teams invitations]) %>
         <% end %>

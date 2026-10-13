@@ -1,0 +1,26 @@
+en:
+  activerecord:
+    models:
+      time_block:
+        one: "Block"
+        other: "Blocks"
+    attributes:
+      time_block:
+        professional: "Professional"
+        starts_at: "From"
+        ends_at: "To"
+        reason: "Reason"
+        all_day: "Whole days"
+        start_date: "From"
+        end_date: "To"
+    errors:
+      models:
+        time_block:
+          attributes:
+            ends_at:
+              after_start: "must be after the start"
+            end_date:
+              before_start: "can't be before the first day"
+            base:
+              overlap: "It overlaps another block of the same professional"
+              over: "The block has already ended: pick a period that hasn't passed"
