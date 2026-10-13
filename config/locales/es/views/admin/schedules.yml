@@ -1,0 +1,18 @@
+es:
+  admin:
+    schedules:
+      edit:
+        title: "Horario de %{name}"
+        subtitle: "Las franjas en las que atiende cada semana, en hora de %{zone}."
+        copy_to_weekdays: "Copiar a martes–viernes"
+        closed: "No trabaja"
+        add: "Agregar franja"
+        cancel: "Cancelar"
+        submit: "Guardar horario"
+      range:
+        start_time: "Desde"
+        end_time: "Hasta"
+        to: "a"
+        remove: "Quitar franja"
+      update:
+        updated: "Guardamos el horario de %{name}."

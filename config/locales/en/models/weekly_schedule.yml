@@ -1,0 +1,12 @@
+en:
+  activemodel:
+    models:
+      weekly_schedule:
+        one: "Weekly hours"
+        other: "Weekly hours"
+    errors:
+      models:
+        weekly_schedule:
+          attributes:
+            base:
+              invalid_ranges: "Check the highlighted ranges."

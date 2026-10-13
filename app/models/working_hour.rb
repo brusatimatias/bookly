@@ -4,6 +4,10 @@
 class WorkingHour < ApplicationRecord
   include BusinessScoped
 
+  # Wall clock times, not instants: Rails would otherwise shift them to and
+  # from the current time zone (14:00 read as 11:00 in Buenos Aires).
+  self.skip_time_zone_conversion_for_attributes = %i[start_time end_time]
+
   belongs_to :professional
 
   scope :ordered, -> { order(:day_of_week, :start_time) }

@@ -30,6 +30,13 @@ RSpec.describe WorkingHour, type: :model do
     expect { working_hour.save(validate: false) }.to raise_error(ActiveRecord::StatementInvalid, /working_hours_end_after_start/)
   end
 
+  it "keeps its times as wall clock times, whatever the time zone" do
+    working_hour = Time.use_zone("America/Argentina/Buenos_Aires") { range("14:00", "20:00").tap(&:save!) }
+
+    reloaded = Time.use_zone("Asia/Tokyo") { WorkingHour.find(working_hour.id) }
+    expect([ reloaded.start_time.strftime("%H:%M"), reloaded.end_time.strftime("%H:%M") ]).to eq(%w[14:00 20:00])
+  end
+
   it "requires both times" do
     working_hour = range(nil, nil)
 

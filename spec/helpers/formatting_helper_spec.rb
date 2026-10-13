@@ -43,4 +43,20 @@ RSpec.describe FormattingHelper, type: :helper do
       expect(helper.format_duration(90)).to eq("1 h 30 min")
     end
   end
+
+  describe "#time_zone_label" do
+    it "uses the friendly Rails name when there is one" do
+      expect(helper.time_zone_label("America/Argentina/Buenos_Aires")).to eq("Buenos Aires")
+    end
+
+    it "falls back to the identifier" do
+      expect(helper.time_zone_label("America/Argentina/Cordoba")).to eq("America/Argentina/Cordoba")
+    end
+
+    it "defaults to the current business's time zone" do
+      with_business(create(:business, time_zone: "America/New_York")) do
+        expect(helper.time_zone_label).to eq("Eastern Time (US & Canada)")
+      end
+    end
+  end
 end

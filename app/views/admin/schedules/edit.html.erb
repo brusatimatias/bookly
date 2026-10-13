@@ -1,0 +1,45 @@
+<% content_for :title, t(".title", name: @schedule.professional.name) %>
+
+<div class="mx-auto max-w-3xl">
+  <%= render "shared/page_header", title: t(".title", name: @schedule.professional.name),
+        subtitle: t(".subtitle", zone: time_zone_label) %>
+
+  <%= form_with url: admin_professional_schedule_path(@schedule.professional), method: :patch, class: "card",
+        data: { controller: "schedule" } do %>
+    <% if @schedule.errors.any? %>
+      <div class="px-6 pt-6"><%= render "shared/form_errors", record: @schedule %></div>
+    <% end %>
+
+    <ul class="list-divided">
+      <% WeeklySchedule::DAYS.each do |day| %>
+        <% ranges = @schedule.ranges_on(day) %>
+        <li class="flex flex-col gap-3 px-6 py-4 sm:flex-row sm:gap-6" data-schedule-target="day" data-day="<%= day %>">
+          <div class="sm:w-36 sm:shrink-0 sm:pt-2">
+            <p class="font-medium text-gray-900"><%= t("date.day_names")[day].capitalize %></p>
+            <% if day == WeeklySchedule::WEEKDAYS.first %>
+              <button type="button" class="link mt-1 text-left text-sm" data-action="schedule#copyToWeekdays"><%= t(".copy_to_weekdays") %></button>
+            <% end %>
+          </div>
+          <div class="flex-1 space-y-2">
+            <div class="space-y-2" data-ranges>
+              <% ranges.each do |range| %>
+                <%= render "range", range: range %>
+              <% end %>
+            </div>
+            <p class="text-sm text-gray-500 sm:pt-2" data-closed <%= "hidden" if ranges.any? %>><%= t(".closed") %></p>
+            <button type="button" class="btn-ghost btn-sm" data-action="schedule#add">
+              <%= icon "plus", class: "size-4" %> <%= t(".add") %>
+            </button>
+          </div>
+        </li>
+      <% end %>
+    </ul>
+
+    <template data-schedule-target="template"><%= render "range", range: nil %></template>
+
+    <div class="flex justify-end gap-3 border-t border-gray-100 px-6 py-4">
+      <%= link_to t(".cancel"), admin_professionals_path, class: "btn-secondary" %>
+      <%= submit_tag t(".submit"), class: "btn-primary" %>
+    </div>
+  <% end %>
+</div>

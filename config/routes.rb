@@ -44,6 +44,7 @@ Rails.application.routes.draw do
           patch :deactivate
           patch :reactivate
         end
+        resource :schedule, only: %i[edit update]
       end
     end
   end

@@ -1,0 +1,18 @@
+<%# One working hours range of the weekly schedule form. Also rendered empty
+    (range: nil) as the template the schedule controller clones. %>
+<div class="space-y-1" data-range>
+  <div class="flex items-center gap-2">
+    <%= hidden_field_tag "schedule[ranges][][day_of_week]", range&.day_of_week, id: nil, data: { field: "day" } %>
+    <%= time_field_tag "schedule[ranges][][start_time]", range&.start_time&.strftime("%H:%M"), id: nil, step: 300,
+          class: "input w-28 sm:w-32", aria: { label: t(".start_time") }, data: { field: "start" } %>
+    <span class="text-sm text-gray-500"><%= t(".to") %></span>
+    <%= time_field_tag "schedule[ranges][][end_time]", range&.end_time&.strftime("%H:%M"), id: nil, step: 300,
+          class: "input w-28 sm:w-32", aria: { label: t(".end_time") }, data: { field: "end" } %>
+    <button type="button" class="btn-ghost btn-sm text-gray-400 hover:text-red-600" data-action="schedule#remove" aria-label="<%= t(".remove") %>" title="<%= t(".remove") %>">
+      <%= icon "x-mark", class: "size-4" %>
+    </button>
+  </div>
+  <% if range&.errors&.any? %>
+    <p class="text-sm text-red-600" role="alert"><%= range.errors.full_messages.to_sentence %></p>
+  <% end %>
+</div>

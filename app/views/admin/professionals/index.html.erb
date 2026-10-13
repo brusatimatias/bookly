@@ -33,8 +33,13 @@
             <div class="mt-1.5 flex flex-wrap items-center gap-1.5">
               <% if !professional.active? %>
                 <span class="badge-gray"><%= t(".inactive") %></span>
-              <% elsif !professional.bookable? %>
-                <span class="badge-yellow"><%= t(".no_services") %></span>
+              <% else %>
+                <% if !professional.bookable? %>
+                  <span class="badge-yellow"><%= t(".no_services") %></span>
+                <% end %>
+                <% if professional.working_hours.empty? %>
+                  <span class="badge-yellow"><%= t(".no_schedule") %></span>
+                <% end %>
               <% end %>
               <% professional.services.select(&:active?).sort_by { |service| service.name.downcase }.each do |service| %>
                 <span class="badge-brand"><%= service.name %></span>
@@ -48,6 +53,9 @@
               <%= link_to new_admin_invitation_path(professional_id: professional), class: "btn-secondary btn-sm" do %>
                 <%= icon "envelope", class: "size-4" %> <%= t(".invite") %>
               <% end %>
+            <% end %>
+            <%= link_to edit_admin_professional_schedule_path(professional), class: "btn-secondary btn-sm" do %>
+              <%= icon "clock", class: "size-4" %> <%= t(".schedule") %>
             <% end %>
             <%= link_to t(".edit"), edit_admin_professional_path(professional), class: "btn-secondary btn-sm" %>
             <% if professional.active? %>
