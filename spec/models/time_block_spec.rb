@@ -47,8 +47,20 @@ RSpec.describe TimeBlock, type: :model do
       expect(time_block.errors).to be_of_kind(:base, :overlap)
     end
 
-    it "is checked in the database" do
-      expect { block(noon - 1.hour, noon + 1.hour).save(validate: false) }.to raise_error(ActiveRecord::StatementInvalid, /time_blocks_no_overlap/)
+    it "is checked in the database, which reports it as the same error" do
+      time_block = block(noon - 1.hour, noon + 1.hour)
+
+      expect(time_block.save(validate: false)).to be(false)
+      expect(time_block.errors).to be_of_kind(:base, :overlap)
+      expect(time_block).to be_new_record
+      expect { time_block.save!(validate: false) }.to raise_error(ActiveRecord::RecordInvalid)
+    end
+
+    it "keeps an outer transaction usable after the database rejects one" do
+      TimeBlock.transaction do
+        expect(block(noon - 1.hour, noon + 1.hour).save(validate: false)).to be(false)
+        expect(block(noon + 3.hours, noon + 4.hours).save).to be(true)
+      end
     end
 
     it "allows blocks that only touch" do
@@ -81,7 +93,7 @@ RSpec.describe TimeBlock, type: :model do
     it "lists ongoing and future blocks, soonest first" do
       later = block(noon + 1.day, noon + 1.day + 1.hour).tap(&:save!)
       ongoing = block(1.hour.ago, 1.hour.from_now).tap(&:save!)
-      block(3.hours.ago, 2.hours.ago).save!
+      block(3.hours.ago, 2.hours.ago).save!(validate: false)
 
       expect(described_class.upcoming).to eq([ ongoing, later ])
     end
@@ -142,6 +154,34 @@ RSpec.describe TimeBlock, type: :model do
       time_block.assign_dates_from_range
 
       expect(time_block).to have_attributes(all_day: false, start_date: monday, end_date: monday + 1)
+    end
+  end
+
+  describe "blocks that already ended" do
+    it "can't be created" do
+      time_block = block(3.hours.ago, 1.hour.ago)
+
+      expect(time_block).not_to be_valid
+      expect(time_block.errors).to be_of_kind(:base, :over)
+    end
+
+    it "can't be moved to the past" do
+      time_block = block(noon, noon + 1.hour).tap(&:save!)
+
+      time_block.assign_attributes(starts_at: 3.hours.ago, ends_at: 1.hour.ago)
+
+      expect(time_block).not_to be_valid
+      expect(time_block.errors).to be_of_kind(:base, :over)
+    end
+
+    it "can still be edited once ongoing, keeping its end" do
+      time_block = block(1.hour.ago, 1.hour.from_now).tap(&:save!)
+
+      travel 30.minutes do
+        time_block.reason = "Trámite"
+
+        expect(time_block).to be_valid
+      end
     end
   end
 

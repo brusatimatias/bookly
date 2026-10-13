@@ -23,3 +23,4 @@ en:
               before_start: "can't be before the first day"
             base:
               overlap: "It overlaps another block of the same professional"
+              over: "The block has already ended: pick a period that hasn't passed"

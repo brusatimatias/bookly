@@ -9,6 +9,7 @@
 # it blocks a single day.
 class TimeBlock < ApplicationRecord
   include BusinessScoped
+  include OverlapConstraint
 
   belongs_to :professional
 
@@ -30,6 +31,7 @@ class TimeBlock < ApplicationRecord
   validates :reason, length: { maximum: 100 }
   validate :end_date_not_before_start, if: -> { all_day && start_date && end_date }
   validate :ends_after_start, if: -> { !all_day && starts_at && ends_at }
+  validate :not_over, if: -> { ends_at && (new_record? || ends_at_changed?) }
   validate :no_overlap, if: -> { professional_id && starts_at && ends_at && errors.none? }
 
   def range
@@ -70,6 +72,11 @@ class TimeBlock < ApplicationRecord
 
     def ends_after_start
       errors.add(:ends_at, :after_start) unless ends_at > starts_at
+    end
+
+    # A block that already ended changes nothing, and wouldn't even be listed.
+    def not_over
+      errors.add(:base, :over) if ends_at <= Time.current
     end
 
     def no_overlap

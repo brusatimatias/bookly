@@ -55,8 +55,11 @@ RSpec.describe WorkingHour, type: :model do
       expect(working_hour.errors).to be_of_kind(:base, :overlap)
     end
 
-    it "is checked in the database" do
-      expect { range("10:00", "11:00").save(validate: false) }.to raise_error(ActiveRecord::StatementInvalid, /working_hours_no_overlap/)
+    it "is checked in the database, which reports it as the same error" do
+      working_hour = range("10:00", "11:00")
+
+      expect(working_hour.save(validate: false)).to be(false)
+      expect(working_hour.errors).to be_of_kind(:base, :overlap)
     end
 
     it "allows ranges that only touch" do

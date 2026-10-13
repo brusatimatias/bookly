@@ -30,7 +30,7 @@ RSpec.describe "Admin time blocks", type: :request do
       in_business do
         create(:time_block, professional: sofia, starts_at: local(tomorrow, 16), ends_at: local(tomorrow, 19), reason: "Trámite")
         create(:time_block, professional: pablo, starts_at: 1.hour.ago, ends_at: 1.hour.from_now)
-        create(:time_block, professional: pablo, starts_at: 3.hours.ago, ends_at: 2.hours.ago, reason: "Pasado")
+        build(:time_block, professional: pablo, starts_at: 3.hours.ago, ends_at: 2.hours.ago, reason: "Pasado").save!(validate: false)
       end
 
       get admin_time_blocks_path(business)
@@ -105,6 +105,15 @@ RSpec.describe "Admin time blocks", type: :request do
       expect(response).to have_http_status(:unprocessable_entity)
       expect(response.body).to include("Se superpone con otro bloqueo del mismo profesional")
       expect(blocks_of(sofia).size).to eq(1)
+    end
+
+    it "rejects blocks that already ended" do
+      yesterday = tomorrow - 2
+
+      post admin_time_blocks_path(business), params: { time_block: { professional_id: sofia.id, all_day: "1", start_date: yesterday } }
+
+      expect(response).to have_http_status(:unprocessable_entity)
+      expect(response.body).to include("El bloqueo ya terminó")
     end
 
     it "requires a professional of the business" do

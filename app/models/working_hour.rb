@@ -3,6 +3,7 @@
 # midnight or overlap (also enforced by the database).
 class WorkingHour < ApplicationRecord
   include BusinessScoped
+  include OverlapConstraint
 
   # Wall clock times, not instants: Rails would otherwise shift them to and
   # from the current time zone (14:00 read as 11:00 in Buenos Aires).
