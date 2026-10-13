@@ -42,6 +42,25 @@ class Availability
     now.to_date + business.booking_horizon_days
   end
 
+  def bookable_day?(date)
+    date.between?(first_day, last_day)
+  end
+
+  # Whether any of the professionals has working hours that weekday.
+  def works_on?(date)
+    professionals.any? { |candidate| candidate.working_hours.any? { |range| range.day_of_week == date.wday } }
+  end
+
+  # The first day with free slots after the given one, looking up to `within`
+  # days ahead (never past the booking window); nil if there is none.
+  def next_free_day(after:, within: 60)
+    from = [ after + 1, first_day ].max
+    to = [ after + within, last_day ].min
+    return if from > to
+
+    days(from..to).find { |_date, slots| slots.any? }&.first
+  end
+
   # Free slots of each day in dates (a range of Date), keeping only the days
   # within the booking window: { date => [Slot, ...] } in order.
   def days(dates)

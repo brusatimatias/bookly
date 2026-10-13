@@ -1,0 +1,8 @@
+es:
+  availabilities:
+    week:
+      today: "Hoy"
+      past: "Ya pasó"
+      outside_window: "Fuera del plazo de reserva"
+      not_working: "No se atiende"
+      full: "Sin horarios libres"

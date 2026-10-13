@@ -12,6 +12,7 @@ es:
       services: "Servicios"
       professionals: "Profesionales"
       time_blocks: "Bloqueos"
+      availability: "Disponibilidad"
       settings: "Configuración"
       team: "Equipo"
       public_page: "Página pública"

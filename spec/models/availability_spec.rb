@@ -212,6 +212,28 @@ RSpec.describe Availability, type: :model do
     end
   end
 
+  describe "day helpers" do
+    before { works(professional, 1, "09:00", "10:00") }
+
+    let(:availability) { Availability.new(service, now: now) }
+
+    it "knows the days within the booking window" do
+      expect(availability.bookable_day?(monday)).to be(true)
+      expect(availability.bookable_day?(now.to_date - 1)).to be(false)
+      expect(availability.bookable_day?(availability.last_day + 1)).to be(false)
+    end
+
+    it "knows the weekdays someone works" do
+      expect(availability.works_on?(monday)).to be(true)
+      expect(availability.works_on?(monday + 1)).to be(false)
+    end
+
+    it "finds the next day with free times" do
+      expect(availability.next_free_day(after: monday)).to eq(monday + 7)
+      expect(availability.next_free_day(after: monday, within: 3)).to be_nil
+    end
+  end
+
   it "needs a current business" do
     Current.set(business: nil) do
       expect { Availability.new(service) }.to raise_error(Current::MissingBusiness)

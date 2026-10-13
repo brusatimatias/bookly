@@ -26,6 +26,7 @@
         <%= admin_nav_link t(".services"), admin_services_path, icon: "tag", active: controller_name == "services" %>
         <%= admin_nav_link t(".professionals"), admin_professionals_path, icon: "user", active: controller_name.in?(%w[professionals schedules]) %>
         <%= admin_nav_link t(".time_blocks"), admin_time_blocks_path, icon: "no-symbol", active: controller_name == "time_blocks" %>
+        <%= admin_nav_link t(".availability"), admin_availability_path, icon: "calendar", active: controller_name == "availabilities" %>
         <% if Current.membership.manager? %>
           <%= admin_nav_link t(".team"), admin_team_path, icon: "users", active: controller_name.in?(%w[teams invitations]) %>
         <% end %>

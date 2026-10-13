@@ -1,0 +1,8 @@
+en:
+  availabilities:
+    week:
+      today: "Today"
+      past: "Already passed"
+      outside_window: "Outside the booking window"
+      not_working: "Closed"
+      full: "No free times"

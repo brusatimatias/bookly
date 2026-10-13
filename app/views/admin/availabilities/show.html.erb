@@ -1,0 +1,65 @@
+<% content_for :title, t(".title") %>
+
+<%= render "shared/page_header", title: t(".title"),
+      subtitle: t(Current.membership.manager? ? ".subtitle" : ".subtitle_own") %>
+
+<% if @service.nil? %>
+  <% if Current.membership.manager? %>
+    <%= render "shared/empty_state", icon: "calendar", title: t(".no_services"), message: t(".no_services_hint"),
+          action: link_to(t(".go_to_professionals"), admin_professionals_path, class: "btn-secondary") %>
+  <% elsif @own_profile %>
+    <%= render "shared/empty_state", icon: "calendar", title: t(".not_bookable"), message: t(".not_bookable_hint") %>
+  <% else %>
+    <%= render "shared/empty_state", icon: "calendar", title: t(".no_profile"), message: t(".no_profile_hint") %>
+  <% end %>
+<% else %>
+  <%= form_with url: admin_availability_path, method: :get, class: "card card-body mb-6 grid gap-4 sm:grid-cols-2",
+        data: { controller: "auto-submit" } do %>
+    <%= hidden_field_tag :week, @week %>
+    <div class="field">
+      <%= label_tag :service_id, Appointment.human_attribute_name(:service), class: "label" %>
+      <%= select_tag :service_id, options_from_collection_for_select(@services, :id, :name, @service.id),
+            class: "input", data: { action: "auto-submit#submit" } %>
+    </div>
+    <% if Current.membership.manager? %>
+      <div class="field">
+        <%= label_tag :professional_id, Appointment.human_attribute_name(:professional), class: "label" %>
+        <%= select_tag :professional_id, options_from_collection_for_select(@professionals, :id, :name, @professional&.id),
+              include_blank: t(".any_professional"), class: "input", data: { action: "auto-submit#submit" } %>
+      </div>
+    <% end %>
+    <noscript><%= submit_tag t(".apply"), name: nil, class: "btn-secondary" %></noscript>
+  <% end %>
+
+  <% navigation = { service_id: @service.id, professional_id: @professional&.id } %>
+  <div class="mb-4 flex items-center justify-between gap-3">
+    <%= link_to admin_availability_path(navigation.merge(week: @week - 7)), class: "btn-secondary btn-sm #{"pointer-events-none opacity-40" if @week <= @availability.first_day}",
+          aria: { disabled: @week <= @availability.first_day } do %>
+      <span aria-hidden="true">←</span> <span class="hidden sm:inline"><%= t(".previous_week") %></span>
+    <% end %>
+    <p class="text-center font-medium text-gray-900">
+      <%= l(@week, format: :weekday) %> – <%= l(@week + 6, format: :weekday) %>
+      <span class="block text-xs font-normal text-gray-500"><%= t(".time_zone", zone: time_zone_label) %></span>
+    </p>
+    <% last_week = @week + 7 > @availability.last_day %>
+    <%= link_to admin_availability_path(navigation.merge(week: @week + 7)), class: "btn-secondary btn-sm #{"pointer-events-none opacity-40" if last_week}",
+          aria: { disabled: last_week } do %>
+      <span class="hidden sm:inline"><%= t(".next_week") %></span> <span aria-hidden="true">→</span>
+    <% end %>
+  </div>
+
+  <% if @days.values.none?(&:any?) %>
+    <div class="mb-4 flex flex-wrap items-center gap-x-3 gap-y-1 rounded-lg bg-yellow-50 p-4 text-sm text-yellow-800 ring-1 ring-yellow-600/20 ring-inset">
+      <%= icon "exclamation-circle", class: "text-yellow-600" %>
+      <span><%= t(".week_empty") %></span>
+      <% if @next_free_day %>
+        <%= link_to t(".next_free_day", date: l(@next_free_day, format: :weekday)),
+              admin_availability_path(navigation.merge(week: @next_free_day)), class: "link font-medium" %>
+      <% else %>
+        <span><%= t(".no_free_days") %></span>
+      <% end %>
+    </div>
+  <% end %>
+
+  <%= render "availabilities/week", availability: @availability, days: @days, week: @week %>
+<% end %>
