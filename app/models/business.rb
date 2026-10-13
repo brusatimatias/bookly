@@ -17,6 +17,8 @@ class Business < ApplicationRecord
   # BusinessScoped: reading these still needs Current.business.
   has_many :services, dependent: :restrict_with_exception
   has_many :professionals, dependent: :restrict_with_exception
+  has_many :working_hours, dependent: :restrict_with_exception
+  has_many :time_blocks, dependent: :restrict_with_exception
 
   enum :status, { active: "active", suspended: "suspended" }, default: :active, validate: true
 

@@ -1,0 +1,42 @@
+es:
+  admin:
+    time_blocks:
+      no_profile: "Necesitás un perfil de profesional para cargar bloqueos."
+      index:
+        title: "Bloqueos"
+        subtitle: "Períodos en los que un profesional no recibe turnos: vacaciones, trámites, imprevistos."
+        subtitle_own: "Períodos en los que no recibís turnos: vacaciones, trámites, imprevistos."
+        new: "Nuevo bloqueo"
+        filter: "Profesional"
+        all_professionals: "Todos"
+        apply: "Filtrar"
+        ongoing: "En curso"
+        whole_days: "Día completo"
+        edit: "Editar"
+        destroy: "Borrar"
+        destroy_confirm: "¿Borrar el bloqueo del %{period}? Ese período vuelve a estar disponible."
+        empty: "No hay bloqueos próximos."
+        empty_hint: "Bloqueá los períodos en los que no se puede reservar, como vacaciones o un trámite."
+        no_profile: "No tenés un perfil de profesional."
+        no_profile_hint: "Cuando el negocio te vincule a un perfil, vas a poder bloquear tu agenda acá."
+      form:
+        choose_professional: "Elegí un profesional"
+        all_day_hint: "Bloquea días enteros, por ejemplo unas vacaciones."
+        time_zone_hint: "En hora de %{zone}."
+        reason_placeholder: "Vacaciones, trámite, capacitación…"
+        reason_hint: "Opcional. Solo lo ve el equipo."
+        cancel: "Cancelar"
+        create: "Crear bloqueo"
+        update: "Guardar cambios"
+      new:
+        title: "Nuevo bloqueo"
+        subtitle: "Durante el bloqueo no se pueden pedir turnos con ese profesional."
+        subtitle_own: "Durante el bloqueo no se pueden pedir turnos con vos."
+      edit:
+        title: "Editar bloqueo"
+      create:
+        created: "Bloqueamos la agenda de %{name}."
+      update:
+        updated: "Actualizamos el bloqueo de %{name}."
+      destroy:
+        destroyed: "Borramos el bloqueo de %{name}."

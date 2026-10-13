@@ -1,0 +1,58 @@
+<% content_for :title, t(".title") %>
+
+<% can_block = Current.membership.manager? || @professionals.any? %>
+<% new_block_button = capture do %>
+  <%= link_to new_admin_time_block_path, class: "btn-primary" do %>
+    <%= icon "plus", class: "size-4" %> <%= t(".new") %>
+  <% end %>
+<% end %>
+<%= render "shared/page_header", title: t(".title"),
+      subtitle: t(Current.membership.manager? ? ".subtitle" : ".subtitle_own"),
+      actions: (new_block_button if can_block) %>
+
+<% if Current.membership.manager? && @professionals.size > 1 %>
+  <%= form_with url: admin_time_blocks_path, method: :get, class: "mb-6 flex items-center gap-3", data: { controller: "auto-submit" } do %>
+    <%= label_tag :professional_id, t(".filter"), class: "label shrink-0" %>
+    <%= select_tag :professional_id, options_from_collection_for_select(@professionals, :id, :name, @professional&.id),
+          include_blank: t(".all_professionals"), class: "input sm:w-72", data: { action: "auto-submit#submit" } %>
+    <noscript><%= submit_tag t(".apply"), name: nil, class: "btn-secondary btn-sm" %></noscript>
+  <% end %>
+<% end %>
+
+<% if @time_blocks.any? %>
+  <ul class="card list-divided">
+    <% @time_blocks.each do |time_block| %>
+      <li class="flex flex-col gap-3 px-6 py-4 sm:flex-row sm:items-center sm:gap-4" id="<%= dom_id(time_block) %>">
+        <div class="flex min-w-0 flex-1 items-center gap-4">
+          <%= professional_avatar(time_block.professional) %>
+          <div class="min-w-0 flex-1">
+            <p class="font-medium text-gray-900"><%= time_block_period(time_block) %></p>
+            <p class="truncate text-sm text-gray-500">
+              <%= time_block.professional.name %><% if time_block.reason %> · <%= time_block.reason %><% end %>
+            </p>
+            <% if time_block.ongoing? || time_block.whole_days? %>
+              <div class="mt-1.5 flex flex-wrap items-center gap-1.5">
+                <% if time_block.ongoing? %>
+                  <span class="badge-yellow"><%= t(".ongoing") %></span>
+                <% end %>
+                <% if time_block.whole_days? %>
+                  <span class="badge-gray"><%= t(".whole_days") %></span>
+                <% end %>
+              </div>
+            <% end %>
+          </div>
+        </div>
+        <div class="flex items-center gap-2 pl-14 sm:pl-0">
+          <%= link_to t(".edit"), edit_admin_time_block_path(time_block), class: "btn-secondary btn-sm" %>
+          <%= button_to t(".destroy"), admin_time_block_path(time_block), method: :delete,
+                form: { data: { turbo_confirm: t(".destroy_confirm", period: time_block_period(time_block)) } },
+                class: "btn-ghost btn-sm text-red-600 hover:bg-red-50 hover:text-red-700" %>
+        </div>
+      </li>
+    <% end %>
+  </ul>
+<% elsif can_block %>
+  <%= render "shared/empty_state", icon: "no-symbol", title: t(".empty"), message: t(".empty_hint"), action: new_block_button %>
+<% else %>
+  <%= render "shared/empty_state", icon: "no-symbol", title: t(".no_profile"), message: t(".no_profile_hint") %>
+<% end %>

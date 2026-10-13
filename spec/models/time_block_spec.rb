@@ -87,6 +87,57 @@ RSpec.describe TimeBlock, type: :model do
     end
   end
 
+  describe "whole days" do
+    around { |example| Time.use_zone("America/Argentina/Buenos_Aires") { example.run } }
+
+    let(:monday) { Date.new(2026, 10, 19) }
+
+    def whole_days(start_date, end_date)
+      block(nil, nil, all_day: true, start_date: start_date, end_date: end_date)
+    end
+
+    it "goes from the first day's midnight to the midnight after the last day, in the current time zone" do
+      time_block = whole_days(monday, monday + 4).tap(&:save!)
+
+      expect(time_block.starts_at).to eq(Time.zone.local(2026, 10, 19))
+      expect(time_block.ends_at).to eq(Time.zone.local(2026, 10, 24))
+      expect(time_block.starts_at.utc.hour).to eq(3)
+      expect(time_block).to be_whole_days
+      expect(time_block.last_day).to eq(monday + 4)
+    end
+
+    it "can be a single day" do
+      expect(whole_days(monday, monday).tap(&:save!).range).to eq(Time.zone.local(2026, 10, 19)...Time.zone.local(2026, 10, 20))
+    end
+
+    it "requires both days, the last not before the first" do
+      expect(whole_days(nil, nil).tap(&:valid?).errors).to be_of_kind(:start_date, :blank)
+      expect(whole_days(monday, monday - 1).tap(&:valid?).errors).to be_of_kind(:end_date, :before_start)
+    end
+
+    it "fills the days back for the edit form" do
+      time_block = TimeBlock.find(whole_days(monday, monday + 2).tap(&:save!).id)
+
+      time_block.assign_dates_from_range
+
+      expect(time_block).to have_attributes(all_day: true, start_date: monday, end_date: monday + 2)
+    end
+
+    it "leaves blocks with times alone" do
+      time_block = block(Time.zone.local(2026, 10, 19, 9), Time.zone.local(2026, 10, 19, 13))
+
+      time_block.assign_dates_from_range
+
+      expect(time_block).not_to be_whole_days
+      expect(time_block.all_day).to be(false)
+    end
+  end
+
+  it "knows when it is ongoing" do
+    expect(block(1.hour.ago, 1.hour.from_now)).to be_ongoing
+    expect(block(noon, noon + 1.hour)).not_to be_ongoing
+  end
+
   it "belongs to a professional of the same business in the database" do
     other_professional = with_business(create(:business)) { create(:professional) }
     time_block = block(noon, noon + 1.hour, professional_id: other_professional.id, professional: nil)

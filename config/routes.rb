@@ -46,6 +46,7 @@ Rails.application.routes.draw do
         end
         resource :schedule, only: %i[edit update]
       end
+      resources :time_blocks, only: %i[index new create edit update destroy]
     end
   end
 end
