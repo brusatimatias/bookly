@@ -126,6 +126,15 @@ RSpec.describe Business do
       expect(business).not_to be_valid
       expect(business.errors.attribute_names).to include(:buffer_minutes, :cancellation_window_hours, :min_booking_notice_hours)
     end
+
+    it "caps the booking settings" do
+      at_limit = build(:business, **Business::BOOKING_LIMITS)
+      over_limit = build(:business, **Business::BOOKING_LIMITS.transform_values(&:succ))
+
+      expect(at_limit).to be_valid
+      expect(over_limit).not_to be_valid
+      expect(over_limit.errors.attribute_names).to match_array(Business::BOOKING_LIMITS.keys)
+    end
   end
 
   describe "database constraints" do

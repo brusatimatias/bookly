@@ -1,0 +1,9 @@
+<%# A booking setting: number input with its unit and what it changes. %>
+<div class="field">
+  <%= form.label attribute, t(".#{attribute}"), class: "label" %>
+  <div class="flex items-center gap-2">
+    <%= form.number_field attribute, required: true, min: min, max: Business::BOOKING_LIMITS.fetch(attribute), step: 1, class: "input w-28" %>
+    <span class="shrink-0 text-sm text-gray-500"><%= t(".units.#{unit}") %></span>
+  </div>
+  <p class="hint"><%= t(".#{attribute}_hint") %></p>
+</div>

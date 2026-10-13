@@ -38,10 +38,24 @@ class Business < ApplicationRecord
   validates :locale, inclusion: { in: ->(_) { I18n.available_locales.map(&:to_s) } }
   validates :currency, presence: true
 
+  # Upper bounds for the booking settings: generous, but they keep availability
+  # from scanning years ahead or breaks longer than a working day.
+  BOOKING_LIMITS = {
+    slot_interval_minutes: 24 * 60,
+    buffer_minutes: 24 * 60,
+    min_booking_notice_hours: 30 * 24,
+    booking_horizon_days: 365,
+    cancellation_window_hours: 30 * 24,
+    request_expiration_hours: 30 * 24
+  }.freeze
+
   validates :slot_interval_minutes, :request_expiration_hours, :booking_horizon_days,
     numericality: { only_integer: true, greater_than: 0 }
   validates :buffer_minutes, :cancellation_window_hours, :min_booking_notice_hours,
     numericality: { only_integer: true, greater_than_or_equal_to: 0 }
+  BOOKING_LIMITS.each do |attribute, maximum|
+    validates attribute, numericality: { less_than_or_equal_to: maximum }, allow_nil: true
+  end
 
   def to_param
     slug

@@ -1,0 +1,25 @@
+<% content_for :title, t(".title") %>
+
+<div class="mx-auto max-w-2xl">
+  <%= render "shared/page_header", title: t(".title"), subtitle: t(".subtitle") %>
+
+  <%= form_with model: @business, url: admin_settings_path, method: :patch, class: "card card-body space-y-8" do |form| %>
+    <%= render "shared/form_errors", record: @business %>
+
+    <% { schedule: [ [ :slot_interval_minutes, :minutes, 1 ], [ :buffer_minutes, :minutes, 0 ] ],
+         window: [ [ :min_booking_notice_hours, :hours, 0 ], [ :booking_horizon_days, :days, 1 ] ],
+         requests: [ [ :request_expiration_hours, :hours, 1 ], [ :cancellation_window_hours, :hours, 0 ] ] }.each do |section, settings| %>
+      <section class="space-y-5">
+        <h2 class="border-b border-gray-100 pb-2 font-semibold text-gray-900"><%= t(".sections.#{section}") %></h2>
+        <% settings.each do |attribute, unit, min| %>
+          <%= render "number", form: form, attribute: attribute, unit: unit, min: min %>
+        <% end %>
+      </section>
+    <% end %>
+
+    <div class="flex items-center justify-end gap-3 border-t border-gray-100 pt-5">
+      <%= link_to t(".cancel"), admin_root_path, class: "btn-ghost" %>
+      <%= form.submit t(".submit"), class: "btn-primary" %>
+    </div>
+  <% end %>
+</div>
