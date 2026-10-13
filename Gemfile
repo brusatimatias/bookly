@@ -63,6 +63,9 @@ group :development, :test do
   # Testing framework and factories
   gem "rspec-rails", "~> 8.0"
   gem "factory_bot_rails", "~> 6.5"
+
+  # Pretty printing of objects in the console and the debugger (ap record) [https://github.com/awesome-print/awesome_print]
+  gem "awesome_print", "~> 1.9"
 end
 
 group :development do
