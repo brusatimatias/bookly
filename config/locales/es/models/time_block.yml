@@ -1,0 +1,20 @@
+es:
+  activerecord:
+    models:
+      time_block:
+        one: "Bloqueo"
+        other: "Bloqueos"
+    attributes:
+      time_block:
+        professional: "Profesional"
+        starts_at: "Desde"
+        ends_at: "Hasta"
+        reason: "Motivo"
+    errors:
+      models:
+        time_block:
+          attributes:
+            ends_at:
+              after_start: "debe ser posterior al inicio"
+            base:
+              overlap: "Se superpone con otro bloqueo del mismo profesional"

@@ -1,0 +1,20 @@
+en:
+  activerecord:
+    models:
+      working_hour:
+        one: "Working hours"
+        other: "Working hours"
+    attributes:
+      working_hour:
+        professional: "Professional"
+        day_of_week: "Day"
+        start_time: "From"
+        end_time: "To"
+    errors:
+      models:
+        working_hour:
+          attributes:
+            end_time:
+              after_start: "must be after the start time"
+            base:
+              overlap: "The range overlaps another one on the same day"
