@@ -21,22 +21,23 @@
   <div class="grid gap-5 sm:grid-cols-2" data-time-block-form-target="days" <%= "hidden" unless time_block.all_day %>>
     <div class="field">
       <%= form.label :start_date, class: "label" %>
-      <%= form.date_field :start_date, class: "input" %>
+      <%= form.date_field :start_date, class: "input", data: { time_block_form_target: "startDate" } %>
     </div>
     <div class="field">
       <%= form.label :end_date, class: "label" %>
-      <%= form.date_field :end_date, class: "input" %>
+      <%= form.date_field :end_date, class: "input", data: { time_block_form_target: "endDate" } %>
+      <p class="hint"><%= t(".single_day_hint") %></p>
     </div>
   </div>
 
   <div class="grid gap-5 sm:grid-cols-2" data-time-block-form-target="times" <%= "hidden" if time_block.all_day %>>
     <div class="field">
       <%= form.label :starts_at, class: "label" %>
-      <%= form.datetime_local_field :starts_at, step: 300, class: "input" %>
+      <%= form.datetime_local_field :starts_at, step: 300, class: "input", data: { time_block_form_target: "startsAt" } %>
     </div>
     <div class="field">
       <%= form.label :ends_at, class: "label" %>
-      <%= form.datetime_local_field :ends_at, step: 300, class: "input" %>
+      <%= form.datetime_local_field :ends_at, step: 300, class: "input", data: { time_block_form_target: "endsAt" } %>
     </div>
   </div>
   <p class="hint -mt-3"><%= t(".time_zone_hint", zone: time_zone_label) %></p>

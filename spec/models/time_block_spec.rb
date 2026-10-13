@@ -110,9 +110,22 @@ RSpec.describe TimeBlock, type: :model do
       expect(whole_days(monday, monday).tap(&:save!).range).to eq(Time.zone.local(2026, 10, 19)...Time.zone.local(2026, 10, 20))
     end
 
-    it "requires both days, the last not before the first" do
+    it "blocks a single day without an end date" do
+      time_block = whole_days(monday, nil).tap(&:save!)
+
+      expect(time_block.range).to eq(Time.zone.local(2026, 10, 19)...Time.zone.local(2026, 10, 20))
+    end
+
+    it "requires the first day, and the last not before it" do
       expect(whole_days(nil, nil).tap(&:valid?).errors).to be_of_kind(:start_date, :blank)
       expect(whole_days(monday, monday - 1).tap(&:valid?).errors).to be_of_kind(:end_date, :before_start)
+    end
+
+    it "ignores the times of the form" do
+      time_block = whole_days(monday, monday)
+      time_block.assign_attributes(starts_at: nil, ends_at: nil)
+
+      expect(time_block).to be_valid
     end
 
     it "fills the days back for the edit form" do
@@ -123,13 +136,12 @@ RSpec.describe TimeBlock, type: :model do
       expect(time_block).to have_attributes(all_day: true, start_date: monday, end_date: monday + 2)
     end
 
-    it "leaves blocks with times alone" do
-      time_block = block(Time.zone.local(2026, 10, 19, 9), Time.zone.local(2026, 10, 19, 13))
+    it "keeps the days of blocks with times, without making them whole days" do
+      time_block = block(Time.zone.local(2026, 10, 19, 9), Time.zone.local(2026, 10, 20, 13))
 
       time_block.assign_dates_from_range
 
-      expect(time_block).not_to be_whole_days
-      expect(time_block.all_day).to be(false)
+      expect(time_block).to have_attributes(all_day: false, start_date: monday, end_date: monday + 1)
     end
   end
 

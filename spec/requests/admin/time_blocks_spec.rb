@@ -86,6 +86,15 @@ RSpec.describe "Admin time blocks", type: :request do
       expect(blocks_of(sofia).map(&:range)).to eq([ local(tomorrow, 0)...local(tomorrow + 3, 0) ])
     end
 
+    it "blocks a single whole day when the end date is left empty" do
+      post admin_time_blocks_path(business), params: { time_block: {
+        professional_id: sofia.id, all_day: "1", start_date: tomorrow, end_date: ""
+      } }
+
+      expect(response).to redirect_to(admin_time_blocks_path(business))
+      expect(blocks_of(sofia).map(&:range)).to eq([ local(tomorrow, 0)...local(tomorrow + 1, 0) ])
+    end
+
     it "shows the errors of an overlapping block" do
       in_business { create(:time_block, professional: sofia, starts_at: local(tomorrow, 16), ends_at: local(tomorrow, 19)) }
 

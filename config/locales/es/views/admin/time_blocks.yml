@@ -22,6 +22,7 @@ es:
       form:
         choose_professional: "Elegí un profesional"
         all_day_hint: "Bloquea días enteros, por ejemplo unas vacaciones."
+        single_day_hint: "Si es un solo día, dejá «Hasta» vacío."
         time_zone_hint: "En hora de %{zone}."
         reason_placeholder: "Vacaciones, trámite, capacitación…"
         reason_hint: "Opcional. Solo lo ve el equipo."

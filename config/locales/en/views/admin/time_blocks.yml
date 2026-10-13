@@ -22,6 +22,7 @@ en:
       form:
         choose_professional: "Choose a professional"
         all_day_hint: "Blocks whole days, like a vacation."
+        single_day_hint: "For a single day, leave “To” empty."
         time_zone_hint: "In %{zone} time."
         reason_placeholder: "Vacation, errand, training…"
         reason_hint: "Optional. Only the team sees it."
