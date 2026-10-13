@@ -1,7 +1,8 @@
 # A period in which a professional can't be booked (vacation, lunch, an
 # errand). Blocks of the same professional don't overlap (also enforced by the
-# database). Unlike services and professionals they are deleted, not
-# deactivated: they carry no history.
+# database), nor active appointments: those need a decision first (cancel or
+# move them), so no appointment is lost silently. Unlike services and
+# professionals they are deleted, not deactivated: they carry no history.
 #
 # The form can set whole days instead of exact times (all_day, start_date and
 # end_date): the block then goes from the first day's midnight to the midnight
@@ -33,6 +34,7 @@ class TimeBlock < ApplicationRecord
   validate :ends_after_start, if: -> { !all_day && starts_at && ends_at }
   validate :not_over, if: -> { ends_at && (new_record? || ends_at_changed?) }
   validate :no_overlap, if: -> { professional_id && starts_at && ends_at && errors.none? }
+  validate :no_active_appointments, if: -> { professional_id && starts_at && ends_at && errors.none? && range_changed? }
 
   def range
     starts_at...ends_at
@@ -45,6 +47,12 @@ class TimeBlock < ApplicationRecord
   # From one midnight to another.
   def whole_days?
     starts_at == starts_at.beginning_of_day && ends_at == ends_at.beginning_of_day
+  end
+
+  # Active appointments of the professional the block would cover. Their
+  # break may fall inside the block: the professional is away anyway.
+  def conflicting_appointments
+    Appointment.active.where(professional_id: professional_id).where(starts_at: ...ends_at).where("ends_at > ?", starts_at).order(:starts_at)
   end
 
   # The last blocked day of a whole days block.
@@ -77,6 +85,15 @@ class TimeBlock < ApplicationRecord
     # A block that already ended changes nothing, and wouldn't even be listed.
     def not_over
       errors.add(:base, :over) if ends_at <= Time.current
+    end
+
+    def range_changed?
+      new_record? || starts_at_changed? || ends_at_changed? || professional_id_changed?
+    end
+
+    def no_active_appointments
+      count = conflicting_appointments.count
+      errors.add(:base, :appointments, count: count) if count.positive?
     end
 
     def no_overlap

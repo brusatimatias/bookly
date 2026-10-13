@@ -20,6 +20,7 @@ es:
         no_profile: "No tenés un perfil de profesional."
         no_profile_hint: "Cuando el negocio te vincule a un perfil, vas a poder bloquear tu agenda acá."
       form:
+        conflicts: "Turnos en conflicto:"
         choose_professional: "Elegí un profesional"
         all_day_hint: "Bloquea días enteros, por ejemplo unas vacaciones."
         single_day_hint: "Si es un solo día, dejá «Hasta» vacío."

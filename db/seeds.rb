@@ -110,3 +110,40 @@ Current.set(business: studio) do
 
   seed_time_block(alex, from: [ 3, "12:00" ], to: [ 3, "13:00" ], reason: "Dentist")
 end
+
+# A few appointments in the coming days, only for businesses that have none
+# yet (the dates move with each run).
+def seed_appointments(appointments)
+  return if Appointment.exists?
+
+  zone = Time.find_zone!(Current.business.time_zone)
+  appointments.each do |attributes|
+    (days, time), name, email = attributes.values_at(:at, :name, :email)
+    attributes = attributes.except(:at, :name, :email)
+    customer = Customer.find_or_create_by!(email: email) { |new_customer| new_customer.name = name }
+    # The next working day of that professional, from "days" ahead.
+    date = (zone.today + days..).find { |day| attributes[:professional].working_hours.exists?(day_of_week: day.wday) }
+    Appointment.create!(attributes.merge(customer: customer, starts_at: zone.parse("#{date} #{time}")))
+  end
+end
+
+Current.set(business: barberia) do
+  martin = Professional.find_by!(name: "Martín Gómez")
+  lucia = Professional.find_by!(name: "Lucía Fernández")
+  haircut = Service.find_by!(name: "Corte de pelo")
+  combo = Service.find_by!(name: "Corte y barba")
+
+  seed_appointments([
+    { at: [ 1, "10:00" ], professional: martin, service: haircut, status: :confirmed, name: "Ana Pérez", email: "ana@example.com" },
+    { at: [ 1, "11:00" ], professional: martin, service: combo, status: :pending, name: "Juan Ríos", email: "juan@example.com" },
+    { at: [ 3, "15:00" ], professional: lucia, service: haircut, status: :confirmed, name: "Ana Pérez", email: "ana@example.com" },
+    { at: [ 1, "16:00" ], professional: martin, service: haircut, status: :cancelled, name: "Carla Díaz", email: "carla@example.com" }
+  ])
+end
+
+Current.set(business: studio) do
+  seed_appointments([
+    { at: [ 1, "11:00" ], professional: Professional.find_by!(name: "Alex Kim"), service: Service.find_by!(name: "Color"),
+      status: :confirmed, name: "Jordan Lee", email: "jordan@example.com" }
+  ])
+end

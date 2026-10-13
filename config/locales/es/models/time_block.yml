@@ -23,4 +23,7 @@ es:
               before_start: "no puede ser anterior al primer día"
             base:
               overlap: "Se superpone con otro bloqueo del mismo profesional"
+              appointments:
+                one: "Se superpone con un turno activo: cancelalo o movelo antes de bloquear"
+                other: "Se superpone con %{count} turnos activos: cancelalos o movelos antes de bloquear"
               over: "El bloqueo ya terminó: elegí un período que no haya pasado"

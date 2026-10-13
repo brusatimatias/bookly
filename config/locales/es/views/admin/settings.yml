@@ -1,0 +1,31 @@
+es:
+  admin:
+    settings:
+      edit:
+        title: "Configuración de reservas"
+        subtitle: "Las reglas con las que se calculan los horarios que pueden pedir los clientes."
+        sections:
+          schedule: "Horarios"
+          window: "Cuándo se puede reservar"
+          requests: "Solicitudes y cancelaciones"
+        cancel: "Cancelar"
+        submit: "Guardar configuración"
+      number:
+        units:
+          minutes: "min"
+          hours: "horas"
+          days: "días"
+        slot_interval_minutes: "Intervalo de inicio"
+        slot_interval_minutes_hint: "Cada cuánto se ofrecen horarios, contando desde el comienzo de cada franja de trabajo. Con 30 min: 9:00, 9:30, 10:00…"
+        buffer_minutes: "Descanso entre turnos"
+        buffer_minutes_hint: "Tiempo libre después de cada turno, salvo que el servicio tenga el suyo. Los turnos ya pedidos conservan el que tenían."
+        min_booking_notice_hours: "Aviso mínimo"
+        min_booking_notice_hours_hint: "Con cuánta anticipación hay que pedir un turno. Con 2 horas, a las 10:00 el primer horario ofrecido es a las 12:00."
+        booking_horizon_days: "Horizonte de reserva"
+        booking_horizon_days_hint: "Hasta cuántos días hacia adelante se pueden pedir turnos."
+        request_expiration_hours: "Vencimiento de solicitudes"
+        request_expiration_hours_hint: "Cuánto tiempo tiene el negocio para confirmar una solicitud antes de que venza y libere el horario. Nunca vence después del turno."
+        cancellation_window_hours: "Ventana de cancelación"
+        cancellation_window_hours_hint: "Hasta cuántas horas antes del turno el cliente puede cancelarlo o reprogramarlo por su cuenta."
+      update:
+        updated: "Guardamos la configuración de reservas."

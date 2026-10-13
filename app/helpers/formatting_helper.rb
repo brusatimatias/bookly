@@ -24,4 +24,14 @@ module FormattingHelper
   def time_zone_label(zone = Current.business.time_zone)
     ActiveSupport::TimeZone::MAPPING.key(zone) || zone
   end
+
+  # "jue 15 oct, 16:00 – 19:00" within a day, "jue 15 oct 22:00 – vie 16 oct
+  # 08:00" across days.
+  def format_period(starts_at, ends_at)
+    if starts_at.to_date == ends_at.to_date
+      "#{l(starts_at.to_date, format: :weekday)}, #{l(starts_at, format: :hour)} – #{l(ends_at, format: :hour)}"
+    else
+      [ starts_at, ends_at ].map { |time| "#{l(time.to_date, format: :weekday)} #{l(time, format: :hour)}" }.join(" – ")
+    end
+  end
 end

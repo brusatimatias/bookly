@@ -39,7 +39,7 @@ RSpec.describe "Layouts", type: :request do
 
       get admin_root_path(business)
 
-      expect(response.body).to include("Barbería Centro", "Dueño", "Lucía Fernández", "LF", "Inicio", "Servicios", "Profesionales", "Bloqueos", "Equipo", "Página pública")
+      expect(response.body).to include("Barbería Centro", "Dueño", "Lucía Fernández", "LF", "Inicio", "Servicios", "Profesionales", "Bloqueos", "Disponibilidad", "Equipo", "Configuración", "Página pública")
       expect(response.body).to include('data-controller="sidebar"')
     end
 
@@ -65,7 +65,7 @@ RSpec.describe "Layouts", type: :request do
 
       get admin_root_path(business)
 
-      expect(response.body).not_to include(admin_team_path(business))
+      expect(response.body).not_to include(admin_team_path(business), edit_admin_settings_path(business))
       expect(response.body).to include(admin_services_path(business), admin_professionals_path(business), admin_time_blocks_path(business))
     end
   end

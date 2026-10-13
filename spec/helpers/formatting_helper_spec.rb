@@ -59,4 +59,16 @@ RSpec.describe FormattingHelper, type: :helper do
       end
     end
   end
+
+  describe "#format_period" do
+    around { |example| Time.use_zone("America/Argentina/Buenos_Aires") { example.run } }
+
+    it "shows the day once within a day" do
+      expect(helper.format_period(Time.zone.local(2026, 10, 15, 16), Time.zone.local(2026, 10, 15, 19))).to eq("jue 15 oct, 16:00 – 19:00")
+    end
+
+    it "shows both days across days" do
+      expect(helper.format_period(Time.zone.local(2026, 10, 15, 22), Time.zone.local(2026, 10, 16, 8))).to eq("jue 15 oct 22:00 – vie 16 oct 08:00")
+    end
+  end
 end
