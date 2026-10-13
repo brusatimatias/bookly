@@ -9,6 +9,7 @@ class Service < ApplicationRecord
 
   has_many :professional_services, dependent: :restrict_with_exception
   has_many :professionals, through: :professional_services
+  has_many :appointments, dependent: :restrict_with_exception
 
   has_rich_text :description
 
@@ -22,6 +23,11 @@ class Service < ApplicationRecord
   validates :duration_minutes, numericality: { only_integer: true, greater_than: 0, less_than_or_equal_to: MAX_DURATION_MINUTES }
   validates :price_cents, numericality: { only_integer: true, greater_than_or_equal_to: 0 }
   validates :buffer_minutes, numericality: { only_integer: true, greater_than_or_equal_to: 0 }, allow_nil: true
+
+  # The break after the service: its own, or the business's.
+  def effective_buffer_minutes
+    buffer_minutes || business.buffer_minutes
+  end
 
   # Price in the currency's main unit (12000.5), for forms. Stored in cents;
   # anything that isn't a number leaves it blank so validation catches it.

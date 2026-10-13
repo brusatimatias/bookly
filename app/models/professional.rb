@@ -14,6 +14,7 @@ class Professional < ApplicationRecord
   has_many :services, through: :professional_services
   has_many :working_hours, dependent: :restrict_with_exception
   has_many :time_blocks, dependent: :restrict_with_exception
+  has_many :appointments, dependent: :restrict_with_exception
 
   has_one_attached :photo
 

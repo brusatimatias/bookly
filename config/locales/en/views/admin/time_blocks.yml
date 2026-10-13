@@ -20,6 +20,7 @@ en:
         no_profile: "You don't have a professional profile."
         no_profile_hint: "Once the business links you to a profile, you'll be able to block your schedule here."
       form:
+        conflicts: "Conflicting appointments:"
         choose_professional: "Choose a professional"
         all_day_hint: "Blocks whole days, like a vacation."
         single_day_hint: "For a single day, leave “To” empty."

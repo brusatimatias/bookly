@@ -116,6 +116,20 @@ RSpec.describe "Admin time blocks", type: :request do
       expect(response.body).to include("El bloqueo ya terminó")
     end
 
+    it "lists the active appointments a block would cover" do
+      in_business do
+        service = create(:service, name: "Corte de pelo")
+        sofia.services << service
+        create(:appointment, professional: sofia, service: service, starts_at: local(tomorrow, 10),
+          customer: create(:customer, name: "Ana Pérez"))
+      end
+
+      post admin_time_blocks_path(business), params: { time_block: { professional_id: sofia.id, all_day: "1", start_date: tomorrow } }
+
+      expect(response).to have_http_status(:unprocessable_entity)
+      expect(response.body).to include("Turnos en conflicto:", "10:00 – 10:30", "Corte de pelo", "Ana Pérez", "Pendiente")
+    end
+
     it "requires a professional of the business" do
       other = with_business(create(:business)) { create(:professional) }
 

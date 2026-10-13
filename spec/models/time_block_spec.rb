@@ -157,6 +157,43 @@ RSpec.describe TimeBlock, type: :model do
     end
   end
 
+  describe "active appointments" do
+    let(:service) { create(:service, duration_minutes: 30, buffer_minutes: 15) }
+
+    before do
+      professional.services << service
+      create(:appointment, professional: professional, service: service, starts_at: noon, status: :confirmed)
+    end
+
+    it "can't be covered by a block" do
+      time_block = block(noon - 1.hour, noon + 1.hour)
+
+      expect(time_block).not_to be_valid
+      expect(time_block.errors).to be_of_kind(:base, :appointments)
+      expect(time_block.errors.full_messages).to include("Se superpone con un turno activo: cancelalo o movelo antes de bloquear")
+      expect(time_block.conflicting_appointments.size).to eq(1)
+    end
+
+    it "may leave their break inside the block" do
+      expect(block(noon + 30.minutes, noon + 2.hours)).to be_valid
+    end
+
+    it "don't count once cancelled" do
+      Appointment.update_all(status: "cancelled")
+
+      expect(block(noon - 1.hour, noon + 1.hour)).to be_valid
+    end
+
+    it "don't stop editing a block whose period doesn't change" do
+      time_block = block(noon - 1.hour, noon - 30.minutes).tap(&:save!)
+      time_block.update_columns(ends_at: noon + 1.hour)
+
+      time_block.reload.reason = "Trámite"
+
+      expect(time_block).to be_valid
+    end
+  end
+
   describe "blocks that already ended" do
     it "can't be created" do
       time_block = block(3.hours.ago, 1.hour.ago)
