@@ -29,6 +29,7 @@ Rails.application.routes.draw do
       root "dashboards#show"
 
       resource :team, only: :show
+      resources :memberships, only: %i[update destroy]
       resources :invitations, only: %i[new create destroy] do
         post :resend, on: :member
       end

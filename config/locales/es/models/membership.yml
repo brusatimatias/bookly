@@ -22,3 +22,4 @@ es:
               taken: "ya es miembro de este negocio"
             role:
               owner_taken: "de dueño ya está asignado en este negocio"
+              owner_unchangeable: "no se puede cambiar desde ni hacia dueño"

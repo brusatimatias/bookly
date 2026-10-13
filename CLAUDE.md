@@ -9,7 +9,7 @@ Multi-tenant appointment booking app, built in stages. Done so far:
 - `Business` model (booking configuration, locale, time zone, active/suspended), tenant context (`Current.business`, `BusinessScoped`) and public business page at `/:business_slug`.
 - Spanish/English i18n, with a language switcher on pages outside a business.
 - A shared UI layer (Tailwind theme, component classes, partials and three layouts) used by every page; see "UI conventions".
-- Users and authentication (Rails 8 generator), password reset, memberships with roles (`owner`/`admin`/`professional`), the business panel at `/:business_slug/admin`, and email invitations to join a business.
+- Users and authentication (Rails 8 generator), password reset, memberships with roles (`owner`/`admin`/`professional`), role changes and member removal, the business panel at `/:business_slug/admin`, and email invitations to join a business.
 - Services and professionals (the first per-business tables), managed from the panel and listed on the public page; see "Services and professionals".
 
 There is no public sign up: owners are created from seeds or the console for now, everyone else joins by invitation.
@@ -72,6 +72,7 @@ Every page is built from the shared pieces below; don't hand-roll styles that al
 - Authentication is required **by default** for every controller; public ones opt out with `allow_unauthenticated_access`.
 - `users`, `sessions`, `memberships` and `invitations` are global tables (not `BusinessScoped`). Always reach invitations and memberships through `Current.business` (`Current.business.invitations.find(...)`) so a request can't touch another business's records.
 - `Membership` links a user to a business with a role: `owner` (exactly one per business, enforced by a partial unique index), `admin` or `professional`. One role per user and business. `manager?` is true for owners and admins.
+- Only the owner changes roles and removes members (`Admin::MembershipsController`, from the team page). `Membership#change_role` switches between `admin` and `professional` (new professionals get a profile); nobody becomes or stops being the owner. `Membership#remove!` deletes the membership but keeps the user, and leaves their professional profile inactive and unlinked; the owner can't be removed (`Membership::NotRemovable`).
 - After signing in, users land on `/dashboard`: straight into their business panel if they belong to a single one, otherwise a list to pick.
 
 ### Business panel
@@ -92,7 +93,7 @@ Every page is built from the shared pieces below; don't hand-roll styles that al
 - `Service` (duration, price in cents, optional `buffer_minutes` that falls back to the business's, Action Text `description`), `Professional` (optional `user`, Active Storage `photo`) and the `ProfessionalService` join. All three are `BusinessScoped`.
 - They are never deleted: `Deactivatable` adds `active`/`inactive` scopes and `deactivate!`/`reactivate!`. Inactive services keep their professionals.
 - `bookable` (scope) and `bookable?`: active services offered by an active professional, and active professionals offering an active service. The public page only lists bookable ones.
-- A professional's `user` must be a member of the same business (validation plus a composite foreign key to `memberships`), and each member has at most one profile. While a profile is linked, the membership can't be deleted.
+- A professional's `user` must be a member of the same business (validation plus a composite foreign key to `memberships`), and each member has at most one profile. While a profile is linked, the membership can't be deleted directly: `Membership#remove!` unlinks it first.
 - Panel: `Admin::ServicesController` and `Admin::ProfessionalsController`. Every member sees the lists; owners and admins manage them (`require_manager`).
 - Photos: JPG/PNG/WebP up to 5 MB, shown with `professional_avatar` (initials when there is none). No image variants yet (libvips isn't required), so images are cropped with CSS.
 

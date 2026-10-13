@@ -47,4 +47,43 @@ RSpec.describe "Admin team", type: :request do
 
     expect(response.body).not_to include("done@example.com")
   end
+
+  describe "removing members" do
+    let!(:member) { create(:membership, business: business, user: create(:user, name: "Ana")) }
+
+    it "offers the owner to remove anyone but themselves" do
+      sign_in_as(owner)
+
+      get admin_team_path(business)
+
+      expect(response.body).to include(admin_membership_path(business, member))
+      expect(response.body).not_to include(admin_membership_path(business, owner.membership_for(business)))
+    end
+
+    it "offers the owner to switch members between admin and professional" do
+      create(:membership, :admin, business: business)
+      sign_in_as(owner)
+
+      get admin_team_path(business)
+
+      expect(response.body).to include("Hacer administrador", "Hacer profesional")
+    end
+
+    it "warns when the member's professional profile will become inactive" do
+      with_business(business) { create(:professional, user: member.user) }
+      sign_in_as(owner)
+
+      get admin_team_path(business)
+
+      expect(response.body).to include("Perfil de profesional", "su perfil de profesional va a quedar inactivo")
+    end
+
+    it "is not offered to admins" do
+      sign_in_with_role(:admin)
+
+      get admin_team_path(business)
+
+      expect(response.body).not_to include(admin_membership_path(business, member))
+    end
+  end
 end
