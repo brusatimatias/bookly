@@ -17,15 +17,17 @@ RSpec.describe "Businesses", type: :request do
         haircut = create(:service, name: "Corte de pelo", duration_minutes: 90, price_cents: 1_200_000, description: "Lavado incluido")
         create(:service, :inactive, name: "Coloración")
         create(:service, name: "Barba sin profesionales")
-        create(:professional, name: "Sofía Torres", services: [ haircut ])
-        create(:professional, name: "Pablo sin servicios")
-        create(:professional, :inactive, name: "Ana inactiva", services: [ haircut ])
+        nails = create(:service, name: "Uñas sin horario")
+        create(:professional, :with_hours, name: "Sofía Torres", services: [ haircut ])
+        create(:professional, :with_hours, name: "Pablo sin servicios")
+        create(:professional, :inactive, :with_hours, name: "Ana inactiva", services: [ haircut ])
+        create(:professional, name: "Juan sin horario", services: [ haircut, nails ])
       end
 
       get business_path(business)
 
       expect(response.body).to include("Corte de pelo", "1 h 30 min", "$ 12.000", "Lavado incluido", "Sofía Torres")
-      expect(response.body).not_to include("Coloración", "Barba sin profesionales", "Pablo sin servicios", "Ana inactiva")
+      expect(response.body).not_to include("Coloración", "Barba sin profesionales", "Uñas sin horario", "Pablo sin servicios", "Ana inactiva", "Juan sin horario")
     end
 
     it "explains when there are no services yet" do

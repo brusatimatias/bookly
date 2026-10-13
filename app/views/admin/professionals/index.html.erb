@@ -34,7 +34,7 @@
               <% if !professional.active? %>
                 <span class="badge-gray"><%= t(".inactive") %></span>
               <% else %>
-                <% if !professional.bookable? %>
+                <% if professional.services.none?(&:active?) %>
                   <span class="badge-yellow"><%= t(".no_services") %></span>
                 <% end %>
                 <% if professional.working_hours.empty? %>

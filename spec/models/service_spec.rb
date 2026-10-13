@@ -135,13 +135,15 @@ RSpec.describe Service, type: :model do
   end
 
   describe ".bookable" do
-    it "includes active services offered by an active professional" do
+    it "includes active services offered by an active professional with weekly hours" do
       offered = create(:service)
-      create(:professional, services: [ offered ])
+      create(:professional, :with_hours, services: [ offered ])
       only_inactive = create(:service)
-      create(:professional, :inactive, services: [ only_inactive ])
+      create(:professional, :inactive, :with_hours, services: [ only_inactive ])
+      only_without_hours = create(:service)
+      create(:professional, services: [ only_without_hours ])
       inactive = create(:service, :inactive)
-      create(:professional, services: [ inactive ])
+      create(:professional, :with_hours, services: [ inactive ])
       create(:service)
 
       expect(described_class.bookable).to contain_exactly(offered)

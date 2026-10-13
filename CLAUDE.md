@@ -11,6 +11,7 @@ Multi-tenant appointment booking app, built in stages. Done so far:
 - A shared UI layer (Tailwind theme, component classes, partials and three layouts) used by every page; see "UI conventions".
 - Users and authentication (Rails 8 generator), password reset, memberships with roles (`owner`/`admin`/`professional`), role changes and member removal, the business panel at `/:business_slug/admin`, and email invitations to join a business.
 - Services and professionals (the first per-business tables), managed from the panel and listed on the public page; see "Services and professionals".
+- Professionals' weekly working hours and time blocks (vacations, errands); see "Working hours and time blocks".
 
 There is no public sign up: owners are created from seeds or the console for now, everyone else joins by invitation.
 
@@ -92,10 +93,19 @@ Every page is built from the shared pieces below; don't hand-roll styles that al
 
 - `Service` (duration, price in cents, optional `buffer_minutes` that falls back to the business's, Action Text `description`), `Professional` (optional `user`, Active Storage `photo`) and the `ProfessionalService` join. All three are `BusinessScoped`.
 - They are never deleted: `Deactivatable` adds `active`/`inactive` scopes and `deactivate!`/`reactivate!`. Inactive services keep their professionals.
-- `bookable` (scope) and `bookable?`: active services offered by an active professional, and active professionals offering an active service. The public page only lists bookable ones.
+- `bookable` (scope) and `bookable?`: active professionals offering an active service and with weekly hours, and active services offered by such a professional. The public page only lists bookable ones.
 - A professional's `user` must be a member of the same business (validation plus a composite foreign key to `memberships`), and each member has at most one profile. While a profile is linked, the membership can't be deleted directly: `Membership#remove!` unlinks it first.
 - Panel: `Admin::ServicesController` and `Admin::ProfessionalsController`. Every member sees the lists; owners and admins manage them (`require_manager`).
 - Photos: JPG/PNG/WebP up to 5 MB, shown with `professional_avatar` (initials when there is none). No image variants yet (libvips isn't required), so images are cropped with CSS.
+
+## Working hours and time blocks
+
+- `WorkingHour`: weekly ranges per professional (`day_of_week` as `Date#wday`, 0 = Sunday; `start_time`/`end_time` as local `time`). A day can have several ranges; they don't cross midnight. `start_time`/`end_time` skip time zone conversion (`skip_time_zone_conversion_for_attributes`): they are wall clock times in the business's zone, not instants.
+- `TimeBlock`: a period (`starts_at`/`ends_at`, UTC like every instant) in which a professional can't be booked, with an optional `reason`. Blocks are deleted, not deactivated. Whole days blocks (`all_day`, `start_date`, `end_date` virtual attributes) go from the first day's midnight to the midnight after the last one in `Time.zone`; `whole_days?` recognizes them.
+- Overlaps are rejected by validations and by exclusion constraints (`btree_gist`): ranges of the same professional and day, and blocks of the same professional. Touching ranges (09:00-13:00 and 13:00-17:00) are fine. `time` has no range type, so the working hours constraint puts the times on a fixed date inside a `tsrange`.
+- Weekly hours are edited as a whole week (`Admin::SchedulesController`, owners and admins) through the `WeeklySchedule` form object, which replaces every range in one transaction and keeps the errors on each range. The `schedule` Stimulus controller adds and removes ranges in the browser.
+- Blocks (`Admin::TimeBlocksController`): owners and admins manage every professional's; professionals only their own profile's, and need one (`Membership#professional_profile`). The list shows ongoing and upcoming blocks (`TimeBlock.upcoming`).
+- Display helpers: `time_zone_label` (`FormattingHelper`, "Buenos Aires") and `time_block_period` (`TimeBlocksHelper`), with the `date.formats.weekday` and `time.formats.hour` formats defined in `app.yml`.
 
 ## Multi-tenancy
 
