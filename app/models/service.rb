@@ -24,9 +24,10 @@ class Service < ApplicationRecord
   validates :price_cents, numericality: { only_integer: true, greater_than_or_equal_to: 0 }
   validates :buffer_minutes, numericality: { only_integer: true, greater_than_or_equal_to: 0 }, allow_nil: true
 
-  # The break after the service: its own, or the business's.
+  # The break after the service: its own, or the business's (the current one,
+  # with its latest settings).
   def effective_buffer_minutes
-    buffer_minutes || business.buffer_minutes
+    buffer_minutes || Current.business!.buffer_minutes
   end
 
   # Price in the currency's main unit (12000.5), for forms. Stored in cents;
