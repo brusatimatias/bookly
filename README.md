@@ -13,7 +13,7 @@ Early development. What works today:
 - **Tenant isolation:** per-business data is filtered by the current business and fails closed when there is none.
 - **Accounts:** sign in, sign out and password reset by email.
 - **Business panel** at `/:business_slug/admin` for the business's members, with roles: owner, admin and professional.
-- **Team invitations:** the owner invites admins and professionals by email; the link (valid for 7 days, single use) lets them create their account or join with an existing one. Invitations can be resent or revoked.
+- **Team:** the owner invites admins and professionals by email; the link (valid for 7 days, single use) lets them create their account or join with an existing one. Invitations can be resent or revoked. The owner can also switch members between admin and professional, and remove them from the team (their professional profile is kept, inactive).
 - **Services and professionals:** owners and admins manage services (duration, price, optional break, rich text description) and professional profiles (photo, offered services, optional linked account). Both are deactivated rather than deleted. A profile can be created before its person has an account and then taken over through an invitation; invited professionals get a profile automatically, and owners and admins can have one too.
 - **Consistent, responsive UI:** a landing page, public business pages, sign in screens and a business panel with sidebar navigation that collapses into a menu on phones.
 - **Spanish and English** throughout, Spanish by default. Pages outside a business follow the browser's language and offer a language switcher; business pages and emails use the business's language.
