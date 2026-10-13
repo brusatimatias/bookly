@@ -12,18 +12,33 @@
   <h2 class="border-b border-gray-100 px-6 py-4 font-semibold text-gray-900"><%= t(".members") %></h2>
   <ul class="list-divided">
     <% @memberships.each do |membership| %>
-      <li class="flex items-center gap-4 px-6 py-4" id="<%= dom_id(membership) %>">
-        <span class="avatar"><%= initials(membership.user.name) %></span>
-        <div class="min-w-0 flex-1">
-          <p class="truncate font-medium text-gray-900">
-            <%= membership.user.name %>
-            <% if membership.user == Current.user %>
-              <span class="ml-1 text-sm font-normal text-gray-500"><%= t(".you") %></span>
-            <% end %>
-          </p>
-          <p class="truncate text-sm text-gray-500"><%= membership.user.email_address %></p>
+      <% profile = @profiles[membership.user_id] %>
+      <li class="flex flex-col gap-3 px-6 py-4 sm:flex-row sm:items-center sm:gap-4" id="<%= dom_id(membership) %>">
+        <div class="flex min-w-0 flex-1 items-center gap-4">
+          <span class="avatar"><%= initials(membership.user.name) %></span>
+          <div class="min-w-0 flex-1">
+            <p class="truncate font-medium text-gray-900">
+              <%= membership.user.name %>
+              <% if membership.user == Current.user %>
+                <span class="ml-1 text-sm font-normal text-gray-500"><%= t(".you") %></span>
+              <% end %>
+            </p>
+            <p class="truncate text-sm text-gray-500"><%= membership.user.email_address %></p>
+            <div class="mt-1 flex flex-wrap items-center gap-2">
+              <span class="<%= membership.owner? ? "badge-brand" : "badge-gray" %>"><%= Membership.human_attribute_name("role.#{membership.role}") %></span>
+              <% if profile %>
+                <span class="badge-gray"><%= t(".bookable_profile") %></span>
+              <% end %>
+            </div>
+          </div>
         </div>
-        <span class="<%= membership.owner? ? "badge-brand" : "badge-gray" %>"><%= Membership.human_attribute_name("role.#{membership.role}") %></span>
+        <% if Current.membership.owner? && !membership.owner? %>
+          <div class="flex items-center gap-2 pl-14 sm:pl-0">
+            <%= button_to t(".remove"), admin_membership_path(membership), method: :delete,
+                  form: { data: { turbo_confirm: t(profile ? ".remove_confirm_with_profile" : ".remove_confirm", name: membership.user.name) } },
+                  class: "btn-ghost btn-sm text-red-600 hover:bg-red-50 hover:text-red-700" %>
+          </div>
+        <% end %>
       </li>
     <% end %>
   </ul>

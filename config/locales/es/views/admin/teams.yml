@@ -16,3 +16,7 @@ es:
         subtitle: "Las personas que trabajan en el negocio y sus roles."
         you: "(vos)"
         no_invitations_hint: "Invitá a tus profesionales para que gestionen su agenda."
+        bookable_profile: "Perfil de profesional"
+        remove: "Quitar"
+        remove_confirm: "¿Quitar a %{name} del equipo? Va a perder el acceso al panel."
+        remove_confirm_with_profile: "¿Quitar a %{name} del equipo? Va a perder el acceso al panel y su perfil de profesional va a quedar inactivo."

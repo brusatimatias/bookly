@@ -1,0 +1,6 @@
+es:
+  admin:
+    memberships:
+      destroy:
+        removed: "Quitamos a %{name} del equipo."
+        owner: "El dueño no puede quitarse del equipo."

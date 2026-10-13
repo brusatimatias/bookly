@@ -110,4 +110,43 @@ RSpec.describe Membership, type: :model do
       expect { membership.user.destroy }.to change(described_class, :count).by(-1)
     end
   end
+
+  describe "#remove!" do
+    let(:membership) { create(:membership, business: business) }
+
+    it "removes the member from the business, keeping the user" do
+      membership.remove!
+
+      expect(described_class.exists?(membership.id)).to be(false)
+      expect(User.exists?(membership.user_id)).to be(true)
+    end
+
+    it "keeps their professional profile, inactive and unlinked" do
+      profile = with_business(business) { create(:professional, user: membership.user) }
+
+      membership.remove!
+
+      with_business(business) do
+        expect(profile.reload).to have_attributes(user: nil, active: false)
+      end
+    end
+
+    it "leaves their profiles in other businesses alone" do
+      other = create(:membership, user: membership.user)
+      profile = with_business(other.business) { create(:professional, user: other.user) }
+
+      membership.remove!
+
+      with_business(other.business) do
+        expect(profile.reload).to have_attributes(user: other.user, active: true)
+      end
+    end
+
+    it "does not remove the owner" do
+      owner = create(:membership, :owner, business: business)
+
+      expect { owner.remove! }.to raise_error(Membership::NotRemovable)
+      expect(described_class.exists?(owner.id)).to be(true)
+    end
+  end
 end

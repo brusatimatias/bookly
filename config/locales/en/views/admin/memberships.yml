@@ -1,0 +1,6 @@
+en:
+  admin:
+    memberships:
+      destroy:
+        removed: "%{name} was removed from the team."
+        owner: "The owner can't be removed from the team."
