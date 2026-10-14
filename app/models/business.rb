@@ -21,6 +21,7 @@ class Business < ApplicationRecord
   has_many :time_blocks, dependent: :restrict_with_exception
   has_many :customers, dependent: :restrict_with_exception
   has_many :appointments, dependent: :restrict_with_exception
+  has_many :appointment_events, dependent: :restrict_with_exception
 
   enum :status, { active: "active", suspended: "suspended" }, default: :active, validate: true
 

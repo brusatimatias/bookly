@@ -5,6 +5,7 @@
 #
 # On create it copies the service's price and break, so later changes to the
 # service don't alter it. State transitions come with request management.
+# Its history lives in events (AppointmentEvent).
 class Appointment < ApplicationRecord
   include BusinessScoped
   include OverlapConstraint
@@ -15,9 +16,15 @@ class Appointment < ApplicationRecord
   belongs_to :service
   belongs_to :professional
   belongs_to :customer
+  has_many :events, -> { chronological }, class_name: "AppointmentEvent", dependent: :restrict_with_exception
 
   enum :status, { pending: "pending", confirmed: "confirmed", rejected: "rejected", expired: "expired",
                   cancelled: "cancelled", attended: "attended", no_show: "no_show" }, validate: true
+
+  # The customer's personal link (request page, and later cancel and
+  # reschedule). It embeds nothing else, so it stays valid for the
+  # appointment's whole life, even when it moves to another time.
+  generates_token_for :management
 
   scope :active, -> { where(status: ACTIVE_STATUSES) }
   # Appointments whose time, break included, overlaps the range.
