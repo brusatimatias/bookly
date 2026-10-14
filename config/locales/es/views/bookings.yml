@@ -1,0 +1,31 @@
+es:
+  bookings:
+    new:
+      title: "Pedir un turno · %{business}"
+      heading: "Pedí tu turno"
+      subtitle: "Elegí qué, con quién y cuándo. El negocio confirma tu pedido."
+      slot_taken: "Ese horario ya no está disponible. Elegí otro."
+    steps:
+      label: "Pasos"
+      service: "Servicio"
+      professional: "Profesional"
+      time: "Horario"
+      details: "Tus datos"
+    summary:
+      change: "Cambiar"
+      any_professional: "Cualquier profesional"
+      time: "Día y hora"
+    service_step:
+      heading: "¿Qué servicio querés?"
+      heading_with: "¿Qué servicio querés con %{professional}?"
+      empty: "No hay servicios para reservar."
+      empty_hint: "Volvé a visitarnos pronto."
+    professional_step:
+      heading: "¿Con quién?"
+      any: "Cualquier profesional"
+      any_hint: "Te asignamos a quien esté libre en el horario que elijas."
+    time_step:
+      heading: "¿Cuándo?"
+    details_step:
+      heading: "Horario elegido"
+      hint: "Revisá los datos de tu turno."

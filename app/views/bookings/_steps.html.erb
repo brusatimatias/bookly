@@ -1,0 +1,18 @@
+<%# Progress through the booking steps; the current one is highlighted. %>
+<% steps = %i[service professional time details] %>
+<% current_index = steps.index(current) %>
+<ol class="mb-6 flex items-center gap-2 text-sm" aria-label="<%= t(".label") %>">
+  <% steps.each_with_index do |step, index| %>
+    <% state = index < current_index ? :done : (index == current_index ? :current : :upcoming) %>
+    <li class="flex min-w-0 items-center gap-2 <%= "flex-1" unless index == steps.size - 1 %>" <%= "aria-current=step" if state == :current %>>
+      <span class="flex size-7 shrink-0 items-center justify-center rounded-full text-xs font-semibold
+                   <%= { done: "bg-brand-600 text-white", current: "bg-white text-brand-700 ring-2 ring-brand-600", upcoming: "bg-gray-100 text-gray-500" }[state] %>">
+        <%= state == :done ? "✓" : index + 1 %>
+      </span>
+      <span class="<%= state == :current ? "shrink-0 font-semibold text-gray-900" : "hidden truncate text-gray-500 sm:inline" %>"><%= t(".#{step}") %></span>
+      <% unless index == steps.size - 1 %>
+        <span class="h-px flex-1 bg-gray-200" aria-hidden="true"></span>
+      <% end %>
+    </li>
+  <% end %>
+</ol>

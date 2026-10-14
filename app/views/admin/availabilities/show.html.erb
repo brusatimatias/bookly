@@ -32,34 +32,8 @@
   <% end %>
 
   <% navigation = { service_id: @service.id, professional_id: @professional&.id } %>
-  <div class="mb-4 flex items-center justify-between gap-3">
-    <%= link_to admin_availability_path(navigation.merge(week: @week - 7)), class: "btn-secondary btn-sm #{"pointer-events-none opacity-40" if @week <= @availability.first_day}",
-          aria: { disabled: @week <= @availability.first_day } do %>
-      <span aria-hidden="true">←</span> <span class="hidden sm:inline"><%= t(".previous_week") %></span>
-    <% end %>
-    <p class="text-center font-medium text-gray-900">
-      <%= l(@week, format: :weekday) %> – <%= l(@week + 6, format: :weekday) %>
-      <span class="block text-xs font-normal text-gray-500"><%= t(".time_zone", zone: time_zone_label) %></span>
-    </p>
-    <% last_week = @week + 7 > @availability.last_day %>
-    <%= link_to admin_availability_path(navigation.merge(week: @week + 7)), class: "btn-secondary btn-sm #{"pointer-events-none opacity-40" if last_week}",
-          aria: { disabled: last_week } do %>
-      <span class="hidden sm:inline"><%= t(".next_week") %></span> <span aria-hidden="true">→</span>
-    <% end %>
-  </div>
-
-  <% if @days.values.none?(&:any?) %>
-    <div class="mb-4 flex flex-wrap items-center gap-x-3 gap-y-1 rounded-lg bg-yellow-50 p-4 text-sm text-yellow-800 ring-1 ring-yellow-600/20 ring-inset">
-      <%= icon "exclamation-circle", class: "text-yellow-600" %>
-      <span><%= t(".week_empty") %></span>
-      <% if @next_free_day %>
-        <%= link_to t(".next_free_day", date: l(@next_free_day, format: :weekday)),
-              admin_availability_path(navigation.merge(week: @next_free_day)), class: "link font-medium" %>
-      <% else %>
-        <span><%= t(".no_free_days") %></span>
-      <% end %>
-    </div>
-  <% end %>
+  <%= render "availabilities/week_navigation", availability: @availability, week: @week, days: @days,
+        next_free_day: @next_free_day, week_url: ->(date) { admin_availability_path(navigation.merge(week: date)) } %>
 
   <%= render "availabilities/week", availability: @availability, days: @days, week: @week %>
 <% end %>

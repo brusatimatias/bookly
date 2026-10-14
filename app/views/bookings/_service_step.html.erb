@@ -1,0 +1,24 @@
+<h2 class="mb-4 text-lg font-semibold text-gray-900">
+  <%= @starting_professional ? t(".heading_with", professional: @starting_professional.name) : t(".heading") %>
+</h2>
+
+<% if @services.any? %>
+  <div class="grid gap-4 sm:grid-cols-2">
+    <% @services.each do |service| %>
+      <%= link_to new_booking_path(service_id: service.id, professional_id: @starting_professional&.id), id: dom_id(service),
+            class: "card card-body group flex flex-col gap-3 transition hover:ring-2 hover:ring-brand-600" do %>
+        <div class="flex items-start justify-between gap-4">
+          <h3 class="font-semibold text-gray-900 group-hover:text-brand-700"><%= service.name %></h3>
+          <span class="shrink-0 font-semibold text-brand-700"><%= format_price(service.price_cents) %></span>
+        </div>
+        <p class="inline-flex items-center gap-1 text-sm text-gray-500"><%= icon "clock", class: "size-4" %><%= format_duration(service.duration_minutes) %></p>
+        <% if service.description.present? %>
+          <p class="line-clamp-2 text-sm text-gray-600"><%= service.description.to_plain_text %></p>
+        <% end %>
+      <% end %>
+    <% end %>
+  </div>
+<% else %>
+  <%= render "shared/empty_state", icon: "tag", title: t(".empty"), message: t(".empty_hint"),
+        action: link_to(Current.business.name, business_path(Current.business), class: "btn-secondary") %>
+<% end %>

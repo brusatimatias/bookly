@@ -1,0 +1,31 @@
+en:
+  bookings:
+    new:
+      title: "Book an appointment · %{business}"
+      heading: "Book your appointment"
+      subtitle: "Choose what, with whom and when. The business confirms your request."
+      slot_taken: "That time is no longer available. Please choose another one."
+    steps:
+      label: "Steps"
+      service: "Service"
+      professional: "Professional"
+      time: "Time"
+      details: "Your details"
+    summary:
+      change: "Change"
+      any_professional: "Any professional"
+      time: "Date and time"
+    service_step:
+      heading: "Which service would you like?"
+      heading_with: "Which service would you like with %{professional}?"
+      empty: "There are no services to book."
+      empty_hint: "Please visit us again soon."
+    professional_step:
+      heading: "With whom?"
+      any: "Any professional"
+      any_hint: "We'll assign whoever is free at the time you choose."
+    time_step:
+      heading: "When?"
+    details_step:
+      heading: "Time chosen"
+      hint: "Check your appointment's details."

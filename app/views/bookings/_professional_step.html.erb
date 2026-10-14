@@ -1,0 +1,20 @@
+<h2 class="mb-4 text-lg font-semibold text-gray-900"><%= t(".heading") %></h2>
+
+<div class="grid gap-4 sm:grid-cols-2">
+  <%= link_to new_booking_path(choices(professional_id: BookingsController::ANY_PROFESSIONAL)), id: "any_professional",
+        class: "card card-body group flex items-center gap-4 transition hover:ring-2 hover:ring-brand-600" do %>
+    <span class="flex size-14 shrink-0 items-center justify-center rounded-full bg-brand-50 text-brand-600"><%= icon "users", class: "size-7" %></span>
+    <div class="min-w-0">
+      <h3 class="font-semibold text-gray-900 group-hover:text-brand-700"><%= t(".any") %></h3>
+      <p class="text-sm text-gray-500"><%= t(".any_hint") %></p>
+    </div>
+  <% end %>
+
+  <% @professionals.each do |professional| %>
+    <%= link_to new_booking_path(choices(professional_id: professional.id)), id: dom_id(professional),
+          class: "card card-body group flex items-center gap-4 transition hover:ring-2 hover:ring-brand-600" do %>
+      <%= professional_avatar(professional, size: "size-14") %>
+      <h3 class="min-w-0 truncate font-semibold text-gray-900 group-hover:text-brand-700"><%= professional.name %></h3>
+    <% end %>
+  <% end %>
+</div>
