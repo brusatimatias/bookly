@@ -29,7 +29,7 @@ class BookingsController < ApplicationController
     @step = :details
     @appointment_request = AppointmentRequest.new(availability: @availability, starts_at: @slot.starts_at, **appointment_request_params)
     if @appointment_request.save
-      redirect_to business_path(Current.business), notice: t(".requested")
+      redirect_to appointment_path(token: @appointment_request.appointment.generate_token_for(:management)), notice: t(".requested")
     elsif @appointment_request.slot_taken?
       redirect_to new_booking_path(choices(week: @slot.starts_at.to_date)), alert: t("bookings.new.slot_taken")
     else

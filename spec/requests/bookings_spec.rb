@@ -175,11 +175,12 @@ RSpec.describe "Bookings", type: :request do
     it "creates a pending appointment for the customer" do
       expect { send_request }.to change { in_business { Appointment.count } }.by(1)
 
+      appointment = in_business { Appointment.last }
       in_business do
-        expect(Appointment.last).to have_attributes(status: "pending", starts_at: thursday_nine, professional: martin, any_professional: true)
-        expect(Appointment.last.customer.email).to eq("ana@example.com")
+        expect(appointment).to have_attributes(status: "pending", starts_at: thursday_nine, professional: martin, any_professional: true)
+        expect(appointment.customer.email).to eq("ana@example.com")
       end
-      expect(response).to redirect_to(business_path(business))
+      expect(response).to redirect_to(appointment_path(business, in_business { appointment.generate_token_for(:management) }))
       expect(flash[:notice]).to eq("¡Listo! Enviamos tu pedido. El negocio lo va a confirmar.")
     end
 

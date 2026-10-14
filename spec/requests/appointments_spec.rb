@@ -1,0 +1,93 @@
+require "rails_helper"
+
+RSpec.describe "Appointments", type: :request do
+  let(:business) do
+    create(:business, name: "Barbería Centro", time_zone: "America/Argentina/Buenos_Aires", request_expiration_hours: 24,
+                      contact_phone: "+54 11 5555-0101")
+  end
+  let(:zone) { Time.find_zone!(business.time_zone) }
+  # A Wednesday morning.
+  let(:now) { zone.local(2026, 10, 14, 8) }
+  let(:service) { in_business { create(:service, name: "Corte de pelo", duration_minutes: 30, price_cents: 12_000_00) } }
+  let(:professional) { in_business { create(:professional, name: "Martín Gómez", services: [ service ]) } }
+  let(:customer) { in_business { create(:customer, name: "Ana Pérez") } }
+  let(:appointment) do
+    in_business do
+      create(:appointment, service: service, professional: professional, customer: customer, starts_at: zone.local(2026, 10, 16, 15),
+                           customer_notes: "Pelo largo")
+    end
+  end
+  let(:token) { in_business { appointment.generate_token_for(:management) } }
+
+  around { |example| travel_to(now) { example.run } }
+
+  def in_business(&block)
+    with_business(business, &block)
+  end
+
+  it "shows a pending request with its details and the business's contact" do
+    get appointment_path(business, token)
+
+    expect(response).to have_http_status(:ok)
+    expect(response.body).to include("Pedido enviado", "Pendiente", "Gracias, Ana Pérez", "tiene hasta el jue 15 oct, 08:00 para confirmarlo")
+    expect(response.body).to include("vie 16 oct, 15:00 – 15:30", "Hora de Buenos Aires", "Corte de pelo", "$ 12.000", "Martín Gómez",
+                                     "Pelo largo", "+54 11 5555-0101", "Guardá este link")
+    expect(response.body).to include('<meta name="robots" content="noindex, nofollow">')
+    expect(response.body).not_to include("Asignado entre los profesionales disponibles.")
+  end
+
+  it "says when the professional was assigned" do
+    in_business { appointment.update!(any_professional: true) }
+
+    get appointment_path(business, token)
+
+    expect(response.body).to include("Asignado entre los profesionales disponibles.")
+  end
+
+  it "explains other statuses" do
+    in_business { appointment.update!(status: :confirmed) }
+
+    get appointment_path(business, token)
+
+    expect(response.body).to include("Turno confirmado", "Confirmado", "Te esperamos en Barbería Centro.")
+  end
+
+  it "keeps the price the appointment was booked with" do
+    token
+    in_business { service.update!(price_cents: 20_000_00) }
+
+    get appointment_path(business, token)
+
+    expect(response.body).to include("$ 12.000")
+  end
+
+  it "is in the business's language" do
+    business.update!(locale: "en")
+
+    get appointment_path(business, token)
+
+    expect(response.body).to include('lang="en"', "Request sent", "Fri, Oct 16, 3:00 PM – 3:30 PM")
+  end
+
+  it "doesn't find a tampered token" do
+    get appointment_path(business, "#{token}x")
+
+    expect(response).to have_http_status(:not_found)
+  end
+
+  it "doesn't find an appointment through another business" do
+    get appointment_path(create(:business), token)
+
+    expect(response).to have_http_status(:not_found)
+  end
+
+  it "shows a suspended business as unavailable" do
+    token
+    business.suspend!
+
+    get appointment_path(business, token)
+
+    expect(response).to have_http_status(:service_unavailable)
+    expect(response.body).not_to include("Ana Pérez")
+  end
+end
