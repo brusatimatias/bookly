@@ -24,6 +24,7 @@ Rails.application.routes.draw do
   scope ":business_slug", constraints: { business_slug: Business::SLUG_FORMAT } do
     get "/", to: "businesses#show", as: :business
     get "book", to: "bookings#new", as: :new_booking
+    post "book", to: "bookings#create", as: :bookings
 
     # Business panel, for its members only.
     namespace :admin do

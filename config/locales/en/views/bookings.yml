@@ -27,5 +27,11 @@ en:
     time_step:
       heading: "When?"
     details_step:
-      heading: "Time chosen"
-      hint: "Check your appointment's details."
+      heading: "Your details"
+      optional: "Optional."
+      notes_placeholder: "Anything the business should know"
+      confirmation_hint: "The time is held for you and the business has up to %{hours} h to confirm it."
+      submit: "Request appointment"
+    create:
+      requested: "Done! Your request was sent. The business will confirm it."
+      rate_limited: "Too many requests in a row. Please try again in a few minutes."

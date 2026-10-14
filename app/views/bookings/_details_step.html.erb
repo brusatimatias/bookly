@@ -1,7 +1,37 @@
-<div class="card card-body flex items-center gap-4">
-  <%= icon "check-circle", class: "size-8 shrink-0 text-brand-600" %>
-  <div>
-    <h2 class="font-semibold text-gray-900"><%= t(".heading") %></h2>
-    <p class="text-sm text-gray-600"><%= t(".hint") %></p>
+<h2 class="mb-4 text-lg font-semibold text-gray-900"><%= t(".heading") %></h2>
+
+<%= form_with model: @appointment_request, scope: :appointment_request, url: bookings_path, class: "card card-body space-y-5" do |form| %>
+  <%= render "shared/form_errors", record: @appointment_request %>
+  <%= hidden_field_tag :service_id, @service.id %>
+  <%= hidden_field_tag :professional_id, choices[:professional_id] %>
+  <%= hidden_field_tag :starts_at, @slot.starts_at.iso8601 %>
+
+  <div class="grid gap-5 sm:grid-cols-2">
+    <div class="field sm:col-span-2">
+      <%= form.label :name, class: "label" %>
+      <%= form.text_field :name, required: true, maxlength: 100, autocomplete: "name", class: "input" %>
+    </div>
+    <div class="field">
+      <%= form.label :email, class: "label" %>
+      <%= form.email_field :email, required: true, autocomplete: "email", class: "input" %>
+    </div>
+    <div class="field">
+      <%= form.label :phone, class: "label" %>
+      <%= form.telephone_field :phone, maxlength: 30, autocomplete: "tel", class: "input" %>
+      <p class="hint"><%= t(".optional") %></p>
+    </div>
+    <div class="field sm:col-span-2">
+      <%= form.label :customer_notes, class: "label" %>
+      <%= form.text_area :customer_notes, rows: 3, maxlength: 500, class: "input", placeholder: t(".notes_placeholder") %>
+      <p class="hint"><%= t(".optional") %></p>
+    </div>
   </div>
-</div>
+
+  <div class="flex flex-col gap-4 border-t border-gray-100 pt-5 sm:flex-row sm:items-center sm:justify-between">
+    <p class="flex items-start gap-2 text-sm text-gray-600">
+      <%= icon "clock", class: "mt-0.5 size-4 shrink-0 text-gray-400" %>
+      <span><%= t(".confirmation_hint", hours: Current.business.request_expiration_hours) %></span>
+    </p>
+    <%= form.submit t(".submit"), class: "btn-primary shrink-0" %>
+  </div>
+<% end %>

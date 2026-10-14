@@ -158,6 +158,82 @@ RSpec.describe "Bookings", type: :request do
     end
   end
 
+  describe "sending the request" do
+    let(:details) { { name: "Ana Pérez", email: "ana@example.com", phone: "", customer_notes: "" } }
+
+    def send_request(professional_id: "any", starts_at: thursday_nine, **attributes)
+      post bookings_path(business), params: { service_id: haircut.id, professional_id: professional_id, starts_at: starts_at.iso8601,
+                                              appointment_request: details.merge(attributes) }
+    end
+
+    it "shows the form with the time chosen" do
+      get new_booking_path(business, service_id: haircut.id, professional_id: "any", starts_at: thursday_nine.iso8601)
+
+      expect(response.body).to include("Tus datos", "Pedir turno", "el negocio tiene hasta 24 h para confirmarlo")
+    end
+
+    it "creates a pending appointment for the customer" do
+      expect { send_request }.to change { in_business { Appointment.count } }.by(1)
+
+      in_business do
+        expect(Appointment.last).to have_attributes(status: "pending", starts_at: thursday_nine, professional: martin, any_professional: true)
+        expect(Appointment.last.customer.email).to eq("ana@example.com")
+      end
+      expect(response).to redirect_to(business_path(business))
+      expect(flash[:notice]).to eq("¡Listo! Enviamos tu pedido. El negocio lo va a confirmar.")
+    end
+
+    it "shows the errors, keeping what was typed" do
+      expect { send_request(name: "", email: "nope", customer_notes: "Pelo largo") }.not_to change { in_business { Appointment.count } }
+
+      expect(response).to have_http_status(:unprocessable_entity)
+      expect(response.body).to include("Nombre no puede estar en blanco", "Pelo largo", "nope", "jue 15 oct, 09:00 – 09:30")
+    end
+
+    it "sends the customer back to the week when the time was taken meanwhile" do
+      in_business { create(:appointment, service: haircut, professional: martin, starts_at: thursday_nine) }
+
+      expect { send_request(professional_id: martin.id) }.not_to change { in_business { Appointment.count } }
+
+      expect(response).to redirect_to(new_booking_path(business, service_id: haircut.id, professional_id: martin.id,
+                                                       starts_at: thursday_nine.iso8601))
+      follow_redirect!
+      expect(response.body).to include("Ese horario ya no está disponible. Elegí otro.", "¿Cuándo?")
+    end
+
+    it "explains when the customer already has an appointment then" do
+      friday_three = zone.local(2026, 10, 16, 15)
+      works(martin, 5, "15:00", "16:00")
+      customer = in_business { create(:customer, email: "ana@example.com") }
+      in_business { create(:appointment, service: haircut, professional: martin, customer: customer, starts_at: friday_three) }
+
+      expect { send_request(professional_id: sofia.id, starts_at: friday_three) }.not_to change { in_business { Appointment.count } }
+
+      expect(response).to have_http_status(:unprocessable_entity)
+      expect(response.body).to include("Ya tenés un turno que se superpone con este horario.")
+    end
+
+    it "limits the requests from one address" do
+      10.times { |index| send_request(email: "nope", name: "Intento #{index}") }
+      expect(response).to have_http_status(:unprocessable_entity)
+
+      send_request
+
+      expect(response).to redirect_to(new_booking_path(business, service_id: haircut.id, professional_id: "any", starts_at: thursday_nine.iso8601))
+      expect(flash[:alert]).to eq("Hiciste demasiados pedidos seguidos. Probá de nuevo en unos minutos.")
+      expect(in_business { Appointment.count }).to eq(0)
+    end
+
+    it "ignores the parameters of another business" do
+      foreign = with_business(create(:business)) { create(:service) }
+
+      post bookings_path(business), params: { service_id: foreign.id, professional_id: "any", starts_at: thursday_nine.iso8601,
+                                              appointment_request: details }
+
+      expect(response).to redirect_to(new_booking_path(business, starts_at: thursday_nine.iso8601))
+    end
+  end
+
   it "is in the business's language" do
     business.update!(locale: "en")
 

@@ -1,0 +1,19 @@
+es:
+  activemodel:
+    models:
+      appointment_request:
+        one: "Pedido de turno"
+        other: "Pedidos de turno"
+    attributes:
+      appointment_request:
+        name: "Nombre"
+        email: "Email"
+        phone: "Teléfono"
+        customer_notes: "Comentarios"
+    errors:
+      models:
+        appointment_request:
+          attributes:
+            base:
+              slot_taken: "Ese horario ya no está disponible. Elegí otro."
+              overlaps_own_appointment: "Ya tenés un turno que se superpone con este horario."

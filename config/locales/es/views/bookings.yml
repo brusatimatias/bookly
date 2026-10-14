@@ -27,5 +27,11 @@ es:
     time_step:
       heading: "¿Cuándo?"
     details_step:
-      heading: "Horario elegido"
-      hint: "Revisá los datos de tu turno."
+      heading: "Tus datos"
+      optional: "Opcional."
+      notes_placeholder: "Algo que el negocio deba saber"
+      confirmation_hint: "El horario queda reservado para vos y el negocio tiene hasta %{hours} h para confirmarlo."
+      submit: "Pedir turno"
+    create:
+      requested: "¡Listo! Enviamos tu pedido. El negocio lo va a confirmar."
+      rate_limited: "Hiciste demasiados pedidos seguidos. Probá de nuevo en unos minutos."
