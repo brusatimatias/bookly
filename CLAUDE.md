@@ -12,7 +12,8 @@ Multi-tenant appointment booking app, built in stages. Done so far:
 - Users and authentication (Rails 8 generator), password reset, memberships with roles (`owner`/`admin`/`professional`), role changes and member removal, the business panel at `/:business_slug/admin`, and email invitations to join a business.
 - Services and professionals (the first per-business tables), managed from the panel and listed on the public page; see "Services and professionals".
 - Professionals' weekly working hours and time blocks (vacations, errands); see "Working hours and time blocks".
-- Customers and appointments (models only, no booking flow yet), availability calculation, booking settings and an availability preview in the panel; see "Appointments and availability".
+- Customers and appointments, availability calculation, booking settings and an availability preview in the panel; see "Appointments and availability".
+- Public appointment requests: customers pick a service, professional and time and send a request, then see it through a personal link; see "Public booking".
 
 There is no public sign up: owners are created from seeds or the console for now, everyone else joins by invitation.
 
@@ -110,13 +111,22 @@ Every page is built from the shared pieces below; don't hand-roll styles that al
 
 ## Appointments and availability
 
-- `Customer`: no account; identified by email, unique per business. `Appointment`: one service with one professional for one customer, with a `status` (`pending`, `confirmed`, `rejected`, `expired`, `cancelled`, `attended`, `no_show`). `active` (pending and confirmed) appointments hold their time: pending requests too. State transitions come with request management; for now appointments are created from seeds, specs or the console.
+- `Customer`: no account; identified by email, unique per business. `Appointment`: one service with one professional for one customer, with a `status` (`pending`, `confirmed`, `rejected`, `expired`, `cancelled`, `attended`, `no_show`). `active` (pending and confirmed) appointments hold their time: pending requests too. Customers create pending ones from the public booking flow; state transitions come with request management.
 - On create an appointment copies the service's price and break (`Service#effective_buffer_minutes`, the service's or the business's), so later changes don't alter it, and sets `request_expires_at` for pending ones (the business's expiration, never after the appointment). `ends_at` and `buffer_ends_at` follow `starts_at`. They are derived before validation and again before save, so they're never missing.
 - No double booking: an exclusion constraint on `tsrange(starts_at, buffer_ends_at)` per professional for active appointments, mirrored by a validation, with `OverlapConstraint`.
 - `Availability.new(service, professional: nil, now:)` computes free start times in the current business: `days(dates)` returns `{ date => [Slot(starts_at, professionals)] }` for the days within the booking window. Start times are counted from the start of each working range every `slot_interval_minutes`; the service must fit in the range (its break may run past it), can't overlap a block, and service plus break can't overlap an active appointment's time plus break. From now plus `min_booking_notice_hours` up to `booking_horizon_days` from today. Without a professional it means "any": each slot lists who is free. Three queries per call, whatever the range.
 - Business settings are read from `Current.business` (`Current.business!`), not from a record's cached `business` association, so they're always current and it fails closed.
 - Booking settings (`Admin::SettingsController`, owner only) edit the six booking rules, capped by `Business::BOOKING_LIMITS`.
-- Availability preview (`Admin::AvailabilitiesController`): owners and admins pick a service and a professional (or any); professionals see their own. Days without free times say why. The week is the `availabilities/_week` partial, which takes `slot_url:` to make each time a link.
+- Availability preview (`Admin::AvailabilitiesController`): owners and admins pick a service and a professional (or any); professionals see their own. Days without free times say why. The week is the `availabilities/_week` partial (`slot_url:` makes each time a link, `show_professionals: false` hides who is free); `availabilities/_week_navigation` and the `AvailabilityWeek` concern (`load_availability_week`) handle moving between weeks, for the panel and the public flow.
+- `AppointmentEvent`: an appointment's history, one row per status change (none as `from_status` on creation), with the actor (`customer`, `user` with `actor_user`, or `system`), an optional `note` and `metadata`. Read only once saved; `appointment.events` is chronological. Record one for every transition.
+- `appointments_helper#appointment_status_badge` shows a status with its badge color.
+
+## Public booking
+
+- `BookingsController` (`/:business_slug/book`, public): one step at a time, service → professional ("any" or one; skipped when a single one offers the service) → time → contact details. The choices travel in the URL (`service_id`, `professional_id`, `starts_at` in ISO 8601, `week`); anything invalid, not bookable, from another business or no longer free sends the customer back to the step that needs it. The public page links into it per service and per professional.
+- `AppointmentRequest` (form object) sends the request in its own transaction (`requires_new`): checks the slot again against `Availability`, finds the customer by email (updating name and phone; a blank phone keeps the old one), rejects a customer's overlapping active appointment, creates the pending appointment and its creation event. With "any professional" it assigns the free one with the fewest active appointments that day (then by name), sets `any_professional`, and tries the next one if the database rejects the first (`slot_taken?` when none is left).
+- `POST /:business_slug/book` is rate limited per IP (10 every 10 minutes). The test cache is a memory store cleared before each example, so rate limits can be tested.
+- `Appointment` has `generates_token_for :management` with no embedded data: the customer's personal link stays valid for the appointment's whole life. `AppointmentsController#show` (`/:business_slug/appointments/:token`, public, `noindex`) finds it within the current business (404 otherwise) and shows its status, details and the business's contact. Cancelling and rescheduling from it come with appointment management by link.
 
 ## Multi-tenancy
 
