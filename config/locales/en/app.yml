@@ -12,10 +12,12 @@ en:
     currency:
       format:
         format: "%u%n"
-  # Added to rails-i18n's formats: l(date, format: :weekday), l(time, format: :hour).
+  # Added to rails-i18n's formats: l(date, format: :weekday), l(time, format: :hour),
+  # l(time, format: :weekday_hour).
   date:
     formats:
       weekday: "%a, %b %-d"
   time:
     formats:
       hour: "%-I:%M %p"
+      weekday_hour: "%a, %b %-d, %-I:%M %p"

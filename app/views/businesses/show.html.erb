@@ -29,6 +29,11 @@
         </dl>
       <% end %>
     </div>
+    <% if @services.any? %>
+      <%= link_to new_booking_path, class: "btn-primary shrink-0 sm:ml-auto" do %>
+        <%= icon "calendar", class: "size-5" %> <%= t(".book_appointment") %>
+      <% end %>
+    <% end %>
   </div>
 
   <% if @services.any? %>
@@ -45,6 +50,7 @@
             <% if service.description.present? %>
               <div class="text-sm text-gray-600"><%= service.description %></div>
             <% end %>
+            <%= link_to t(".book"), new_booking_path(service_id: service.id), class: "btn-secondary btn-sm mt-auto self-start" %>
           </article>
         <% end %>
       </div>
@@ -60,18 +66,14 @@
         <% @professionals.each do |professional| %>
           <article class="card card-body flex items-center gap-4" id="<%= dom_id(professional) %>">
             <%= professional_avatar(professional, size: "size-14") %>
-            <div class="min-w-0">
+            <div class="min-w-0 flex-1">
               <h3 class="truncate font-semibold text-gray-900"><%= professional.name %></h3>
               <p class="text-sm text-gray-500"><%= professional.services.select(&:active?).map(&:name).sort_by(&:downcase).to_sentence %></p>
             </div>
+            <%= link_to t(".book"), new_booking_path(professional_id: professional.id), class: "btn-secondary btn-sm shrink-0" %>
           </article>
         <% end %>
       </div>
     </section>
   <% end %>
-
-  <div class="flex items-center gap-4 rounded-xl bg-brand-50 px-6 py-5 ring-1 ring-brand-600/20 ring-inset">
-    <%= icon "calendar", class: "size-8 text-brand-600" %>
-    <p class="font-medium text-brand-900"><%= t(".booking_soon") %></p>
-  </div>
 </section>

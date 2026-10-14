@@ -1,0 +1,19 @@
+en:
+  activemodel:
+    models:
+      appointment_request:
+        one: "Appointment request"
+        other: "Appointment requests"
+    attributes:
+      appointment_request:
+        name: "Name"
+        email: "Email"
+        phone: "Phone"
+        customer_notes: "Comments"
+    errors:
+      models:
+        appointment_request:
+          attributes:
+            base:
+              slot_taken: "That time is no longer available. Please choose another one."
+              overlaps_own_appointment: "You already have an appointment that overlaps this time."

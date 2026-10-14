@@ -135,6 +135,35 @@ RSpec.describe Appointment, type: :model do
     end
   end
 
+  describe "management token" do
+    let(:created) { appointment.tap(&:save!) }
+
+    it "finds the appointment" do
+      token = created.generate_token_for(:management)
+
+      expect(described_class.find_by_token_for(:management, token)).to eq(created)
+    end
+
+    it "stays valid when the appointment moves or changes status" do
+      token = created.generate_token_for(:management)
+      created.update!(starts_at: tomorrow_ten + 2.hours, status: :confirmed)
+
+      expect(described_class.find_by_token_for(:management, token)).to eq(created)
+    end
+
+    it "doesn't find appointments of another business" do
+      token = created.generate_token_for(:management)
+
+      with_business(create(:business)) do
+        expect(described_class.find_by_token_for(:management, token)).to be_nil
+      end
+    end
+
+    it "rejects tampered tokens" do
+      expect(described_class.find_by_token_for(:management, "nope")).to be_nil
+    end
+  end
+
   it "belongs to a service, professional and customer of the same business in the database" do
     other = create(:business)
     other_customer = with_business(other) { create(:customer) }

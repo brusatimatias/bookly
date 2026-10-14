@@ -23,6 +23,10 @@ Rails.application.routes.draw do
   # new top-level paths must also be added to Business::RESERVED_SLUGS.
   scope ":business_slug", constraints: { business_slug: Business::SLUG_FORMAT } do
     get "/", to: "businesses#show", as: :business
+    get "book", to: "bookings#new", as: :new_booking
+    post "book", to: "bookings#create", as: :bookings
+    # The customer's appointment, by its management token (no account).
+    resources :appointments, param: :token, only: :show
 
     # Business panel, for its members only.
     namespace :admin do

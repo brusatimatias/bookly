@@ -1,0 +1,6 @@
+<h2 class="mb-4 text-lg font-semibold text-gray-900"><%= t(".heading") %></h2>
+
+<%= render "availabilities/week_navigation", availability: @availability, week: @week, days: @days,
+      next_free_day: @next_free_day, week_url: ->(date) { new_booking_path(choices(week: date)) } %>
+<%= render "availabilities/week", availability: @availability, days: @days, week: @week, show_professionals: false,
+      slot_url: ->(slot) { new_booking_path(choices(starts_at: slot.starts_at.iso8601)) } %>

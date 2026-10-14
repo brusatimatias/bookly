@@ -127,6 +127,22 @@ def seed_appointments(appointments)
   end
 end
 
+# The history of appointments without one: requested by the customer, then
+# confirmed by the owner and, for cancelled ones, cancelled by the customer.
+def seed_appointment_events
+  owner = Current.business.owner
+  Appointment.where.missing(:events).find_each do |appointment|
+    created_at = appointment.created_at
+    appointment.events.create!(to_status: "pending", actor_kind: :customer, created_at: created_at)
+    next if appointment.pending?
+
+    appointment.events.create!(from_status: "pending", to_status: "confirmed", actor_kind: :user, actor_user: owner, created_at: created_at + 1.hour)
+    if appointment.cancelled?
+      appointment.events.create!(from_status: "confirmed", to_status: "cancelled", actor_kind: :customer, created_at: created_at + 2.hours)
+    end
+  end
+end
+
 Current.set(business: barberia) do
   martin = Professional.find_by!(name: "Martín Gómez")
   lucia = Professional.find_by!(name: "Lucía Fernández")
@@ -139,6 +155,7 @@ Current.set(business: barberia) do
     { at: [ 3, "15:00" ], professional: lucia, service: haircut, status: :confirmed, name: "Ana Pérez", email: "ana@example.com" },
     { at: [ 1, "16:00" ], professional: martin, service: haircut, status: :cancelled, name: "Carla Díaz", email: "carla@example.com" }
   ])
+  seed_appointment_events
 end
 
 Current.set(business: studio) do
@@ -146,4 +163,5 @@ Current.set(business: studio) do
     { at: [ 1, "11:00" ], professional: Professional.find_by!(name: "Alex Kim"), service: Service.find_by!(name: "Color"),
       status: :confirmed, name: "Jordan Lee", email: "jordan@example.com" }
   ])
+  seed_appointment_events
 end

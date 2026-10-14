@@ -1,0 +1,86 @@
+<% content_for :title, t(".title", business: Current.business.name) %>
+<%# A personal link: keep it out of search engines. %>
+<% content_for :head, tag.meta(name: "robots", content: "noindex, nofollow") %>
+
+<section class="mx-auto max-w-2xl space-y-6">
+  <div class="card card-body flex items-start gap-4">
+    <% pending = @appointment.pending? %>
+    <span class="flex size-12 shrink-0 items-center justify-center rounded-full <%= pending ? "bg-yellow-50 text-yellow-600" : "bg-brand-50 text-brand-600" %>">
+      <%= icon pending ? "clock" : "calendar", class: "size-6" %>
+    </span>
+    <div class="min-w-0 space-y-1">
+      <div class="flex flex-wrap items-center gap-2">
+        <h1 class="text-xl font-bold tracking-tight text-gray-900 sm:text-2xl"><%= t(".heading.#{@appointment.status}") %></h1>
+        <%= appointment_status_badge(@appointment) %>
+      </div>
+      <p class="text-gray-600">
+        <% if pending %>
+          <%= t(".pending_message", name: @appointment.customer.name, business: Current.business.name,
+                deadline: l(@appointment.request_expires_at, format: :weekday_hour)) %>
+        <% else %>
+          <%= t(".message.#{@appointment.status}", business: Current.business.name) %>
+        <% end %>
+      </p>
+    </div>
+  </div>
+
+  <div class="card">
+    <dl class="list-divided">
+      <div class="flex items-center gap-4 px-6 py-4">
+        <span class="flex size-10 shrink-0 items-center justify-center rounded-lg bg-brand-50 text-brand-600"><%= icon "calendar", class: "size-5" %></span>
+        <div class="min-w-0">
+          <dt class="text-xs font-medium tracking-wide text-gray-500 uppercase"><%= t("bookings.summary.time") %></dt>
+          <dd class="font-medium text-gray-900"><%= format_period(@appointment.starts_at, @appointment.ends_at) %></dd>
+          <dd class="text-sm text-gray-500"><%= t("availabilities.week_navigation.time_zone", zone: time_zone_label) %></dd>
+        </div>
+      </div>
+      <div class="flex items-center gap-4 px-6 py-4">
+        <span class="flex size-10 shrink-0 items-center justify-center rounded-lg bg-brand-50 text-brand-600"><%= icon "tag", class: "size-5" %></span>
+        <div class="min-w-0 flex-1">
+          <dt class="text-xs font-medium tracking-wide text-gray-500 uppercase"><%= Appointment.human_attribute_name(:service) %></dt>
+          <dd class="font-medium text-gray-900"><%= @appointment.service.name %></dd>
+          <dd class="text-sm text-gray-500"><%= format_duration(@appointment.service.duration_minutes) %></dd>
+        </div>
+        <span class="shrink-0 font-semibold text-brand-700"><%= format_price(@appointment.price_cents) %></span>
+      </div>
+      <div class="flex items-center gap-4 px-6 py-4">
+        <%= professional_avatar(@appointment.professional) %>
+        <div class="min-w-0">
+          <dt class="text-xs font-medium tracking-wide text-gray-500 uppercase"><%= Appointment.human_attribute_name(:professional) %></dt>
+          <dd class="truncate font-medium text-gray-900"><%= @appointment.professional.name %></dd>
+          <% if @appointment.any_professional? && pending %>
+            <dd class="text-sm text-gray-500"><%= t(".assigned") %></dd>
+          <% end %>
+        </div>
+      </div>
+      <% if @appointment.customer_notes.present? %>
+        <div class="px-6 py-4">
+          <dt class="text-xs font-medium tracking-wide text-gray-500 uppercase"><%= Appointment.human_attribute_name(:customer_notes) %></dt>
+          <dd class="mt-1 text-sm whitespace-pre-line text-gray-700"><%= @appointment.customer_notes %></dd>
+        </div>
+      <% end %>
+    </dl>
+  </div>
+
+  <div class="flex items-start gap-3 rounded-xl bg-brand-50 px-6 py-5 text-sm text-brand-900 ring-1 ring-brand-600/20 ring-inset">
+    <%= icon "exclamation-circle", class: "mt-0.5 size-5 shrink-0 text-brand-600" %>
+    <p><%= t(".keep_link") %></p>
+  </div>
+
+  <% business = Current.business %>
+  <div class="card card-body">
+    <h2 class="font-semibold text-gray-900"><%= t(".contact", business: business.name) %></h2>
+    <ul class="mt-3 space-y-2 text-sm text-gray-600">
+      <% if business.address.present? %>
+        <li class="flex items-center gap-2"><%= icon "map-pin", class: "size-4 text-gray-400" %><%= business.address %></li>
+      <% end %>
+      <% if business.contact_phone.present? %>
+        <li class="flex items-center gap-2"><%= icon "phone", class: "size-4 text-gray-400" %><%= link_to business.contact_phone, "tel:#{business.contact_phone.delete(" -")}", class: "link" %></li>
+      <% end %>
+      <% if business.contact_email.present? %>
+        <li class="flex items-center gap-2"><%= icon "envelope", class: "size-4 text-gray-400" %><%= mail_to business.contact_email, class: "link" %></li>
+      <% end %>
+      <li class="flex items-center gap-2"><%= icon "external-link", class: "size-4 text-gray-400" %><%= link_to t(".business_page"), business_path(business), class: "link" %></li>
+    </ul>
+  </div>
+</section>

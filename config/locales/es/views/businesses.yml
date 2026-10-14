@@ -7,7 +7,8 @@ es:
       professionals: "Profesionales"
       no_services: "Todavía no hay servicios publicados."
       no_services_hint: "Volvé a visitarnos pronto."
-      booking_soon: "Muy pronto se podrán solicitar turnos online."
+      book: "Reservar"
+      book_appointment: "Pedir un turno"
     unavailable:
       title: "Negocio no disponible"
       message: "Este negocio no está disponible en este momento."

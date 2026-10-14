@@ -41,10 +41,10 @@ RSpec.describe "Businesses", type: :request do
       english = create(:business, locale: "en")
 
       get business_path(spanish)
-      expect(response.body).to include('lang="es"', "Muy pronto se podrán solicitar turnos online.")
+      expect(response.body).to include('lang="es"', "Todavía no hay servicios publicados.")
 
       get business_path(english)
-      expect(response.body).to include('lang="en"', "Online booking is coming soon.")
+      expect(response.body).to include('lang="en"', "No services published yet.")
     end
 
     it "responds not found for an unknown slug" do

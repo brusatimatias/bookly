@@ -1,0 +1,24 @@
+es:
+  appointments:
+    show:
+      title: "Tu turno · %{business}"
+      heading:
+        pending: "Pedido enviado"
+        confirmed: "Turno confirmado"
+        rejected: "Pedido rechazado"
+        expired: "Pedido vencido"
+        cancelled: "Turno cancelado"
+        attended: "Turno atendido"
+        no_show: "No asististe al turno"
+      pending_message: "Gracias, %{name}. El horario ya está reservado para vos; %{business} tiene hasta el %{deadline} para confirmarlo."
+      message:
+        confirmed: "Te esperamos en %{business}."
+        rejected: "%{business} no pudo tomar este pedido. Podés pedir otro horario."
+        expired: "%{business} no respondió a tiempo y el horario se liberó. Podés pedir otro."
+        cancelled: "Este turno fue cancelado y el horario se liberó."
+        attended: "Gracias por visitar %{business}."
+        no_show: "Este turno figura como ausente."
+      assigned: "Asignado entre los profesionales disponibles."
+      keep_link: "Guardá este link: es la forma de volver a ver tu turno."
+      contact: "Contacto de %{business}"
+      business_page: "Página del negocio"

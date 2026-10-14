@@ -17,6 +17,7 @@ Early development. What works today:
 - **Services and professionals:** owners and admins manage services (duration, price, optional break, rich text description) and professional profiles (photo, offered services, optional linked account). Both are deactivated rather than deleted. A profile can be created before its person has an account and then taken over through an invitation; invited professionals get a profile automatically, and owners and admins can have one too.
 - **Working hours and blocks:** owners and admins set each professional's weekly hours (several ranges per day, copied across weekdays in one click). Blocks mark periods a professional can't be booked, with exact times or whole days; professionals manage their own. Only professionals with services and hours are shown to customers.
 - **Availability:** free start times are computed from working hours, blocks and appointments, following the business's booking rules (start interval, breaks, minimum notice, booking horizon), with no double booking enforced by the database. The owner edits those rules from the panel, and every member can preview the week's free times as customers will see them.
+- **Online requests:** customers book from the business's page without an account: service, professional (or any), a free time and their contact details. The request holds the time until the business answers, and the customer gets a personal link to see it. With "any professional" the least busy free one is assigned.
 - **Consistent, responsive UI:** a landing page, public business pages, sign in screens and a business panel with sidebar navigation that collapses into a menu on phones.
 - **Spanish and English** throughout, Spanish by default. Pages outside a business follow the browser's language and offer a language switcher; business pages and emails use the business's language.
 
@@ -28,7 +29,7 @@ Early development. What works today:
 - [x] Services and professionals
 - [x] Working hours and schedule blocks
 - [x] Availability calculation
-- [ ] Public appointment request
+- [x] Public appointment request
 - [ ] Request management and live schedule (confirm, reject, reassign, expiration)
 - [ ] Appointment management by personal link (cancel, reschedule)
 - [ ] Emails and reminders
@@ -64,7 +65,7 @@ Sample users, all with the password `password` (sign in at http://localhost:3000
 | martin@barberiacentro.example | Professional in both businesses |
 | sam@downtownstudio.example | Owner of Downtown Studio |
 
-Both businesses come with services, professionals, weekly hours, a few upcoming blocks and some appointments in the coming days. Barbería Centro also has an inactive service and a professional profile without an account (Sofía Torres), to try inviting someone from their profile.
+Both businesses come with services, professionals, weekly hours, a few upcoming blocks and some appointments in the coming days, with their history. To try a request, use the booking button on a business page ("Pedir un turno" / "Book an appointment"). Barbería Centro also has an inactive service and a professional profile without an account (Sofía Torres), to try inviting someone from their profile.
 
 There is no public sign up yet: new team members join through invitations. Emails sent in development (invitations, password resets) can be read at http://localhost:3000/letter_opener.
 
