@@ -1,3 +1,4 @@
+<%= refresh_on_appointment_changes Appointment.availability_stream(Current.business) %>
 <h2 class="mb-4 text-lg font-semibold text-gray-900"><%= t(".heading") %></h2>
 
 <%= render "availabilities/week_navigation", availability: @availability, week: @week, days: @days,

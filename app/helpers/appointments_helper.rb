@@ -4,6 +4,15 @@ module AppointmentsHelper
     "rejected" => "badge-red", "cancelled" => "badge-red", "expired" => "badge-gray", "no_show" => "badge-gray"
   }.freeze
 
+  # Makes the page refresh itself (morphing, keeping the scroll) when an
+  # appointment of the business changes: stream is Appointment.panel_stream or
+  # Appointment.availability_stream. Only for pages without forms to fill, so a
+  # refresh never wipes what someone is typing.
+  def refresh_on_appointment_changes(stream)
+    content_for :head, turbo_refreshes_with(method: :morph, scroll: :preserve)
+    turbo_stream_from(*stream)
+  end
+
   def appointment_status_badge(appointment)
     tag.span Appointment.human_attribute_name("status.#{appointment.status}"), class: STATUS_BADGES.fetch(appointment.status)
   end

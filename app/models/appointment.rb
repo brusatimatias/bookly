@@ -42,6 +42,7 @@ class Appointment < ApplicationRecord
   # saving, so they're never missing even when validations are skipped.
   before_validation :derive_from_service
   before_save :derive_from_service
+  after_commit :broadcast_refresh
 
   validates :starts_at, presence: true
   validates :customer_notes, length: { maximum: 500 }
@@ -108,7 +109,18 @@ class Appointment < ApplicationRecord
     starts_at...buffer_ends_at
   end
 
+  # Streams of the pages that show appointments: the panel's (agenda, requests,
+  # dashboard, appointment page) and the public week of free times. Each one
+  # refreshes itself when an appointment is created or changes.
+  def self.panel_stream(business) = [ business, :appointments ]
+  def self.availability_stream(business) = [ business, :availability ]
+
   private
+    def broadcast_refresh
+      Turbo::StreamsChannel.broadcast_refresh_to(*Appointment.panel_stream(business))
+      Turbo::StreamsChannel.broadcast_refresh_to(*Appointment.availability_stream(business))
+    end
+
     # Price and break are copied once; the end follows the start. A request
     # can't expire after the appointment it asks for.
     def derive_from_service

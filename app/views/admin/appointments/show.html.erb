@@ -1,4 +1,5 @@
 <% content_for :title, t(".title", customer: @appointment.customer.name) %>
+<%= refresh_on_appointment_changes Appointment.panel_stream(Current.business) %>
 
 <%= render "shared/page_header", title: @appointment.customer.name, subtitle: format_period(@appointment.starts_at, @appointment.ends_at) %>
 

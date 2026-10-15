@@ -1,4 +1,5 @@
 <% content_for :title, t(".title") %>
+<%= refresh_on_appointment_changes Appointment.panel_stream(Current.business) %>
 
 <% manager = Current.membership.manager? %>
 <%= render "shared/page_header", title: t(".title"), subtitle: t(manager ? ".subtitle" : ".subtitle_own") %>
