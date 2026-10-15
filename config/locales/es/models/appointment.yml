@@ -31,5 +31,9 @@ es:
           attributes:
             service:
               not_offered: "no lo ofrece este profesional"
+            professional:
+              inactive: "no está activo"
+              not_working: "no trabaja en ese horario"
+              blocked: "tiene un bloqueo en ese horario"
             base:
               overlap: "El horario ya no está disponible para este profesional"

@@ -88,6 +88,24 @@ RSpec.describe Membership, type: :model do
     end
   end
 
+  describe "#manages_appointment?" do
+    let(:business) { create(:business) }
+
+    it "is true for owners and admins with any appointment, and for professionals with their own" do
+      with_business(business) do
+        professional = create(:membership, business: business)
+        service = create(:service)
+        own = create(:appointment, service: service, professional: create(:professional, user: professional.user, services: [ service ]))
+        others = create(:appointment)
+
+        expect(professional.manages_appointment?(own)).to be(true)
+        expect(professional.manages_appointment?(others)).to be(false)
+        expect(create(:membership, :admin, business: business).manages_appointment?(others)).to be(true)
+        expect(create(:membership, :owner, business: business).manages_appointment?(others)).to be(true)
+      end
+    end
+  end
+
   describe "associations" do
     it "exposes the owner and members of a business" do
       owner = create(:membership, :owner, business: business).user

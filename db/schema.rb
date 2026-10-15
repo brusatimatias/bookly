@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_10_14_120000) do
+ActiveRecord::Schema[8.1].define(version: 2026_10_15_120000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "btree_gist"
   enable_extension "pg_catalog.plpgsql"
@@ -65,6 +65,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_14_120000) do
     t.datetime "created_at", null: false
     t.index ["actor_user_id"], name: "index_appointment_events_on_actor_user_id"
     t.index ["business_id", "appointment_id", "created_at"], name: "idx_on_business_id_appointment_id_created_at_6cc85a3f3c"
+    t.check_constraint "actor_kind::text <> 'user'::text OR (to_status::text <> ALL (ARRAY['rejected'::character varying, 'cancelled'::character varying]::text[])) OR length(btrim(COALESCE(note, ''::text))) > 0", name: "appointment_events_team_reason_present"
     t.check_constraint "actor_kind::text <> 'user'::text OR actor_user_id IS NOT NULL", name: "appointment_events_user_actor_present"
     t.check_constraint "actor_kind::text = ANY (ARRAY['customer'::character varying, 'user'::character varying, 'system'::character varying]::text[])", name: "appointment_events_actor_kind_valid"
     t.check_constraint "from_status IS NULL OR (from_status::text = ANY (ARRAY['pending'::character varying, 'confirmed'::character varying, 'rejected'::character varying, 'expired'::character varying, 'cancelled'::character varying, 'attended'::character varying, 'no_show'::character varying]::text[]))", name: "appointment_events_from_status_valid"
@@ -99,8 +100,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_14_120000) do
     t.check_constraint "ends_at > starts_at", name: "appointments_end_after_start"
     t.check_constraint "price_cents >= 0", name: "appointments_price_non_negative"
     t.check_constraint "status::text <> 'pending'::text OR request_expires_at IS NOT NULL", name: "appointments_pending_expires"
-    t.check_constraint "status::text = ANY (ARRAY['pending'::character varying::text, 'confirmed'::character varying::text, 'rejected'::character varying::text, 'expired'::character varying::text, 'cancelled'::character varying::text, 'attended'::character varying::text, 'no_show'::character varying::text])", name: "appointments_status_valid"
-    t.exclusion_constraint "professional_id WITH =, tsrange(starts_at, buffer_ends_at) WITH &&", where: "(status)::text = ANY (ARRAY[('pending'::character varying)::text, ('confirmed'::character varying)::text])", using: :gist, name: "appointments_no_double_booking"
+    t.check_constraint "status::text = ANY (ARRAY['pending'::character varying, 'confirmed'::character varying, 'rejected'::character varying, 'expired'::character varying, 'cancelled'::character varying, 'attended'::character varying, 'no_show'::character varying]::text[])", name: "appointments_status_valid"
+    t.exclusion_constraint "professional_id WITH =, tsrange(starts_at, buffer_ends_at) WITH &&", where: "(status)::text = ANY ((ARRAY['pending'::character varying, 'confirmed'::character varying])::text[])", using: :gist, name: "appointments_no_double_booking"
   end
 
   create_table "businesses", force: :cascade do |t|

@@ -31,5 +31,9 @@ en:
           attributes:
             service:
               not_offered: "isn't offered by this professional"
+            professional:
+              inactive: "isn't active"
+              not_working: "doesn't work at that time"
+              blocked: "has a time block at that time"
             base:
               overlap: "That time is no longer available for this professional"
