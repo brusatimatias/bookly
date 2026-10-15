@@ -23,6 +23,8 @@ es:
         attended: "Gracias por visitar %{business}."
         no_show: "Este turno figura como ausente."
       assigned: "Asignado entre los profesionales disponibles."
+      reassigned: "%{business} reasignó tu turno a este profesional."
+      reason: "Motivo de %{business}"
       keep_link: "Guardá este link: es la forma de volver a ver tu turno."
       contact: "Contacto de %{business}"
       business_page: "Página del negocio"
