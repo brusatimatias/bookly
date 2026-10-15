@@ -31,7 +31,7 @@
         <div class="min-w-0">
           <dt class="text-xs font-medium tracking-wide text-gray-500 uppercase"><%= t("bookings.summary.time") %></dt>
           <dd class="font-medium text-gray-900"><%= format_period(@appointment.starts_at, @appointment.ends_at) %></dd>
-          <dd class="text-sm text-gray-500"><%= t("availabilities.week_navigation.time_zone", zone: time_zone_label) %></dd>
+          <dd class="text-sm text-gray-500"><%= t("shared.week_navigation.time_zone", zone: time_zone_label) %></dd>
         </div>
       </div>
       <div class="flex items-center gap-4 px-6 py-4">

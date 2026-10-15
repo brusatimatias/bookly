@@ -54,6 +54,7 @@ Rails.application.routes.draw do
       resources :time_blocks, only: %i[index new create edit update destroy]
       resource :availability, only: :show
       resources :requests, only: :index
+      resource :agenda, only: :show
       resources :appointments, only: :show do
         member do
           patch :confirm

@@ -7,9 +7,6 @@ en:
       not_working: "Closed"
       full: "No free times"
     week_navigation:
-      previous_week: "Previous week"
-      next_week: "Next week"
-      time_zone: "%{zone} time"
       week_empty: "There are no free times this week."
       next_free_day: "Go to the next one: %{date}"
       no_free_days: "Nor in the next 60 days."

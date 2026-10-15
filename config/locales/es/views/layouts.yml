@@ -9,6 +9,7 @@ es:
     admin:
       navigation: "Panel del negocio"
       home: "Inicio"
+      agenda: "Agenda"
       requests: "Pedidos"
       services: "Servicios"
       professionals: "Profesionales"
