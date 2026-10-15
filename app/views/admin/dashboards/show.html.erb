@@ -35,10 +35,37 @@
   </div>
 <% end %>
 
-<div class="card card-body mt-6 flex items-start gap-4">
-  <span class="flex size-12 shrink-0 items-center justify-center rounded-lg bg-gray-100 text-gray-500"><%= icon "calendar", class: "size-6" %></span>
-  <div>
-    <p class="font-semibold text-gray-900"><%= t(".coming_soon_title") %></p>
-    <p class="mt-1 text-sm text-gray-600"><%= t(".coming_soon") %></p>
-  </div>
+<div class="mt-6 grid gap-6 lg:grid-cols-2">
+  <section class="card min-w-0">
+    <div class="flex items-center justify-between gap-3 border-b border-gray-100 px-6 py-4">
+      <h2 class="flex items-center gap-2 font-semibold text-gray-900"><%= icon "inbox", class: "size-5 text-yellow-600" %><%= t(".requests") %></h2>
+      <% if pending_requests_count.positive? %>
+        <%= link_to t(".all_requests", count: pending_requests_count), admin_requests_path, class: "link text-sm" %>
+      <% end %>
+    </div>
+    <% if @requests.any? %>
+      <div class="list-divided">
+        <% @requests.each do |appointment| %>
+          <%= render "admin/appointments/row", appointment: appointment %>
+        <% end %>
+      </div>
+    <% else %>
+      <p class="px-6 py-8 text-center text-sm text-gray-500"><%= t(".no_requests") %></p>
+    <% end %>
+  </section>
+
+  <section class="card min-w-0">
+    <div class="border-b border-gray-100 px-6 py-4">
+      <h2 class="flex items-center gap-2 font-semibold text-gray-900"><%= icon "calendar", class: "size-5 text-brand-600" %><%= t(".today") %></h2>
+    </div>
+    <% if @today.any? %>
+      <div class="list-divided">
+        <% @today.each do |appointment| %>
+          <%= render "admin/appointments/row", appointment: appointment %>
+        <% end %>
+      </div>
+    <% else %>
+      <p class="px-6 py-8 text-center text-sm text-gray-500"><%= t(".no_appointments_today") %></p>
+    <% end %>
+  </section>
 </div>

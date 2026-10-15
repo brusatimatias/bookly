@@ -31,6 +31,10 @@ class Appointment < ApplicationRecord
   generates_token_for :management
 
   scope :active, -> { where(status: ACTIVE_STATUSES) }
+  # Requests still waiting for an answer (an overdue one is about to expire).
+  scope :awaiting_answer, -> { pending.where("request_expires_at > ?", Time.current) }
+  # What the agenda shows: requests, confirmed appointments and their attendance.
+  scope :on_agenda, -> { where(status: %w[pending confirmed attended no_show]) }
   # Appointments whose time, break included, overlaps the range.
   scope :overlapping, ->(range) { where(starts_at: ...range.end).where("buffer_ends_at > ?", range.begin) }
 

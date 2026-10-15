@@ -1,0 +1,33 @@
+<% content_for :title, t(".title") %>
+
+<%= render "shared/page_header", title: t(".title"), subtitle: t(Current.membership.manager? ? ".subtitle" : ".subtitle_own") %>
+
+<% if @requests.any? %>
+  <ul class="card list-divided">
+    <% @requests.each do |request| %>
+      <li class="flex flex-col gap-3 px-6 py-4 sm:flex-row sm:items-center sm:gap-4" id="<%= dom_id(request) %>">
+        <div class="flex min-w-0 flex-1 items-center gap-4">
+          <%= professional_avatar(request.professional) %>
+          <div class="min-w-0 flex-1">
+            <%= link_to admin_appointment_path(request), class: "block truncate font-medium text-gray-900 hover:text-brand-700" do %>
+              <%= request.customer.name %> · <%= request.service.name %>
+            <% end %>
+            <p class="truncate text-sm text-gray-500"><%= format_period(request.starts_at, request.ends_at) %> · <%= request.professional.name %></p>
+            <p class="mt-1 flex items-center gap-1 text-xs text-yellow-700">
+              <%= icon "clock", class: "size-3.5" %>
+              <%= t(".expires", deadline: l(request.request_expires_at, format: :weekday_hour)) %>
+            </p>
+          </div>
+        </div>
+        <div class="flex items-center gap-2 pl-14 sm:pl-0">
+          <%= button_to confirm_admin_appointment_path(request), method: :patch, class: "btn-primary btn-sm" do %>
+            <%= icon "check", class: "size-4" %> <%= t(".confirm") %>
+          <% end %>
+          <%= link_to t(".reject"), new_admin_appointment_rejection_path(request), class: "btn-ghost btn-sm text-red-600 hover:bg-red-50 hover:text-red-700" %>
+        </div>
+      </li>
+    <% end %>
+  </ul>
+<% else %>
+  <%= render "shared/empty_state", icon: "inbox", title: t(".empty"), message: t(".empty_hint") %>
+<% end %>

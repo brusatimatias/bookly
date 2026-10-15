@@ -1,5 +1,9 @@
 es:
   appointments:
+    # Helpers (AppointmentsHelper), also used by the panel.
+    events:
+      created: "Pedido enviado"
+      reassigned: "Reasignado de %{from} a %{to}"
     show:
       title: "Tu turno · %{business}"
       heading:

@@ -1,0 +1,32 @@
+en:
+  admin:
+    appointments:
+      transition_failed: "That change couldn't be made: the appointment is %{status}."
+      show:
+        title: "%{customer}'s appointment"
+        expires: "Expires %{deadline} if nobody answers."
+        any_professional: "The customer chose any professional."
+        history: "History"
+        actions: "Actions"
+        confirm: "Confirm"
+        reject: "Reject"
+        cancel: "Cancel appointment"
+        reassign: "Reassign"
+        attended: "Attended"
+        no_show: "No show"
+        no_show_confirm: "Mark that the customer didn't come?"
+        actions_hint:
+          pending: "If nobody answers in time, the request expires and the time is freed."
+          confirmed: "Once it starts, you can mark the attendance."
+          started: "Mark whether the customer came."
+        final: "This appointment has no pending actions."
+      confirm:
+        confirmed: "%{customer}'s appointment is confirmed."
+      attended:
+        marked: "The appointment is marked as attended."
+      no_show:
+        marked: "The appointment is marked as no show."
+      reason_form:
+        placeholder: "Tell the customer why."
+        hint: "Required. The customer will see it."
+        back: "Back"

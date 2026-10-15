@@ -9,7 +9,14 @@ class Admin::BaseController < ApplicationController
 
   before_action :require_membership
 
+  helper_method :pending_requests_count
+
   private
+    # Requests waiting for the member's answer, for the sidebar.
+    def pending_requests_count
+      @pending_requests_count ||= Current.membership.visible_appointments.awaiting_answer.count
+    end
+
     def require_membership
       Current.membership = Current.user.membership_for(Current.business) || raise(ActiveRecord::RecordNotFound)
     end

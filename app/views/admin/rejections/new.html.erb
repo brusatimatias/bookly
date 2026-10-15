@@ -1,0 +1,11 @@
+<% content_for :title, t(".title") %>
+
+<div class="mx-auto max-w-2xl">
+  <%= render "shared/page_header", title: t(".title"), subtitle: t(".subtitle") %>
+
+  <div class="space-y-6">
+    <%= render "admin/appointments/card", appointment: @appointment %>
+    <%= render "admin/appointments/reason_form", event: @event, scope: :rejection,
+          url: admin_appointment_rejection_path(@appointment), submit: t(".submit") %>
+  </div>
+</div>

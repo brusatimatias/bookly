@@ -53,6 +53,17 @@ Rails.application.routes.draw do
       end
       resources :time_blocks, only: %i[index new create edit update destroy]
       resource :availability, only: :show
+      resources :requests, only: :index
+      resources :appointments, only: :show do
+        member do
+          patch :confirm
+          patch :attended
+          patch :no_show
+        end
+        resource :rejection, only: %i[new create]
+        resource :cancellation, only: %i[new create]
+        resource :reassignment, only: %i[new create]
+      end
     end
   end
 end

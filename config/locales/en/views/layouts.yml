@@ -9,6 +9,7 @@ en:
     admin:
       navigation: "Business panel"
       home: "Home"
+      requests: "Requests"
       services: "Services"
       professionals: "Professionals"
       time_blocks: "Blocks"

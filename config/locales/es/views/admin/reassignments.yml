@@ -1,0 +1,14 @@
+es:
+  admin:
+    reassignments:
+      new:
+        title: "Reasignar turno"
+        subtitle: "Mismo horario y servicio, con otro profesional."
+        choose: "Elegí un profesional"
+        hint: "Tiene que trabajar en ese horario, sin bloqueos ni otros turnos."
+        submit: "Reasignar"
+        back: "Volver"
+        empty: "No hay otros profesionales para este servicio."
+        empty_hint: "Ningún otro profesional activo ofrece este servicio."
+      create:
+        reassigned: "Reasignamos el turno a %{name}."

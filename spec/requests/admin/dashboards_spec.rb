@@ -52,6 +52,35 @@ RSpec.describe "Admin dashboard", type: :request do
     expect(response).to have_http_status(:service_unavailable)
   end
 
+  describe "requests and today's appointments" do
+    it "shows the member's pending requests and today's appointments" do
+      travel_to(Time.find_zone!(business.time_zone).local(2026, 10, 19, 12))
+      membership = create(:membership, business: business, user: user)
+      with_business(business) do
+        service = create(:service, name: "Corte")
+        profile = create(:professional, user: user, services: [ service ])
+        create(:appointment, service: service, professional: profile, starts_at: 3.days.from_now, customer: create(:customer, name: "Ana Pérez"))
+        create(:appointment, :confirmed, service: service, professional: profile, starts_at: 1.hour.from_now, customer: create(:customer, name: "Juan Ríos"))
+        create(:appointment, starts_at: 1.hour.from_now, customer: create(:customer, name: "Someone Else's"))
+      end
+      sign_in_as(membership.user)
+
+      get admin_root_path(business)
+
+      expect(response.body).to include("Pedidos pendientes", "Ana Pérez", "Turnos de hoy", "Juan Ríos")
+      expect(response.body).not_to include("Someone Else")
+    end
+
+    it "says when there is nothing" do
+      create(:membership, :owner, business: business, user: user)
+      sign_in_as(user)
+
+      get admin_root_path(business)
+
+      expect(response.body).to include("No hay pedidos esperando respuesta.", "No hay turnos para hoy.")
+    end
+  end
+
   describe "team summary" do
     before do
       create(:membership, :owner, business: business, user: user)

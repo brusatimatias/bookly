@@ -106,6 +106,24 @@ RSpec.describe Membership, type: :model do
     end
   end
 
+  describe "#visible_appointments" do
+    let(:business) { create(:business) }
+
+    it "is every appointment for managers and the own profile's for professionals" do
+      with_business(business) do
+        professional = create(:membership, business: business)
+        service = create(:service)
+        own = create(:appointment, service: service, professional: create(:professional, user: professional.user, services: [ service ]))
+        others = create(:appointment)
+        with_business(create(:business)) { create(:appointment) }
+
+        expect(professional.visible_appointments).to contain_exactly(own)
+        expect(create(:membership, :admin, business: business).visible_appointments).to contain_exactly(own, others)
+        expect(create(:membership, business: business).visible_appointments).to be_empty
+      end
+    end
+  end
+
   describe "associations" do
     it "exposes the owner and members of a business" do
       owner = create(:membership, :owner, business: business).user

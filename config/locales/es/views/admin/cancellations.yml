@@ -1,0 +1,9 @@
+es:
+  admin:
+    cancellations:
+      new:
+        title: "Cancelar turno"
+        subtitle: "El horario se libera y el cliente ve el motivo."
+        submit: "Cancelar turno"
+      create:
+        cancelled: "Cancelamos el turno de %{customer}."

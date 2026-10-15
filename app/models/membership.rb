@@ -25,6 +25,12 @@ class Membership < ApplicationRecord
     manager? || appointment.professional.user_id == user_id
   end
 
+  # The appointments the member sees in the panel: every one for owners and
+  # admins, their own profile's for professionals. Needs Current.business.
+  def visible_appointments
+    manager? ? business.appointments : business.appointments.where(professional: professional_profile)
+  end
+
   # The member's professional profile in this business, if they have one.
   def professional_profile
     Current.set(business: business) { business.professionals.find_by(user: user) }

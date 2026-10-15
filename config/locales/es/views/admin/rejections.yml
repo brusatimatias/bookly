@@ -1,0 +1,9 @@
+es:
+  admin:
+    rejections:
+      new:
+        title: "Rechazar pedido"
+        subtitle: "El horario se libera y el cliente ve el motivo."
+        submit: "Rechazar pedido"
+      create:
+        rejected: "Rechazamos el pedido de %{customer}."

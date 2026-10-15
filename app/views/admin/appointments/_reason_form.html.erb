@@ -1,0 +1,16 @@
+<%# Rejection or cancellation: the reason, which the customer will read.
+    Locals: event, scope (:rejection / :cancellation), url, submit. %>
+<%= form_with model: event, scope: scope, url: url, method: :post, class: "card card-body space-y-5" do |form| %>
+  <%= render "shared/form_errors", record: event %>
+
+  <div class="field">
+    <%= form.label :note, class: "label" %>
+    <%= form.text_area :note, rows: 4, maxlength: 500, required: true, class: "input", placeholder: t(".placeholder") %>
+    <p class="hint"><%= t(".hint") %></p>
+  </div>
+
+  <div class="flex items-center justify-end gap-3 border-t border-gray-100 pt-5">
+    <%= link_to t(".back"), admin_appointment_path(@appointment), class: "btn-ghost" %>
+    <%= form.submit submit, class: "btn-danger" %>
+  </div>
+<% end %>
