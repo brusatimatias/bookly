@@ -1,0 +1,32 @@
+es:
+  admin:
+    appointments:
+      transition_failed: "No se pudo hacer el cambio: el turno está %{status}."
+      show:
+        title: "Turno de %{customer}"
+        expires: "Vence el %{deadline} si nadie responde."
+        any_professional: "El cliente eligió cualquier profesional."
+        history: "Historial"
+        actions: "Acciones"
+        confirm: "Confirmar"
+        reject: "Rechazar"
+        cancel: "Cancelar turno"
+        reassign: "Reasignar"
+        attended: "Atendido"
+        no_show: "Ausente"
+        no_show_confirm: "¿Marcar que el cliente no vino?"
+        actions_hint:
+          pending: "Si nadie responde a tiempo, el pedido vence y el horario se libera."
+          confirmed: "Una vez que empiece, vas a poder marcar la asistencia."
+          started: "Marcá si el cliente vino o no."
+        final: "Este turno ya no tiene acciones pendientes."
+      confirm:
+        confirmed: "Confirmamos el turno de %{customer}."
+      attended:
+        marked: "Marcamos el turno como atendido."
+      no_show:
+        marked: "Marcamos el turno como ausente."
+      reason_form:
+        placeholder: "Contale al cliente por qué."
+        hint: "Obligatorio. El cliente lo va a ver."
+        back: "Volver"

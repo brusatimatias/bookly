@@ -14,6 +14,7 @@ Multi-tenant appointment booking app, built in stages. Done so far:
 - Professionals' weekly working hours and time blocks (vacations, errands); see "Working hours and time blocks".
 - Customers and appointments, availability calculation, booking settings and an availability preview in the panel; see "Appointments and availability".
 - Public appointment requests: customers pick a service, professional and time and send a request, then see it through a personal link; see "Public booking".
+- Request management and a live agenda in the panel: confirming, rejecting, reassigning, cancelling and attendance, expiration by a recurring job, and pages that refresh themselves when appointments change; see "Request management and live agenda".
 
 There is no public sign up: owners are created from seeds or the console for now, everyone else joins by invitation.
 
@@ -21,7 +22,7 @@ There is no public sign up: owners are created from seeds or the console for now
 
 ```bash
 bin/setup                      # install gems, prepare DB, start server (--skip-server to skip)
-bin/dev                        # run web (port 3000) + Tailwind watcher via foreman (Procfile.dev)
+bin/dev                        # run web (port 3000), jobs (bin/jobs) and the Tailwind watcher via foreman (Procfile.dev)
 bin/rails db:prepare           # create/migrate the PostgreSQL DB
 
 bundle exec rspec                              # full test suite
@@ -35,14 +36,14 @@ bin/importmap audit            # JS dependency audit
 bin/ci                         # local CI pipeline defined in config/ci.rb
 ```
 
-Seeds (`bin/rails db:seed`) create two businesses with members; every seeded user's password is `password`. In development, sent emails are browsable at `/letter_opener`.
+Seeds (`bin/rails db:seed`) create two businesses with members, services, hours and appointments (plus, in Barbería Centro, a request about to expire and an appointment to mark attendance whenever there are none); every seeded user's password is `password`. In development, sent emails are browsable at `/letter_opener`.
 
 `bin/ci` (config/ci.rb) mirrors the GitHub workflow (.github/workflows/ci.yml): RuboCop, bundler-audit, importmap audit, Brakeman, and RSpec. The GitHub `test` job runs against a Postgres service via `DATABASE_URL`.
 
 ## Stack / architecture
 
-- **Database:** PostgreSQL (`bookly_development` / `bookly_test`, local socket, OS user). In production, Solid Cache/Queue/Cable each use a separate database (`bookly_production_cache`, `_queue`, `_cable`) with their own schemas in `db/*_schema.rb` and migration paths `db/{cache,queue,cable}_migrate`.
-- **Background jobs, cache, websockets:** Solid Queue, Solid Cache, Solid Cable (DB-backed; no Redis).
+- **Database:** PostgreSQL (`bookly_development` / `bookly_test`, local socket, OS user). In production, Solid Cache/Queue/Cable each use a separate database (`bookly_production_cache`, `_queue`, `_cable`) with their own schemas in `db/*_schema.rb` and migration paths `db/{cache,queue,cable}_migrate`. Development does the same for Solid Queue and Solid Cable (`bookly_development_queue`, `_cable`); the test environment uses a single database with the `:test` job and cable adapters.
+- **Background jobs, cache, websockets:** Solid Queue, Solid Cache, Solid Cable (DB-backed; no Redis). Jobs run in `bin/jobs` (started by `bin/dev`); recurring ones are scheduled in `config/recurring.yml`. Solid Cable writes broadcasts from a background thread in batches, so a short-lived process (`bin/rails runner`) may exit before they're written; the web server and `bin/jobs` are fine.
 - **Frontend:** Hotwire (Turbo + Stimulus) via importmap — no Node/bundler. Stimulus controllers in `app/javascript/controllers` are auto-pinned. Add JS packages with `bin/importmap pin <pkg>`.
 - **CSS:** Tailwind 4 via `tailwindcss-rails`; source is `app/assets/tailwind/application.css`, compiled to `app/assets/builds/` (gitignored). Only classes found in views/helpers end up in the build, so keep `bin/dev` running (or `bin/rails tailwindcss:build`) after adding classes. Assets served by Propshaft.
 - **Testing:** RSpec (`spec/`) with FactoryBot; Minitest railtie is disabled and system test generation is turned off. Transactional fixtures are on. `FactoryBot::Syntax::Methods` is included (call `create`/`build` directly). Specs run in random order; `spec/examples.txt` persists status for `--only-failures`. Spec type is declared explicitly (`type: :request`, `type: :controller`); it is not inferred from the folder. `ActiveSupport::Testing::TimeHelpers` (`freeze_time`, `travel_to`) is included, and `spec/support/**` is auto-loaded. Request specs sign in with `sign_in_as(user)` (password `"password"`, the factory default).
@@ -111,22 +112,38 @@ Every page is built from the shared pieces below; don't hand-roll styles that al
 
 ## Appointments and availability
 
-- `Customer`: no account; identified by email, unique per business. `Appointment`: one service with one professional for one customer, with a `status` (`pending`, `confirmed`, `rejected`, `expired`, `cancelled`, `attended`, `no_show`). `active` (pending and confirmed) appointments hold their time: pending requests too. Customers create pending ones from the public booking flow; state transitions come with request management.
+- `Customer`: no account; identified by email, unique per business. `Appointment`: one service with one professional for one customer, with a `status` (`pending`, `confirmed`, `rejected`, `expired`, `cancelled`, `attended`, `no_show`). `active` (pending and confirmed) appointments hold their time: pending requests too. Customers create pending ones from the public booking flow; the business moves them through the transition methods (see "Request management and live agenda").
 - On create an appointment copies the service's price and break (`Service#effective_buffer_minutes`, the service's or the business's), so later changes don't alter it, and sets `request_expires_at` for pending ones (the business's expiration, never after the appointment). `ends_at` and `buffer_ends_at` follow `starts_at`. They are derived before validation and again before save, so they're never missing.
 - No double booking: an exclusion constraint on `tsrange(starts_at, buffer_ends_at)` per professional for active appointments, mirrored by a validation, with `OverlapConstraint`.
 - `Availability.new(service, professional: nil, now:)` computes free start times in the current business: `days(dates)` returns `{ date => [Slot(starts_at, professionals)] }` for the days within the booking window. Start times are counted from the start of each working range every `slot_interval_minutes`; the service must fit in the range (its break may run past it), can't overlap a block, and service plus break can't overlap an active appointment's time plus break. From now plus `min_booking_notice_hours` up to `booking_horizon_days` from today. Without a professional it means "any": each slot lists who is free. Three queries per call, whatever the range.
 - Business settings are read from `Current.business` (`Current.business!`), not from a record's cached `business` association, so they're always current and it fails closed.
 - Booking settings (`Admin::SettingsController`, owner only) edit the six booking rules, capped by `Business::BOOKING_LIMITS`.
-- Availability preview (`Admin::AvailabilitiesController`): owners and admins pick a service and a professional (or any); professionals see their own. Days without free times say why. The week is the `availabilities/_week` partial (`slot_url:` makes each time a link, `show_professionals: false` hides who is free); `availabilities/_week_navigation` and the `AvailabilityWeek` concern (`load_availability_week`) handle moving between weeks, for the panel and the public flow.
+- Availability preview (`Admin::AvailabilitiesController`): owners and admins pick a service and a professional (or any); professionals see their own. Days without free times say why. The week is the `availabilities/_week` partial (`slot_url:` makes each time a link, `show_professionals: false` hides who is free); `availabilities/_week_navigation` (the booking window's limits and the empty week notice, around the generic `shared/_week_navigation`) and the `AvailabilityWeek` concern (`load_availability_week`) handle moving between weeks, for the panel and the public flow.
 - `AppointmentEvent`: an appointment's history, one row per status change (none as `from_status` on creation), with the actor (`customer`, `user` with `actor_user`, or `system`), an optional `note` and `metadata`. Read only once saved; `appointment.events` is chronological. Record one for every transition.
-- `appointments_helper#appointment_status_badge` shows a status with its badge color.
+- `appointments_helper#appointment_status_badge` shows a status with its badge color; `appointment_event_title` and `appointment_event_actor` describe a history entry.
 
 ## Public booking
 
 - `BookingsController` (`/:business_slug/book`, public): one step at a time, service → professional ("any" or one; skipped when a single one offers the service) → time → contact details. The choices travel in the URL (`service_id`, `professional_id`, `starts_at` in ISO 8601, `week`); anything invalid, not bookable, from another business or no longer free sends the customer back to the step that needs it. The public page links into it per service and per professional.
 - `AppointmentRequest` (form object) sends the request in its own transaction (`requires_new`): checks the slot again against `Availability`, finds the customer by email (updating name and phone; a blank phone keeps the old one), rejects a customer's overlapping active appointment, creates the pending appointment and its creation event. With "any professional" it assigns the free one with the fewest active appointments that day (then by name), sets `any_professional`, and tries the next one if the database rejects the first (`slot_taken?` when none is left).
 - `POST /:business_slug/book` is rate limited per IP (10 every 10 minutes). The test cache is a memory store cleared before each example, so rate limits can be tested.
-- `Appointment` has `generates_token_for :management` with no embedded data: the customer's personal link stays valid for the appointment's whole life. `AppointmentsController#show` (`/:business_slug/appointments/:token`, public, `noindex`) finds it within the current business (404 otherwise) and shows its status, details and the business's contact. Cancelling and rescheduling from it come with appointment management by link.
+- `Appointment` has `generates_token_for :management` with no embedded data: the customer's personal link stays valid for the appointment's whole life. `AppointmentsController#show` (`/:business_slug/appointments/:token`, public, `noindex`) finds it within the current business (404 otherwise) and shows its status, details, the business's reason when it rejected or cancelled it, a note when it was reassigned, and the business's contact. Cancelling and rescheduling from it come with appointment management by link.
+- The time step refreshes itself when an appointment changes, so a time someone else takes disappears (see "Live updates").
+
+## Request management and live agenda
+
+- Transitions live in `Appointment`: `confirm!(by:)` and `reject!(by:, reason:)` for requests, `cancel!(by:, reason:)` for confirmed appointments that haven't started, `mark_attended!(by:)` and `mark_no_show!(by:)` once they started, `reassign!(professional, by:)` for active ones that haven't started, and `expire!` (the system, for overdue requests). `by` is the acting `User` (or `:customer` / `:system`). Each one locks the row, checks the current status, saves and records its `AppointmentEvent` in one transaction; anything that no longer applies raises `Appointment::InvalidTransition`, and acting on a request past its deadline expires it instead (and raises). Add new transitions through the private `transition!`.
+- The team's rejections and cancellations need a reason (the event's `note`, up to 500 characters, shown to the customer): validated on `AppointmentEvent` and by a check constraint. A missing one raises `RecordInvalid` on the event, before anything changes.
+- Reassigning keeps the status and records the previous and new professional in the event's `metadata`. The new professional must be active, offer the service, work the whole service (in the business's time zone) and have no block or appointment then (`professional` / `service` / `base` errors); the customer's booking window doesn't apply.
+- Permissions: `Membership#visible_appointments` (owners and admins every one, professionals their own profile's) scopes every panel query; another professional's appointment is a 404. Professionals confirm, reject, cancel and mark attendance on their own; reassigning needs `manager?`. `Membership#manages_appointment?` answers the same for one appointment.
+- `ExpireRequestsJob` runs every minute (`config/recurring.yml`): it finds overdue requests across businesses (`BusinessScoped.across_businesses`) and expires each one within its own business. `Appointment.awaiting_answer` leaves out overdue requests that haven't expired yet.
+- Panel: `Admin::RequestsController` (pending requests, the ones expiring first on top, with the sidebar count), `Admin::AppointmentsController` (details, history, confirm and attendance), `Admin::RejectionsController`, `Admin::CancellationsController` (reason forms, `admin/appointments/_reason_form`) and `Admin::ReassignmentsController` (managers only), sharing `Admin::AppointmentActions` (finds the appointment among the visible ones and turns `InvalidTransition` into an alert on its page). `Admin::AgendasController` shows a week (`?week=`, any date in it) of `Appointment.on_agenda` (pending, confirmed, attended, no show), by professional or everyone's. The dashboard lists pending requests and today's appointments.
+
+### Live updates
+
+- After every commit an appointment broadcasts a Turbo 8 refresh to `Appointment.panel_stream(business)` and `Appointment.availability_stream(business)`. Pages subscribe with `refresh_on_appointment_changes(stream)`, which also sets morphing with preserved scroll: the panel's dashboard, requests, agenda and appointment page, and the public time step. Pages with forms don't subscribe, so a refresh never wipes what someone is typing.
+- Broadcasts carry no data: each page reloads itself with its viewer's permissions, so nothing leaks between professionals, and there are no partials to keep in sync. Turbo ignores the refresh caused by the viewer's own request.
+- Action Cable connections may be anonymous (customers have no account); the signed in user is identified when there is one. Streams stay private because Turbo only subscribes to signed stream names, which include the business. Specs use `turbo_stream_name` and `signed_turbo_stream_name` (`spec/support/turbo_stream_helpers.rb`).
 
 ## Multi-tenancy
 

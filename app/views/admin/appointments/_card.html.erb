@@ -1,0 +1,9 @@
+<%# The appointment a form acts on, above it. %>
+<div class="card card-body flex items-center gap-4">
+  <%= professional_avatar(appointment.professional) %>
+  <div class="min-w-0 flex-1">
+    <p class="truncate font-medium text-gray-900"><%= appointment.customer.name %> · <%= appointment.service.name %></p>
+    <p class="truncate text-sm text-gray-500"><%= format_period(appointment.starts_at, appointment.ends_at) %> · <%= appointment.professional.name %></p>
+  </div>
+  <%= appointment_status_badge(appointment) %>
+</div>

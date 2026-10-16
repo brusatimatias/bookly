@@ -18,6 +18,19 @@ class Membership < ApplicationRecord
     owner? || admin?
   end
 
+  # Whether the member can answer and manage an appointment (confirm, reject,
+  # cancel, attendance): owners and admins any, professionals their own.
+  # Reassigning is for owners and admins only (manager?).
+  def manages_appointment?(appointment)
+    manager? || appointment.professional.user_id == user_id
+  end
+
+  # The appointments the member sees in the panel: every one for owners and
+  # admins, their own profile's for professionals. Needs Current.business.
+  def visible_appointments
+    manager? ? business.appointments : business.appointments.where(professional: professional_profile)
+  end
+
   # The member's professional profile in this business, if they have one.
   def professional_profile
     Current.set(business: business) { business.professionals.find_by(user: user) }

@@ -127,6 +127,26 @@ def seed_appointments(appointments)
   end
 end
 
+# Something to do in the panel, unless there already is: a request that
+# expires in two hours and an appointment that started an hour ago, to mark its
+# attendance. Unlike the ones above, they're added to existing data too.
+def seed_panel_examples(professional:, service:)
+  zone = Time.find_zone!(Current.business.time_zone)
+
+  unless Appointment.awaiting_answer.where("request_expires_at < ?", 3.hours.from_now).exists?
+    customer = Customer.find_or_create_by!(email: "marta@example.com") { |new_customer| new_customer.name = "Marta Sosa" }
+    date = (zone.today + 1..).find { |day| professional.working_hours.exists?(day_of_week: day.wday) }
+    Appointment.create!(service: service, professional: professional, customer: customer, starts_at: zone.parse("#{date} 12:00"),
+                        request_expires_at: 2.hours.from_now, customer_notes: "¿Puede ser con máquina?")
+  end
+
+  unless Appointment.confirmed.where(starts_at: ..Time.current).exists?
+    customer = Customer.find_or_create_by!(email: "pedro@example.com") { |new_customer| new_customer.name = "Pedro Gil" }
+    Appointment.create!(service: service, professional: professional, customer: customer, status: :confirmed,
+                        starts_at: 1.hour.ago.in_time_zone(zone).beginning_of_hour)
+  end
+end
+
 # The history of appointments without one: requested by the customer, then
 # confirmed by the owner and, for cancelled ones, cancelled by the customer.
 def seed_appointment_events
@@ -155,6 +175,7 @@ Current.set(business: barberia) do
     { at: [ 3, "15:00" ], professional: lucia, service: haircut, status: :confirmed, name: "Ana Pérez", email: "ana@example.com" },
     { at: [ 1, "16:00" ], professional: martin, service: haircut, status: :cancelled, name: "Carla Díaz", email: "carla@example.com" }
   ])
+  seed_panel_examples(professional: martin, service: haircut)
   seed_appointment_events
 end
 

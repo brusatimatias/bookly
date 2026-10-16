@@ -1,5 +1,9 @@
 en:
   appointments:
+    # Helpers (AppointmentsHelper), also used by the panel.
+    events:
+      created: "Request sent"
+      reassigned: "Reassigned from %{from} to %{to}"
     show:
       title: "Your appointment · %{business}"
       heading:
@@ -19,6 +23,8 @@ en:
         attended: "Thank you for visiting %{business}."
         no_show: "This appointment is marked as missed."
       assigned: "Assigned among the available professionals."
+      reassigned: "%{business} reassigned your appointment to this professional."
+      reason: "%{business}'s reason"
       keep_link: "Keep this link: it's the way to see your appointment again."
       contact: "Contact %{business}"
       business_page: "Business page"

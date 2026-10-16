@@ -9,10 +9,16 @@ class AppointmentEvent < ApplicationRecord
 
   enum :actor_kind, { customer: "customer", user: "user", system: "system" }, validate: true
 
+  # Statuses the business can only reach giving a reason.
+  REASON_REQUIRED_STATUSES = %w[rejected cancelled].freeze
+
+  normalizes :note, with: ->(note) { note.strip.presence }
+
   validates :to_status, inclusion: { in: Appointment.statuses.values }
   validates :from_status, inclusion: { in: Appointment.statuses.values }, allow_nil: true
   validates :actor_user, presence: true, if: :user?
   validates :note, length: { maximum: 500 }
+  validates :note, presence: true, if: -> { user? && to_status.in?(REASON_REQUIRED_STATUSES) }
 
   scope :chronological, -> { order(:created_at, :id) }
 

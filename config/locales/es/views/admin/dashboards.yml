@@ -9,5 +9,10 @@ es:
         active_services: "Servicios activos"
         active_professionals: "Profesionales activos"
         pending_invitations: "Invitaciones pendientes"
-        coming_soon_title: "Próximamente"
-        coming_soon: "Desde acá vas a gestionar el equipo, los servicios y la agenda del negocio."
+        requests: "Pedidos pendientes"
+        all_requests:
+          one: "Ver el pedido"
+          other: "Ver los %{count}"
+        no_requests: "No hay pedidos esperando respuesta."
+        today: "Turnos de hoy"
+        no_appointments_today: "No hay turnos para hoy."

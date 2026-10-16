@@ -20,9 +20,20 @@ default: &default
   max_connections: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
 
 
+# Like production, Solid Queue and Solid Cable use their own databases, so jobs
+# (bin/jobs) run as in production and their broadcasts reach the browser.
 development:
-  <<: *default
-  database: bookly_development
+  primary: &primary_development
+    <<: *default
+    database: bookly_development
+  queue:
+    <<: *primary_development
+    database: bookly_development_queue
+    migrations_paths: db/queue_migrate
+  cable:
+    <<: *primary_development
+    database: bookly_development_cable
+    migrations_paths: db/cable_migrate
 
   # The specified database role being used to connect to PostgreSQL.
   # To create additional roles in PostgreSQL see `$ createuser --help`.

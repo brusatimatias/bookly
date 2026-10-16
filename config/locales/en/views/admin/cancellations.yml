@@ -1,0 +1,9 @@
+en:
+  admin:
+    cancellations:
+      new:
+        title: "Cancel appointment"
+        subtitle: "The time is freed and the customer sees the reason."
+        submit: "Cancel appointment"
+      create:
+        cancelled: "%{customer}'s appointment was cancelled."

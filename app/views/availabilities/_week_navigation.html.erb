@@ -1,23 +1,9 @@
-<%# Previous and next week around the shown one, and a notice when the whole
-    week has no free times (with a link to the next free day):
+<%# Previous and next week around the shown one, within the booking window
+    (shared/week_navigation), and a notice when the whole week has no free
+    times (with a link to the next free day):
       render "availabilities/week_navigation", availability:, week:, days:,
         next_free_day:, week_url: ->(date) { ... } %>
-<div class="mb-4 flex items-center justify-between gap-3">
-  <% first_week = week <= availability.first_day %>
-  <%= link_to week_url.call(week - 7), class: "btn-secondary btn-sm #{"pointer-events-none opacity-40" if first_week}",
-        aria: { disabled: first_week } do %>
-    <span aria-hidden="true">←</span> <span class="hidden sm:inline"><%= t("availabilities.week_navigation.previous_week") %></span>
-  <% end %>
-  <p class="text-center font-medium text-gray-900">
-    <%= l(week, format: :weekday) %> – <%= l(week + 6, format: :weekday) %>
-    <span class="block text-xs font-normal text-gray-500"><%= t("availabilities.week_navigation.time_zone", zone: time_zone_label) %></span>
-  </p>
-  <% last_week = week + 7 > availability.last_day %>
-  <%= link_to week_url.call(week + 7), class: "btn-secondary btn-sm #{"pointer-events-none opacity-40" if last_week}",
-        aria: { disabled: last_week } do %>
-    <span class="hidden sm:inline"><%= t("availabilities.week_navigation.next_week") %></span> <span aria-hidden="true">→</span>
-  <% end %>
-</div>
+<%= render "shared/week_navigation", week: week, week_url: week_url, first: availability.first_day, last: availability.last_day %>
 
 <% if days.values.none?(&:any?) %>
   <div class="mb-4 flex flex-wrap items-center gap-x-3 gap-y-1 rounded-lg bg-yellow-50 p-4 text-sm text-yellow-800 ring-1 ring-yellow-600/20 ring-inset">

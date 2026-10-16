@@ -52,6 +52,36 @@ RSpec.describe "Appointments", type: :request do
     expect(response.body).to include("Turno confirmado", "Confirmado", "Te esperamos en Barbería Centro.")
   end
 
+  it "shows the business's reason for a rejection or cancellation" do
+    in_business { appointment.reject!(by: create(:user), reason: "Ese día cerramos por inventario.") }
+
+    get appointment_path(business, token)
+
+    expect(response.body).to include("Pedido rechazado", "Motivo de Barbería Centro", "Ese día cerramos por inventario.")
+  end
+
+  it "has no reason box for other statuses" do
+    in_business { appointment.confirm!(by: create(:user)) }
+
+    get appointment_path(business, token)
+
+    expect(response.body).not_to include("Motivo de")
+  end
+
+  it "says when the business reassigned the appointment" do
+    in_business do
+      other = create(:professional, name: "Sofía Torres", services: [ service ])
+      create(:working_hour, professional: other, day_of_week: 5, start_time: "14:00", end_time: "18:00")
+      appointment.update!(any_professional: true)
+      appointment.reassign!(other, by: create(:user))
+    end
+
+    get appointment_path(business, token)
+
+    expect(response.body).to include("Sofía Torres", "Barbería Centro reasignó tu turno a este profesional.")
+    expect(response.body).not_to include("Asignado entre los profesionales disponibles.")
+  end
+
   it "keeps the price the appointment was booked with" do
     token
     in_business { service.update!(price_cents: 20_000_00) }

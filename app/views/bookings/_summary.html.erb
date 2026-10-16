@@ -36,7 +36,7 @@
         <div class="min-w-0 flex-1">
           <dt class="text-xs font-medium tracking-wide text-gray-500 uppercase"><%= t(".time") %></dt>
           <dd class="font-medium text-gray-900"><%= format_period(@slot.starts_at, @slot.starts_at + @service.duration_minutes.minutes) %></dd>
-          <dd class="text-sm text-gray-500"><%= t("availabilities.week_navigation.time_zone", zone: time_zone_label) %></dd>
+          <dd class="text-sm text-gray-500"><%= t("shared.week_navigation.time_zone", zone: time_zone_label) %></dd>
         </div>
         <%= link_to t(".change"), new_booking_path(choices(week: @slot.starts_at.to_date)), class: "btn-ghost btn-sm" %>
       </div>

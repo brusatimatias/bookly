@@ -7,9 +7,6 @@ es:
       not_working: "No se atiende"
       full: "Sin horarios libres"
     week_navigation:
-      previous_week: "Semana anterior"
-      next_week: "Semana siguiente"
-      time_zone: "Hora de %{zone}"
       week_empty: "No hay horarios libres esta semana."
       next_free_day: "Ir al próximo: %{date}"
       no_free_days: "Tampoco en los próximos 60 días."

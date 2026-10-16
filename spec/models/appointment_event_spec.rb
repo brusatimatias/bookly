@@ -26,6 +26,16 @@ RSpec.describe AppointmentEvent, type: :model do
     expect(build(:appointment_event, actor_kind: :user, actor_user: create(:user))).to be_valid
   end
 
+  it "requires a reason when the team rejects or cancels" do
+    user = create(:user)
+
+    expect(build(:appointment_event, to_status: "rejected", actor_kind: :user, actor_user: user, note: "  ")).not_to be_valid
+    expect(build(:appointment_event, to_status: "cancelled", actor_kind: :user, actor_user: user)).not_to be_valid
+    expect(build(:appointment_event, to_status: "cancelled", actor_kind: :user, actor_user: user, note: "Ill")).to be_valid
+    expect(build(:appointment_event, to_status: "cancelled", actor_kind: :customer)).to be_valid
+    expect(build(:appointment_event, to_status: "confirmed", actor_kind: :user, actor_user: user)).to be_valid
+  end
+
   it "can't be changed once recorded" do
     event = create(:appointment_event)
 
@@ -46,8 +56,12 @@ RSpec.describe AppointmentEvent, type: :model do
 
     # Straight to the database (recorded events are read only in Rails), in a
     # savepoint so one failure doesn't abort the example's transaction.
+    def update_columns!(**values)
+      described_class.transaction(requires_new: true) { described_class.where(id: event.id).update_all(values) }
+    end
+
     def update_column!(column, value)
-      described_class.transaction(requires_new: true) { described_class.where(id: event.id).update_all(column => value) }
+      update_columns!(column => value)
     end
 
     it "rejects unknown statuses and actors" do
@@ -58,6 +72,14 @@ RSpec.describe AppointmentEvent, type: :model do
 
     it "requires the user for a member's change" do
       expect { update_column!(:actor_kind, "user") }.to raise_error(ActiveRecord::StatementInvalid, /user_actor_present/)
+    end
+
+    it "requires a reason for the team's rejections and cancellations" do
+      team_rejection = { actor_kind: "user", actor_user_id: create(:user).id, to_status: "rejected" }
+
+      expect { update_columns!(**team_rejection, note: nil) }.to raise_error(ActiveRecord::StatementInvalid, /team_reason_present/)
+      expect { update_columns!(**team_rejection, note: " ") }.to raise_error(ActiveRecord::StatementInvalid, /team_reason_present/)
+      expect { update_columns!(**team_rejection, note: "Closed that day") }.not_to raise_error
     end
 
     it "rejects an appointment from another business" do
