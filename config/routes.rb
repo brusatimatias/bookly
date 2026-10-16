@@ -26,7 +26,11 @@ Rails.application.routes.draw do
     get "book", to: "bookings#new", as: :new_booking
     post "book", to: "bookings#create", as: :bookings
     # The customer's appointment, by its management token (no account).
-    resources :appointments, param: :token, only: :show
+    resources :appointments, param: :token, only: :show do
+      scope module: :appointments do
+        resource :cancellation, only: %i[new create]
+      end
+    end
 
     # Business panel, for its members only.
     namespace :admin do

@@ -82,6 +82,49 @@ RSpec.describe "Appointments", type: :request do
     expect(response.body).not_to include("Asignado entre los profesionales disponibles.")
   end
 
+  describe "what the customer can do" do
+    it "offers withdrawing a request" do
+      get appointment_path(business, token)
+
+      expect(response.body).to include("Podés retirar el pedido.", new_appointment_cancellation_path(business, token))
+    end
+
+    it "offers cancelling a confirmed appointment until the window closes" do
+      in_business { appointment.confirm!(by: create(:user)) }
+
+      get appointment_path(business, token)
+
+      expect(response.body).to include("Podés cancelarlo hasta el jue 15 oct, 15:00.", "Cancelar turno")
+    end
+
+    it "sends the customer to the business once the window closed" do
+      in_business { appointment.confirm!(by: create(:user)) }
+      travel_to(zone.local(2026, 10, 15, 15, 1))
+
+      get appointment_path(business, token)
+
+      expect(response.body).to include("Faltan menos de 24 h para el turno: para cancelarlo, contactá a Barbería Centro.")
+      expect(response.body).not_to include(new_appointment_cancellation_path(business, token))
+    end
+
+    it "offers nothing once the appointment is over" do
+      in_business { appointment.reject!(by: create(:user), reason: "No") }
+
+      get appointment_path(business, token)
+
+      expect(response.body).not_to include(new_appointment_cancellation_path(business, token), "Faltan menos de")
+    end
+  end
+
+  it "says when the customer cancelled it, without showing their reason as the business's" do
+    in_business { appointment.cancel!(by: :customer, reason: "Me surgió algo") }
+
+    get appointment_path(business, token)
+
+    expect(response.body).to include("Turno cancelado", "Lo cancelaste y el horario se liberó.")
+    expect(response.body).not_to include("Motivo de", "Me surgió algo")
+  end
+
   it "keeps the price the appointment was booked with" do
     token
     in_business { service.update!(price_cents: 20_000_00) }

@@ -1,5 +1,8 @@
 en:
   appointments:
+    # Customer's pages (AppointmentByToken).
+    change_failed: "This appointment can no longer be changed from here."
+    rate_limited: "You made too many changes in a row. Please try again in a few minutes."
     # Helpers (AppointmentsHelper), also used by the panel.
     events:
       created: "Request sent"
@@ -20,11 +23,18 @@ en:
         rejected: "%{business} couldn't take this request. You can request another time."
         expired: "%{business} didn't answer in time and the time was released. You can request another one."
         cancelled: "This appointment was cancelled and its time was released."
+        cancelled_by_customer: "You cancelled it and its time was released."
         attended: "Thank you for visiting %{business}."
         no_show: "This appointment is marked as missed."
       assigned: "Assigned among the available professionals."
       reassigned: "%{business} reassigned your appointment to this professional."
       reason: "%{business}'s reason"
       keep_link: "Keep this link: it's the way to see your appointment again."
+      changes:
+        pending: "Don't need it anymore? You can withdraw the request."
+        confirmed: "You can cancel it until %{deadline}."
+        closed: "The appointment is less than %{hours} h away: to cancel it, contact %{business}."
+      withdraw: "Withdraw request"
+      cancel: "Cancel appointment"
       contact: "Contact %{business}"
       business_page: "Business page"

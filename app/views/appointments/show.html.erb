@@ -2,6 +2,12 @@
 <%# A personal link: keep it out of search engines. %>
 <% content_for :head, tag.meta(name: "robots", content: "noindex, nofollow") %>
 
+<% professional_note = if @reassigned
+                        t(".reassigned", business: Current.business.name)
+                      elsif @appointment.any_professional? && @appointment.pending?
+                        t(".assigned")
+                      end %>
+
 <section class="mx-auto max-w-2xl space-y-6">
   <div class="card card-body flex items-start gap-4">
     <% pending = @appointment.pending? %>
@@ -17,6 +23,8 @@
         <% if pending %>
           <%= t(".pending_message", name: @appointment.customer.name, business: Current.business.name,
                 deadline: l(@appointment.request_expires_at, format: :weekday_hour)) %>
+        <% elsif @cancelled_by_customer %>
+          <%= t(".message.cancelled_by_customer") %>
         <% else %>
           <%= t(".message.#{@appointment.status}", business: Current.business.name) %>
         <% end %>
@@ -30,45 +38,23 @@
     </div>
   </div>
 
-  <div class="card">
-    <dl class="list-divided">
-      <div class="flex items-center gap-4 px-6 py-4">
-        <span class="flex size-10 shrink-0 items-center justify-center rounded-lg bg-brand-50 text-brand-600"><%= icon "calendar", class: "size-5" %></span>
-        <div class="min-w-0">
-          <dt class="text-xs font-medium tracking-wide text-gray-500 uppercase"><%= t("bookings.summary.time") %></dt>
-          <dd class="font-medium text-gray-900"><%= format_period(@appointment.starts_at, @appointment.ends_at) %></dd>
-          <dd class="text-sm text-gray-500"><%= t("shared.week_navigation.time_zone", zone: time_zone_label) %></dd>
-        </div>
+  <%= render "appointments/details", appointment: @appointment, professional_note: professional_note %>
+
+  <% if @appointment.customer_can_cancel? %>
+    <div class="card card-body flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+      <p class="text-sm text-gray-600">
+        <%= pending ? t(".changes.pending") : t(".changes.confirmed", deadline: l(@appointment.customer_deadline, format: :weekday_hour)) %>
+      </p>
+      <div class="flex shrink-0 flex-wrap gap-2">
+        <%= link_to (pending ? t(".withdraw") : t(".cancel")), new_appointment_cancellation_path(appointment_token: appointment_token),
+              class: "btn-ghost text-red-600 hover:bg-red-50" %>
       </div>
-      <div class="flex items-center gap-4 px-6 py-4">
-        <span class="flex size-10 shrink-0 items-center justify-center rounded-lg bg-brand-50 text-brand-600"><%= icon "tag", class: "size-5" %></span>
-        <div class="min-w-0 flex-1">
-          <dt class="text-xs font-medium tracking-wide text-gray-500 uppercase"><%= Appointment.human_attribute_name(:service) %></dt>
-          <dd class="font-medium text-gray-900"><%= @appointment.service.name %></dd>
-          <dd class="text-sm text-gray-500"><%= format_duration(@appointment.service.duration_minutes) %></dd>
-        </div>
-        <span class="shrink-0 font-semibold text-brand-700"><%= format_price(@appointment.price_cents) %></span>
-      </div>
-      <div class="flex items-center gap-4 px-6 py-4">
-        <%= professional_avatar(@appointment.professional) %>
-        <div class="min-w-0">
-          <dt class="text-xs font-medium tracking-wide text-gray-500 uppercase"><%= Appointment.human_attribute_name(:professional) %></dt>
-          <dd class="truncate font-medium text-gray-900"><%= @appointment.professional.name %></dd>
-          <% if @reassigned %>
-            <dd class="text-sm text-gray-500"><%= t(".reassigned", business: Current.business.name) %></dd>
-          <% elsif @appointment.any_professional? && pending %>
-            <dd class="text-sm text-gray-500"><%= t(".assigned") %></dd>
-          <% end %>
-        </div>
-      </div>
-      <% if @appointment.customer_notes.present? %>
-        <div class="px-6 py-4">
-          <dt class="text-xs font-medium tracking-wide text-gray-500 uppercase"><%= Appointment.human_attribute_name(:customer_notes) %></dt>
-          <dd class="mt-1 text-sm whitespace-pre-line text-gray-700"><%= @appointment.customer_notes %></dd>
-        </div>
-      <% end %>
-    </dl>
-  </div>
+    </div>
+  <% elsif @appointment.confirmed? && !@appointment.started? %>
+    <div class="card card-body">
+      <p class="text-sm text-gray-600"><%= t(".changes.closed", hours: Current.business.cancellation_window_hours, business: Current.business.name) %></p>
+    </div>
+  <% end %>
 
   <div class="flex items-start gap-3 rounded-xl bg-brand-50 px-6 py-5 text-sm text-brand-900 ring-1 ring-brand-600/20 ring-inset">
     <%= icon "exclamation-circle", class: "mt-0.5 size-5 shrink-0 text-brand-600" %>

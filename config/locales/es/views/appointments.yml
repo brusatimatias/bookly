@@ -1,5 +1,8 @@
 es:
   appointments:
+    # Customer's pages (AppointmentByToken).
+    change_failed: "Este turno ya no se puede cambiar desde acá."
+    rate_limited: "Hiciste demasiados cambios seguidos. Probá de nuevo en unos minutos."
     # Helpers (AppointmentsHelper), also used by the panel.
     events:
       created: "Pedido enviado"
@@ -20,11 +23,18 @@ es:
         rejected: "%{business} no pudo tomar este pedido. Podés pedir otro horario."
         expired: "%{business} no respondió a tiempo y el horario se liberó. Podés pedir otro."
         cancelled: "Este turno fue cancelado y el horario se liberó."
+        cancelled_by_customer: "Lo cancelaste y el horario se liberó."
         attended: "Gracias por visitar %{business}."
         no_show: "Este turno figura como ausente."
       assigned: "Asignado entre los profesionales disponibles."
       reassigned: "%{business} reasignó tu turno a este profesional."
       reason: "Motivo de %{business}"
       keep_link: "Guardá este link: es la forma de volver a ver tu turno."
+      changes:
+        pending: "¿Ya no lo necesitás? Podés retirar el pedido."
+        confirmed: "Podés cancelarlo hasta el %{deadline}."
+        closed: "Faltan menos de %{hours} h para el turno: para cancelarlo, contactá a %{business}."
+      withdraw: "Retirar pedido"
+      cancel: "Cancelar turno"
       contact: "Contacto de %{business}"
       business_page: "Página del negocio"
