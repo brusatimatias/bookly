@@ -29,6 +29,7 @@ Rails.application.routes.draw do
     resources :appointments, param: :token, only: :show do
       scope module: :appointments do
         resource :cancellation, only: %i[new create]
+        resource :reschedule, only: %i[new create]
       end
     end
 
@@ -67,6 +68,7 @@ Rails.application.routes.draw do
         end
         resource :rejection, only: %i[new create]
         resource :cancellation, only: %i[new create]
+        resource :reschedule, only: %i[new create]
         resource :reassignment, only: %i[new create]
       end
     end

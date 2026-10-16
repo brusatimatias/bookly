@@ -94,7 +94,7 @@ RSpec.describe "Appointments", type: :request do
 
       get appointment_path(business, token)
 
-      expect(response.body).to include("Podés cancelarlo hasta el jue 15 oct, 15:00.", "Cancelar turno")
+      expect(response.body).to include("Podés cancelarlo o cambiar el horario hasta el jue 15 oct, 15:00.", "Cancelar turno")
     end
 
     it "sends the customer to the business once the window closed" do
@@ -103,7 +103,7 @@ RSpec.describe "Appointments", type: :request do
 
       get appointment_path(business, token)
 
-      expect(response.body).to include("Faltan menos de 24 h para el turno: para cancelarlo, contactá a Barbería Centro.")
+      expect(response.body).to include("Faltan menos de 24 h para el turno: para cancelarlo o cambiarlo, contactá a Barbería Centro.")
       expect(response.body).not_to include(new_appointment_cancellation_path(business, token))
     end
 

@@ -11,6 +11,8 @@ class AppointmentsController < ApplicationController
     # Why the business rejected or cancelled it.
     @reason = last_change.note if last_change&.user? && (@appointment.rejected? || @appointment.cancelled?)
     @cancelled_by_customer = @appointment.cancelled? && last_change&.customer?
+    # The time a pending reschedule comes from.
+    @rescheduled_from = Time.zone.iso8601(last_change.metadata["from_starts_at"]) if @appointment.pending? && last_change&.metadata&.key?("from_starts_at")
     @reassigned = @appointment.active? && events.any? { |event| event.user? && event.metadata.key?("to_professional_id") }
   end
 end

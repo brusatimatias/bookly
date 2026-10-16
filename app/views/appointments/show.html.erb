@@ -16,13 +16,18 @@
     </span>
     <div class="min-w-0 space-y-1">
       <div class="flex flex-wrap items-center gap-2">
-        <h1 class="text-xl font-bold tracking-tight text-gray-900 sm:text-2xl"><%= t(".heading.#{@appointment.status}") %></h1>
+        <h1 class="text-xl font-bold tracking-tight text-gray-900 sm:text-2xl"><%= t(".heading.#{@rescheduled_from ? "rescheduled" : @appointment.status}") %></h1>
         <%= appointment_status_badge(@appointment) %>
       </div>
       <p class="text-gray-600">
         <% if pending %>
-          <%= t(".pending_message", name: @appointment.customer.name, business: Current.business.name,
-                deadline: l(@appointment.request_expires_at, format: :weekday_hour)) %>
+          <% if @rescheduled_from %>
+            <%= t(".rescheduled_message", from: l(@rescheduled_from, format: :weekday_hour), business: Current.business.name,
+                  deadline: l(@appointment.request_expires_at, format: :weekday_hour)) %>
+          <% else %>
+            <%= t(".pending_message", name: @appointment.customer.name, business: Current.business.name,
+                  deadline: l(@appointment.request_expires_at, format: :weekday_hour)) %>
+          <% end %>
         <% elsif @cancelled_by_customer %>
           <%= t(".message.cancelled_by_customer") %>
         <% else %>
@@ -46,6 +51,9 @@
         <%= pending ? t(".changes.pending") : t(".changes.confirmed", deadline: l(@appointment.customer_deadline, format: :weekday_hour)) %>
       </p>
       <div class="flex shrink-0 flex-wrap gap-2">
+        <% if @appointment.customer_can_reschedule? %>
+          <%= link_to t(".reschedule"), new_appointment_reschedule_path(appointment_token: appointment_token), class: "btn-secondary" %>
+        <% end %>
         <%= link_to (pending ? t(".withdraw") : t(".cancel")), new_appointment_cancellation_path(appointment_token: appointment_token),
               class: "btn-ghost text-red-600 hover:bg-red-50" %>
       </div>

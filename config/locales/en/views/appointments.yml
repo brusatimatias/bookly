@@ -11,12 +11,14 @@ en:
       title: "Your appointment · %{business}"
       heading:
         pending: "Request sent"
+        rescheduled: "New time requested"
         confirmed: "Appointment confirmed"
         rejected: "Request declined"
         expired: "Request expired"
         cancelled: "Appointment cancelled"
         attended: "Appointment attended"
         no_show: "You missed this appointment"
+      rescheduled_message: "You asked to move your appointment from %{from} to this time, which is held for you; %{business} has until %{deadline} to confirm it."
       pending_message: "Thank you, %{name}. The time is held for you; %{business} has until %{deadline} to confirm it."
       message:
         confirmed: "See you at %{business}."
@@ -32,9 +34,10 @@ en:
       keep_link: "Keep this link: it's the way to see your appointment again."
       changes:
         pending: "Don't need it anymore? You can withdraw the request."
-        confirmed: "You can cancel it until %{deadline}."
-        closed: "The appointment is less than %{hours} h away: to cancel it, contact %{business}."
+        confirmed: "You can cancel it or change its time until %{deadline}."
+        closed: "The appointment is less than %{hours} h away: to cancel or change it, contact %{business}."
       withdraw: "Withdraw request"
       cancel: "Cancel appointment"
+      reschedule: "Change time"
       contact: "Contact %{business}"
       business_page: "Business page"
