@@ -68,8 +68,7 @@ class BookingsController < ApplicationController
       @requested_start = Time.zone.iso8601(params[:starts_at].to_s) rescue nil
       return unless @requested_start
 
-      slot = @availability.days(@requested_start.to_date..@requested_start.to_date)
-        .fetch(@requested_start.to_date, []).find { |slot| slot.starts_at == @requested_start }
+      slot = @availability.slot_at(@requested_start)
       flash.now[:alert] = t("bookings.new.slot_taken") unless slot
       slot
     end

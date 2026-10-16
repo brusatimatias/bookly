@@ -4,8 +4,9 @@
 # same professional that overlap, break included.
 #
 # On create it copies the service's price and break, so later changes to the
-# service don't alter it. Its status only changes through the transition
-# methods (confirm!, reject!, ...), each recording an event (AppointmentEvent).
+# service don't alter it. Its status and time only change through the
+# transition methods (confirm!, reject!, reschedule!, ...), each recording an
+# event (AppointmentEvent).
 class Appointment < ApplicationRecord
   include BusinessScoped
   include OverlapConstraint
@@ -63,6 +64,22 @@ class Appointment < ApplicationRecord
     pending? && request_expires_at <= Time.current
   end
 
+  # Until when the customer may cancel or reschedule a confirmed appointment
+  # on their own (the business's cancellation window); later, they contact
+  # the business.
+  def customer_deadline
+    starts_at - Current.business!.cancellation_window_hours.hours
+  end
+
+  # A request can be withdrawn while it waits for an answer.
+  def customer_can_cancel?
+    (pending? && !request_overdue?) || customer_can_reschedule?
+  end
+
+  def customer_can_reschedule?
+    confirmed? && Time.current <= customer_deadline
+  end
+
   # The business accepts a request. `by` is the user answering it.
   def confirm!(by:)
     transition!(:confirmed, from: :pending, by: by)
@@ -74,8 +91,33 @@ class Appointment < ApplicationRecord
   end
 
   # The business cancels a confirmed appointment, saying why, until it starts.
-  def cancel!(by:, reason:)
-    transition!(:cancelled, from: :confirmed, by: by, note: reason, guard: -> { !started? })
+  # The customer withdraws a request, or cancels a confirmed appointment
+  # until the cancellation window closes; their reason is optional.
+  def cancel!(by:, reason: nil)
+    if by == :customer
+      transition!(:cancelled, from: ACTIVE_STATUSES, by: by, note: reason, guard: -> { customer_can_cancel? })
+    else
+      transition!(:cancelled, from: :confirmed, by: by, note: reason, guard: -> { !started? })
+    end
+  end
+
+  # The customer moves a confirmed appointment to another time, until the
+  # cancellation window closes; the caller checks the time is free
+  # (AppointmentReschedule). The old time is freed at once, and the
+  # appointment goes back to pending with a new deadline for the business: if
+  # it rejects the new time or doesn't answer, the appointment is lost. The
+  # professional may change when the customer had asked for any.
+  def reschedule!(new_starts_at, new_professional = professional)
+    transition!(:pending, from: :confirmed, by: :customer, guard: -> { customer_can_reschedule? && new_starts_at != starts_at }) do
+      metadata = { from_starts_at: starts_at.utc.iso8601, to_starts_at: new_starts_at.utc.iso8601 }
+      if new_professional.id != professional_id
+        metadata.merge!(from_professional_id: professional_id, to_professional_id: new_professional.id)
+        self.professional = new_professional
+      end
+      self.starts_at = new_starts_at
+      self.request_expires_at = [ Current.business!.request_expiration_hours.hours.from_now, new_starts_at ].min
+      metadata
+    end
   end
 
   # Attendance, once the appointment started.

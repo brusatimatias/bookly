@@ -38,4 +38,23 @@ RSpec.describe Customer, type: :model do
       expect(with_business(create(:business)) { build(:customer, email: "ana@example.com").valid? }).to be(true)
     end
   end
+
+  describe "#busy_during?" do
+    let(:customer) { create(:customer) }
+    let(:starts_at) { 1.day.from_now.change(hour: 10) }
+    let!(:appointment) { create(:appointment, customer: customer, starts_at: starts_at) }
+
+    it "is true when an active appointment's service overlaps the range" do
+      expect(customer.busy_during?((starts_at + 10.minutes)...(starts_at + 1.hour))).to be(true)
+      expect(customer.busy_during?(appointment.ends_at...(appointment.ends_at + 1.hour))).to be(false)
+    end
+
+    it "ignores appointments that no longer hold their time, and the one left out" do
+      range = starts_at...(starts_at + 1.hour)
+
+      expect(customer.busy_during?(range, except: appointment)).to be(false)
+      appointment.update_column(:status, "cancelled")
+      expect(customer.busy_during?(range)).to be(false)
+    end
+  end
 end

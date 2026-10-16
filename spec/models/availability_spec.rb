@@ -138,6 +138,13 @@ RSpec.describe Availability, type: :model do
 
       expect(times_on(monday)).to include("09:30", "10:00", "10:30")
     end
+
+    it "leave out the appointment being moved" do
+      moving = book("10:00", status: :confirmed)
+      book("11:00", status: :confirmed)
+
+      expect(times_on(monday, except: moving)).to eq(%w[09:00 09:30 10:00 12:00 12:30])
+    end
   end
 
   describe "booking window" do
@@ -209,6 +216,27 @@ RSpec.describe Availability, type: :model do
       service.deactivate!
 
       expect(Availability.new(service, now: now).days(monday..monday)).to eq({})
+    end
+  end
+
+  describe "#candidates" do
+    let(:sofia) { create(:professional, name: "Sofía", services: [ service ]) }
+
+    before do
+      works(professional, 1, "09:00", "13:00")
+      works(sofia, 1, "09:00", "13:00")
+    end
+
+    it "lists who is free at a start time, the least busy that day first" do
+      create(:appointment, service: service, professional: professional, starts_at: local(monday, "12:00"))
+
+      expect(Availability.new(service, now: now).candidates(local(monday, "10:00"))).to eq([ sofia, professional ])
+      expect(Availability.new(service, now: now).candidates(local(monday, "12:00"))).to eq([ sofia ])
+    end
+
+    it "is empty for a time that isn't a free slot" do
+      expect(Availability.new(service, now: now).candidates(local(monday, "10:10"))).to be_empty
+      expect(Availability.new(service, now: now).slot_at(local(monday, "10:10"))).to be_nil
     end
   end
 

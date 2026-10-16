@@ -14,14 +14,18 @@
 #
 # Without a professional it looks at every bookable professional offering the
 # service ("any professional"); each slot lists who is free then.
+#
+# `except` is an appointment whose time doesn't count as busy: the one a
+# customer is moving to another time.
 class Availability
   Slot = Data.define(:starts_at, :professionals)
 
-  attr_reader :service, :professional, :business, :zone, :now
+  attr_reader :service, :professional, :except, :business, :zone, :now
 
-  def initialize(service, professional: nil, now: Time.current)
+  def initialize(service, professional: nil, except: nil, now: Time.current)
     @service = service
     @professional = professional
+    @except = except
     # The current one (the service belongs to it): fails closed without one,
     # and always has its latest booking rules.
     @business = Current.business!
@@ -73,6 +77,23 @@ class Availability
     dates.index_with { |date| slots_on(date) }
   end
 
+  # The free slot starting at starts_at, if there is one.
+  def slot_at(starts_at)
+    date = starts_at.in_time_zone(zone).to_date
+    days(date..date).fetch(date, []).find { |slot| slot.starts_at == starts_at }
+  end
+
+  # Who is free at starts_at; with several, the least busy that day first
+  # (then by name), to spread the work for "any professional".
+  def candidates(starts_at)
+    free = slot_at(starts_at)&.professionals || []
+    return free if free.size < 2
+
+    midnight = starts_at.in_time_zone(zone).beginning_of_day
+    busy = Appointment.active.where(professional_id: free.map(&:id), starts_at: midnight...(midnight + 1.day)).group(:professional_id).count
+    free.sort_by { |candidate| [ busy.fetch(candidate.id, 0), candidate.name.downcase ] }
+  end
+
   # Professionals customers can book for the service: the given one, or any.
   def professionals
     @professionals ||= begin
@@ -102,7 +123,9 @@ class Availability
       ids = professionals.map(&:id)
 
       @blocks = TimeBlock.where(professional_id: ids).overlapping(search).group_by(&:professional_id)
-      @appointments = Appointment.active.where(professional_id: ids).overlapping(search).group_by(&:professional_id)
+      appointments = Appointment.active.where(professional_id: ids).overlapping(search)
+      appointments = appointments.where.not(id: except.id) if except
+      @appointments = appointments.group_by(&:professional_id)
     end
 
     def slots_on(date)
