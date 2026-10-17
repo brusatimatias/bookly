@@ -8,6 +8,7 @@ en:
           schedule: "Times"
           window: "When customers can book"
           requests: "Requests and cancellations"
+          reminders: "Reminders"
         cancel: "Cancel"
         submit: "Save settings"
       number:
@@ -27,5 +28,7 @@ en:
         request_expiration_hours_hint: "How long the business has to confirm a request before it expires and frees the time. It never expires after the appointment."
         cancellation_window_hours: "Cancellation window"
         cancellation_window_hours_hint: "Up to how many hours before the appointment customers can cancel or reschedule it themselves."
+        reminder_hours_before: "Reminder before the appointment"
+        reminder_hours_before_hint: "How many hours before a confirmed appointment we email the customer a reminder. With 0, none are sent."
       update:
         updated: "Booking settings saved."

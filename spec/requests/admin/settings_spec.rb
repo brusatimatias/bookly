@@ -16,26 +16,27 @@ RSpec.describe "Admin settings", type: :request do
       get edit_admin_settings_path(business)
 
       expect(response).to have_http_status(:ok)
-      expect(response.body).to include("Configuración de reservas", "Intervalo de inicio", "Aviso mínimo", 'value="30"')
+      expect(response.body).to include("Configuración de reservas", "Intervalo de inicio", "Aviso mínimo", 'value="30"',
+                                       "Recordatorio antes del turno", "Con 0, no se mandan.")
     end
 
     it "updates them" do
       patch admin_settings_path(business), params: { business: {
         slot_interval_minutes: 15, buffer_minutes: 5, min_booking_notice_hours: 1,
-        booking_horizon_days: 30, request_expiration_hours: 12, cancellation_window_hours: 48
+        booking_horizon_days: 30, request_expiration_hours: 12, cancellation_window_hours: 48, reminder_hours_before: 0
       } }
 
       expect(response).to redirect_to(edit_admin_settings_path(business))
       expect(flash[:notice]).to eq("Guardamos la configuración de reservas.")
       expect(business.reload).to have_attributes(slot_interval_minutes: 15, buffer_minutes: 5, min_booking_notice_hours: 1,
-        booking_horizon_days: 30, request_expiration_hours: 12, cancellation_window_hours: 48)
+        booking_horizon_days: 30, request_expiration_hours: 12, cancellation_window_hours: 48, reminder_hours_before: 0)
     end
 
     it "shows the errors of invalid values" do
-      patch admin_settings_path(business), params: { business: { slot_interval_minutes: 0, booking_horizon_days: 1000 } }
+      patch admin_settings_path(business), params: { business: { slot_interval_minutes: 0, booking_horizon_days: 1000, reminder_hours_before: -1 } }
 
       expect(response).to have_http_status(:unprocessable_entity)
-      expect(response.body).to include("debe ser mayor que 0", "debe ser menor que o igual a 365")
+      expect(response.body).to include("debe ser mayor que 0", "debe ser menor que o igual a 365", "debe ser mayor que o igual a 0")
       expect(business.reload.slot_interval_minutes).to eq(30)
     end
 

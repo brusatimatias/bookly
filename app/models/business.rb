@@ -47,12 +47,13 @@ class Business < ApplicationRecord
     min_booking_notice_hours: 30 * 24,
     booking_horizon_days: 365,
     cancellation_window_hours: 30 * 24,
-    request_expiration_hours: 30 * 24
+    request_expiration_hours: 30 * 24,
+    reminder_hours_before: 7 * 24
   }.freeze
 
   validates :slot_interval_minutes, :request_expiration_hours, :booking_horizon_days,
     numericality: { only_integer: true, greater_than: 0 }
-  validates :buffer_minutes, :cancellation_window_hours, :min_booking_notice_hours,
+  validates :buffer_minutes, :cancellation_window_hours, :min_booking_notice_hours, :reminder_hours_before,
     numericality: { only_integer: true, greater_than_or_equal_to: 0 }
   BOOKING_LIMITS.each do |attribute, maximum|
     validates attribute, numericality: { less_than_or_equal_to: maximum }, allow_nil: true

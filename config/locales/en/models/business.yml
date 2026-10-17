@@ -17,6 +17,7 @@ en:
         slot_interval_minutes: "Appointment start interval (minutes)"
         buffer_minutes: "Break between appointments (minutes)"
         cancellation_window_hours: "Cancellation window (hours)"
+        reminder_hours_before: "Reminder before the appointment (hours)"
         request_expiration_hours: "Request expiration (hours)"
         min_booking_notice_hours: "Minimum booking notice (hours)"
         booking_horizon_days: "Maximum booking horizon (days)"

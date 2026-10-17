@@ -188,6 +188,26 @@ RSpec.describe CustomerAppointmentsMailer, type: :mailer do
     end
   end
 
+  describe "#reminder" do
+    it "reminds the customer of the appointment, with its .ics" do
+      in_business { appointment.confirm!(by: member) }
+      travel_to(zone.local(2026, 10, 15, 16))
+
+      mail = mailer.reminder
+
+      expect(mail.subject).to eq("Recordatorio: tu turno en Barbería Centro es el vie 16 oct, 15:00")
+      expect(text(mail)).to include("Te recordamos tu turno en Barbería Centro el vie 16 oct, 15:00.",
+                                    "Para cancelarlo o cambiarlo, contactá a Barbería Centro.")
+      expect(calendar(mail)).to include("METHOD:PUBLISH")
+    end
+
+    it "isn't sent once the appointment is no longer confirmed" do
+      in_business { appointment.cancel!(by: :customer) }
+
+      expect { mailer.reminder.deliver_now }.not_to change(ActionMailer::Base.deliveries, :size)
+    end
+  end
+
   describe "sending in the business's name" do
     it "comes from the platform's address with the business's name, and replies go to its contact" do
       mail = mailer.requested

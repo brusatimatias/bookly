@@ -37,3 +37,6 @@ es:
     reassigned:
       subject: "Cambió el profesional de tu turno en %{business}"
       body: "%{business} reasignó tu turno: ahora te atiende %{professional}. El día y el horario no cambian."
+    reminder:
+      subject: "Recordatorio: tu turno en %{business} es el %{time}"
+      body: "Te recordamos tu turno en %{business} el %{time}. Te esperamos."

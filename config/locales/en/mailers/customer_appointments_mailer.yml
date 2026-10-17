@@ -37,3 +37,6 @@ en:
     reassigned:
       subject: "Your appointment at %{business} has a new professional"
       body: "%{business} reassigned your appointment: you'll now be seen by %{professional}. The day and time stay the same."
+    reminder:
+      subject: "Reminder: your appointment at %{business} is on %{time}"
+      body: "This is a reminder of your appointment at %{business} on %{time}. See you there."

@@ -33,6 +33,10 @@ class CustomerAppointmentsMailerPreview < ActionMailer::Preview
     mailer_for { AppointmentEvent.where("metadata ? 'to_professional_id'").where.not("metadata ? 'from_starts_at'") }.reassigned
   end
 
+  def reminder
+    mailer_for { AppointmentEvent.joins(:appointment).merge(Appointment.confirmed.where(starts_at: Time.current..)) }.reminder
+  end
+
   private
     # The mailer for the latest event the block's scope finds, in whichever
     # business.

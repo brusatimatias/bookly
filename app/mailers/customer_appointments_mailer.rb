@@ -71,6 +71,17 @@ class CustomerAppointmentsMailer < BusinessMailer
     mail_to_customer
   end
 
+  # Before the appointment (SendRemindersJob), with its .ics. Nothing is sent
+  # if it was cancelled or moved meanwhile.
+  def reminder
+    return unless @appointment.confirmed?
+
+    @body = t(".body", business: @business.name, time: l(@appointment.starts_at, format: :weekday_hour))
+    @footer = changes_footer
+    attach_calendar
+    mail_to_customer t(".subject", business: @business.name, time: l(@appointment.starts_at, format: :weekday_hour))
+  end
+
   private
     # Until when the customer may cancel or reschedule on their own.
     def changes_footer
