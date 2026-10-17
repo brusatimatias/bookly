@@ -1,0 +1,59 @@
+<% content_for :title, t(".title") %>
+
+<div class="mx-auto max-w-2xl">
+  <%= render "shared/page_header", title: t(".title"), subtitle: t(".subtitle") %>
+  <%= render "admin/settings/tabs" %>
+
+  <%= form_with model: @business, url: admin_business_path, method: :patch, class: "card card-body space-y-8" do |form| %>
+    <%= render "shared/form_errors", record: @business %>
+
+    <section class="space-y-5">
+      <h2 class="border-b border-gray-100 pb-2 font-semibold text-gray-900"><%= t(".sections.business") %></h2>
+
+      <div class="field">
+        <%= form.label :name, class: "label" %>
+        <%= form.text_field :name, required: true, maxlength: 100, class: "input" %>
+      </div>
+
+      <div class="field">
+        <span class="label"><%= Business.human_attribute_name(:slug) %></span>
+        <p class="text-sm">
+          <%= link_to business_url(@business), business_url(@business), class: "link", target: "_blank" %>
+        </p>
+        <p class="hint"><%= t(".slug_hint") %></p>
+      </div>
+    </section>
+
+    <section class="space-y-5">
+      <h2 class="border-b border-gray-100 pb-2 font-semibold text-gray-900"><%= t(".sections.contact") %></h2>
+      <p class="-mt-2 text-sm text-gray-500"><%= t(".contact_hint") %></p>
+
+      <div class="field">
+        <%= form.label :contact_email, class: "label" %>
+        <%= form.email_field :contact_email, class: "input" %>
+        <p class="hint"><%= t(".contact_email_hint") %></p>
+      </div>
+
+      <div class="field">
+        <%= form.label :contact_phone, class: "label" %>
+        <%= form.telephone_field :contact_phone, maxlength: 30, class: "input" %>
+      </div>
+
+      <div class="field">
+        <%= form.label :address, class: "label" %>
+        <%= form.text_field :address, maxlength: 200, class: "input" %>
+        <p class="hint"><%= t(".address_hint") %></p>
+      </div>
+    </section>
+
+    <section class="space-y-5">
+      <h2 class="border-b border-gray-100 pb-2 font-semibold text-gray-900"><%= t(".sections.regional") %></h2>
+      <%= render "businesses/regional_fields", form: form, changing: true %>
+    </section>
+
+    <div class="flex items-center justify-end gap-3 border-t border-gray-100 pt-5">
+      <%= link_to t(".cancel"), admin_root_path, class: "btn-ghost" %>
+      <%= form.submit t(".submit"), class: "btn-primary" %>
+    </div>
+  <% end %>
+</div>

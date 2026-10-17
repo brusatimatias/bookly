@@ -33,7 +33,10 @@ class Business < ApplicationRecord
 
   before_validation :generate_slug, if: -> { slug.blank? && name.present? }
 
-  validates :name, presence: true
+  validates :name, presence: true, length: { maximum: 100 }
+  validates :contact_email, format: { with: URI::MailTo::EMAIL_REGEXP }, allow_blank: true
+  validates :contact_phone, length: { maximum: 30 }
+  validates :address, length: { maximum: 200 }
   validates :slug, presence: true,
     uniqueness: true,
     format: { with: /\A#{SLUG_FORMAT}\z/ },

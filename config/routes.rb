@@ -40,6 +40,7 @@ Rails.application.routes.draw do
       root "dashboards#show"
 
       resource :team, only: :show
+      resource :business, only: %i[edit update]
       resource :settings, only: %i[edit update]
       resources :memberships, only: %i[update destroy]
       resources :invitations, only: %i[new create destroy] do

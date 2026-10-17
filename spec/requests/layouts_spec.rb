@@ -60,12 +60,20 @@ RSpec.describe "Layouts", type: :request do
       expect(response.body).to match(/<a[^>]*aria-current="page"[^>]*href="#{admin_professionals_path(business)}"|<a[^>]*href="#{admin_professionals_path(business)}"[^>]*aria-current="page"/)
     end
 
+    it "keeps settings highlighted on the booking rules tab" do
+      sign_in_with_role(:owner)
+
+      get edit_admin_settings_path(business)
+
+      expect(response.body).to match(/<a[^>]*aria-current="page"[^>]*href="#{edit_admin_business_path(business)}"|<a[^>]*href="#{edit_admin_business_path(business)}"[^>]*aria-current="page"/)
+    end
+
     it "hides the team section from professionals, but not services, professionals and blocks" do
       sign_in_with_role(:professional)
 
       get admin_root_path(business)
 
-      expect(response.body).not_to include(admin_team_path(business), edit_admin_settings_path(business))
+      expect(response.body).not_to include(admin_team_path(business), edit_admin_business_path(business))
       expect(response.body).to include(admin_services_path(business), admin_professionals_path(business), admin_time_blocks_path(business))
     end
   end

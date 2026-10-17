@@ -103,6 +103,14 @@ RSpec.describe Business do
       expect(build(:business, locale: "fr")).not_to be_valid
     end
 
+    it "checks the contact details" do
+      business = build(:business, name: "a" * 101, contact_email: "nope", contact_phone: "1" * 31, address: "a" * 201)
+
+      expect(business).not_to be_valid
+      expect(business.errors.attribute_names).to match_array(%i[name contact_email contact_phone address])
+      expect(build(:business, contact_email: "", contact_phone: "", address: "")).to be_valid
+    end
+
     it "accepts the listed currencies only" do
       expect(build(:business, currency: "USD")).to be_valid
       expect(build(:business, currency: "XYZ")).not_to be_valid

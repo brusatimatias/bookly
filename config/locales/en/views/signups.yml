@@ -9,8 +9,6 @@ en:
       email_taken: "There's already an account with this email."
       sign_in: "Sign in"
       slug_hint: "Your page:"
-      time_zone_hint: "Your schedule and your page show times in this zone."
-      locale_hint: "The language of your public page and of the emails to your customers."
       submit: "Create business"
       have_account: "Already have an account?"
       back: "Back to my businesses"

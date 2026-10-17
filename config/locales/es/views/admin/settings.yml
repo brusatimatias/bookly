@@ -1,6 +1,10 @@
 es:
   admin:
     settings:
+      tabs:
+        label: "Configuración"
+        business: "Negocio"
+        booking: "Reservas"
       edit:
         title: "Configuración de reservas"
         subtitle: "Las reglas con las que se calculan los horarios que pueden pedir los clientes."

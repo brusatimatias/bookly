@@ -9,8 +9,6 @@ es:
       email_taken: "Ya hay una cuenta con este email."
       sign_in: "Iniciar sesión"
       slug_hint: "Tu página:"
-      time_zone_hint: "Los horarios de tu agenda y de tu página se muestran en esta zona."
-      locale_hint: "El idioma de tu página pública y de los emails a tus clientes."
       submit: "Crear negocio"
       have_account: "¿Ya tenés una cuenta?"
       back: "Volver a mis negocios"

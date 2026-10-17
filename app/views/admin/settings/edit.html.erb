@@ -2,6 +2,7 @@
 
 <div class="mx-auto max-w-2xl">
   <%= render "shared/page_header", title: t(".title"), subtitle: t(".subtitle") %>
+  <%= render "tabs" %>
 
   <%= form_with model: @business, url: admin_settings_path, method: :patch, class: "card card-body space-y-8" do |form| %>
     <%= render "shared/form_errors", record: @business %>

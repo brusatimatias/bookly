@@ -1,0 +1,18 @@
+es:
+  admin:
+    businesses:
+      edit:
+        title: "Datos del negocio"
+        subtitle: "Cómo se presenta tu negocio a los clientes en tu página y en los emails."
+        sections:
+          business: "Negocio"
+          contact: "Contacto"
+          regional: "Zona horaria, idioma y moneda"
+        slug_hint: "La dirección web no se puede cambiar: tus clientes ya tienen links a ella."
+        contact_hint: "Se muestran en tu página pública y en los emails a tus clientes."
+        contact_email_hint: "Las respuestas de los clientes a los emails de turnos llegan a esta dirección."
+        address_hint: "Aparece en los emails y en el archivo de calendario de cada turno."
+        cancel: "Cancelar"
+        submit: "Guardar datos"
+      update:
+        updated: "Guardamos los datos del negocio."
