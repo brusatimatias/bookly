@@ -22,6 +22,8 @@ class AppointmentEvent < ApplicationRecord
 
   scope :chronological, -> { order(:created_at, :id) }
 
+  after_create_commit -> { AppointmentNotifier.call(self) }
+
   def readonly?
     persisted?
   end

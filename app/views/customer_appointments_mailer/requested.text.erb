@@ -1,9 +1,0 @@
-<%= t(".greeting", name: @appointment.customer.name) %>
-
-<%= t(".body", business: @business.name, deadline: l(@appointment.request_expires_at, format: :weekday_hour)) %>
-
-<%= render "mailers/appointment", appointment: @appointment -%>
-
-<%= t(".view") %>: <%= @appointment_url %>
-
-<%= t(".keep_link") %>

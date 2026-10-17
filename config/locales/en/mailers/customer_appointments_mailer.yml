@@ -1,8 +1,39 @@
 en:
   customer_appointments_mailer:
+    greeting: "Hi %{name},"
+    view: "View my appointment"
+    book_again: "Book another appointment"
+    reason: "Reason from %{business}"
+    changes:
+      open: "You can cancel it or change the time from the link until %{deadline}."
+      closed: "To cancel or change it, contact %{business}."
     requested:
       subject: "We received your appointment request at %{business}"
-      greeting: "Hi %{name},"
-      body: "%{business} has until %{deadline} to confirm it. We'll email you when they answer."
-      view: "View my appointment"
-      keep_link: "Keep this email: the link lets you check the request or withdraw it."
+      body: "The time is already held for you. %{business} has until %{deadline} to confirm it; we'll email you when they answer."
+      footer: "Keep this email: the link lets you check the request or withdraw it."
+    confirmed:
+      subject: "Your appointment at %{business} is confirmed"
+      body: "All set! %{business} confirmed your appointment. See you there."
+    rejected:
+      subject: "%{business} couldn't confirm your appointment request"
+      body: "%{business} declined your request and the time was released. You can request another one anytime."
+    cancelled:
+      by_business:
+        subject: "%{business} cancelled your appointment"
+        body: "%{business} cancelled your appointment and the time was released. You can request another one anytime."
+      by_customer:
+        subject: "You cancelled your appointment at %{business}"
+        body: "Your appointment is cancelled and the time was released."
+      withdrawn:
+        subject: "You withdrew your appointment request at %{business}"
+        body: "Your request is withdrawn and the time was released."
+    expired:
+      subject: "Your appointment request at %{business} expired"
+      body: "%{business} didn't answer in time and the time was released. You can request another one anytime."
+    rescheduled:
+      subject: "We received your change of time at %{business}"
+      body: "You asked to move your appointment from %{from} to this time, which is already held for you. %{business} has until %{deadline} to confirm it; we'll email you when they answer."
+      footer: "Your previous time was already released: if %{business} declines the new one or doesn't answer in time, you lose the appointment."
+    reassigned:
+      subject: "Your appointment at %{business} has a new professional"
+      body: "%{business} reassigned your appointment: you'll now be seen by %{professional}. The day and time stay the same."
