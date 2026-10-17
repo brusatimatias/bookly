@@ -1,0 +1,4 @@
+es:
+  mailers:
+    appointment:
+      address: "Dirección"

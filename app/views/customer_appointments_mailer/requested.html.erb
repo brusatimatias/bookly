@@ -1,0 +1,9 @@
+<p style="margin:0 0 16px;font-weight:600;"><%= t(".greeting", name: @appointment.customer.name) %></p>
+
+<p style="margin:0 0 24px;"><%= t(".body", business: @business.name, deadline: l(@appointment.request_expires_at, format: :weekday_hour)) %></p>
+
+<%= render "mailers/appointment", appointment: @appointment %>
+
+<p style="margin:0 0 24px;"><%= email_button t(".view"), @appointment_url %></p>
+
+<p style="margin:0;color:#6b7280;font-size:13px;"><%= t(".keep_link") %></p>

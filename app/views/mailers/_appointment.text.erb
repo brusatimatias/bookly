@@ -1,0 +1,7 @@
+<% business = Current.business -%>
+<%= t("bookings.summary.time") %>: <%= format_period(appointment.starts_at, appointment.ends_at) %> (<%= t("shared.week_navigation.time_zone", zone: time_zone_label) %>)
+<%= Appointment.human_attribute_name(:service) %>: <%= appointment.service.name %> (<%= format_duration(appointment.service.duration_minutes) %> · <%= format_price(appointment.price_cents) %>)
+<%= Appointment.human_attribute_name(:professional) %>: <%= appointment.professional.name %>
+<% if business.address.present? -%>
+<%= t(".address") %>: <%= business.address %>
+<% end -%>

@@ -1,0 +1,8 @@
+es:
+  customer_appointments_mailer:
+    requested:
+      subject: "Recibimos tu pedido de turno en %{business}"
+      greeting: "Hola, %{name}:"
+      body: "%{business} tiene hasta el %{deadline} para confirmarlo. Te avisamos por email cuando responda."
+      view: "Ver mi turno"
+      keep_link: "Guardá este email: desde el link podés ver el estado del pedido o retirarlo."

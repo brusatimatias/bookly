@@ -1,0 +1,8 @@
+en:
+  customer_appointments_mailer:
+    requested:
+      subject: "We received your appointment request at %{business}"
+      greeting: "Hi %{name},"
+      body: "%{business} has until %{deadline} to confirm it. We'll email you when they answer."
+      view: "View my appointment"
+      keep_link: "Keep this email: the link lets you check the request or withdraw it."
