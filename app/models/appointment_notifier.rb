@@ -6,7 +6,19 @@
 # the request, and only for changes that were actually saved.
 class AppointmentNotifier
   def self.call(event)
-    new(event).call
+    new(event).call unless silenced?
+  end
+
+  # Runs the block without emailing anyone about the changes it makes (seeds).
+  def self.silence
+    previous, ActiveSupport::IsolatedExecutionState[:appointment_notifier_silenced] = silenced?, true
+    yield
+  ensure
+    ActiveSupport::IsolatedExecutionState[:appointment_notifier_silenced] = previous
+  end
+
+  def self.silenced?
+    ActiveSupport::IsolatedExecutionState[:appointment_notifier_silenced] || false
   end
 
   def initialize(event)

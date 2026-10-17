@@ -2,7 +2,7 @@
 # from the seeded appointments: each email uses the latest event it is about.
 class CustomerAppointmentsMailerPreview < ActionMailer::Preview
   def requested
-    mailer_for { AppointmentEvent.where(from_status: nil) }.requested
+    mailer_for { AppointmentEvent.where(from_status: nil).joins(:appointment).merge(Appointment.pending) }.requested
   end
 
   def confirmed

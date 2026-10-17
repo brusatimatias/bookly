@@ -157,6 +157,38 @@ def seed_panel_examples(professional:, service:)
   end
 end
 
+# Past outcomes, for the email previews, unless there already are: a request
+# the business rejected and an appointment it cancelled, each with its reason,
+# and a request nobody answered in time.
+def seed_past_outcomes(professional:, service:)
+  zone = Time.find_zone!(Current.business.time_zone)
+  owner = Current.business.owner
+  date = (zone.today + 2..).find { |day| professional.working_hours.exists?(day_of_week: day.wday) }
+
+  unless Appointment.rejected.exists?
+    customer = Customer.find_or_create_by!(email: "nora@example.com") { |new_customer| new_customer.name = "Nora Paz" }
+    appointment = Appointment.create!(service: service, professional: professional, customer: customer, starts_at: zone.parse("#{date} 15:00"))
+    appointment.events.create!(to_status: "pending", actor_kind: :customer)
+    appointment.reject!(by: owner, reason: "Ese día cerramos temprano por una capacitación.")
+  end
+
+  unless Appointment.cancelled.joins(:events).where(appointment_events: { to_status: "cancelled", actor_kind: "user" }).exists?
+    customer = Customer.find_or_create_by!(email: "tomas@example.com") { |new_customer| new_customer.name = "Tomás Ibarra" }
+    appointment = Appointment.create!(service: service, professional: professional, customer: customer, starts_at: zone.parse("#{date} 16:00"))
+    appointment.events.create!(to_status: "pending", actor_kind: :customer)
+    appointment.confirm!(by: owner)
+    appointment.cancel!(by: owner, reason: "Sofía no va a poder atender ese día; escribinos y te buscamos otro horario.")
+  end
+
+  unless Appointment.expired.exists?
+    customer = Customer.find_or_create_by!(email: "irene@example.com") { |new_customer| new_customer.name = "Irene Sáenz" }
+    appointment = Appointment.create!(service: service, professional: professional, customer: customer, starts_at: zone.parse("#{date} 17:00"),
+                                      request_expires_at: 1.minute.ago)
+    appointment.events.create!(to_status: "pending", actor_kind: :customer)
+    appointment.expire!
+  end
+end
+
 # The history of appointments without one: requested by the customer, then
 # confirmed by the owner and, for cancelled ones, cancelled by the customer.
 def seed_appointment_events
@@ -173,26 +205,31 @@ def seed_appointment_events
   end
 end
 
-Current.set(business: barberia) do
-  martin = Professional.find_by!(name: "Martín Gómez")
-  lucia = Professional.find_by!(name: "Lucía Fernández")
-  haircut = Service.find_by!(name: "Corte de pelo")
-  combo = Service.find_by!(name: "Corte y barba")
+# Seeded changes email nobody: browse the emails in the previews instead
+# (/rails/mailers).
+AppointmentNotifier.silence do
+  Current.set(business: barberia) do
+    martin = Professional.find_by!(name: "Martín Gómez")
+    lucia = Professional.find_by!(name: "Lucía Fernández")
+    haircut = Service.find_by!(name: "Corte de pelo")
+    combo = Service.find_by!(name: "Corte y barba")
 
-  seed_appointments([
-    { at: [ 1, "10:00" ], professional: martin, service: haircut, status: :confirmed, name: "Ana Pérez", email: "ana@example.com" },
-    { at: [ 1, "11:00" ], professional: martin, service: combo, status: :pending, name: "Juan Ríos", email: "juan@example.com" },
-    { at: [ 3, "15:00" ], professional: lucia, service: haircut, status: :confirmed, name: "Ana Pérez", email: "ana@example.com" },
-    { at: [ 1, "16:00" ], professional: martin, service: haircut, status: :cancelled, name: "Carla Díaz", email: "carla@example.com" }
-  ])
-  seed_panel_examples(professional: martin, service: haircut)
-  seed_appointment_events
-end
+    seed_appointments([
+      { at: [ 1, "10:00" ], professional: martin, service: haircut, status: :confirmed, name: "Ana Pérez", email: "ana@example.com" },
+      { at: [ 1, "11:00" ], professional: martin, service: combo, status: :pending, name: "Juan Ríos", email: "juan@example.com" },
+      { at: [ 3, "15:00" ], professional: lucia, service: haircut, status: :confirmed, name: "Ana Pérez", email: "ana@example.com" },
+      { at: [ 1, "16:00" ], professional: martin, service: haircut, status: :cancelled, name: "Carla Díaz", email: "carla@example.com" }
+    ])
+    seed_panel_examples(professional: martin, service: haircut)
+    seed_past_outcomes(professional: Professional.find_by!(name: "Sofía Torres"), service: haircut)
+    seed_appointment_events
+  end
 
-Current.set(business: studio) do
-  seed_appointments([
-    { at: [ 1, "11:00" ], professional: Professional.find_by!(name: "Alex Kim"), service: Service.find_by!(name: "Color"),
-      status: :confirmed, name: "Jordan Lee", email: "jordan@example.com" }
-  ])
-  seed_appointment_events
+  Current.set(business: studio) do
+    seed_appointments([
+      { at: [ 1, "11:00" ], professional: Professional.find_by!(name: "Alex Kim"), service: Service.find_by!(name: "Color"),
+        status: :confirmed, name: "Jordan Lee", email: "jordan@example.com" }
+    ])
+    seed_appointment_events
+  end
 end

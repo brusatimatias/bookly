@@ -2,7 +2,7 @@
 # the seeded appointments and sent to the business's owner.
 class TeamAppointmentsMailerPreview < ActionMailer::Preview
   def new_request
-    mailer_for { AppointmentEvent.where(from_status: nil) }.new_request
+    mailer_for { AppointmentEvent.where(from_status: nil).joins(:appointment).merge(Appointment.pending) }.new_request
   end
 
   def customer_rescheduled
