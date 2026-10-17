@@ -4,6 +4,7 @@
   <div class="min-w-0 flex-1">
     <p class="truncate font-medium text-gray-900"><%= appointment.customer.name %> · <%= appointment.service.name %></p>
     <p class="truncate text-sm text-gray-500"><%= format_period(appointment.starts_at, appointment.ends_at) %> · <%= appointment.professional.name %></p>
+    <%= appointment_rescheduled_note(appointment, class: "mt-1") %>
   </div>
   <%= appointment_status_badge(appointment) %>
 </div>

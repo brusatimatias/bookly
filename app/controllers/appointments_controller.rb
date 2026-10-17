@@ -1,20 +1,17 @@
-# The customer's page for an appointment, reached through its management token
-# (the personal link; customers have no account): its status, the business's
-# reason when it rejected or cancelled it, and its details. Read only for now:
-# cancelling and rescheduling come with appointment management by link.
+# The customer's page for an appointment: its status, the business's reason
+# when it rejected or cancelled it, its details and what the customer can
+# still do (cancel it, or reschedule a confirmed one, within the business's
+# cancellation window).
 class AppointmentsController < ApplicationController
-  include SetCurrentBusiness
-  allow_unauthenticated_access
+  include AppointmentByToken
 
   def show
-    # Only this business's appointments: a token from another one, or a
-    # tampered one, is not found.
-    @appointment = Appointment.includes(:service, :professional, :customer).find_by_token_for(:management, params[:token]) or
-      raise ActiveRecord::RecordNotFound
-
     events = @appointment.events.to_a
+    last_change = events.reverse.find { |event| event.to_status == @appointment.status }
     # Why the business rejected or cancelled it.
-    @reason = events.reverse.find { |event| event.to_status == @appointment.status && event.user? }&.note if @appointment.rejected? || @appointment.cancelled?
-    @reassigned = @appointment.active? && events.any? { |event| event.metadata.key?("to_professional_id") }
+    @reason = last_change.note if last_change&.user? && (@appointment.rejected? || @appointment.cancelled?)
+    @cancelled_by_customer = @appointment.cancelled? && last_change&.customer?
+    @rescheduled_from = @appointment.rescheduled_from
+    @reassigned = @appointment.active? && events.any?(&:reassignment?)
   end
 end

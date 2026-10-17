@@ -59,7 +59,8 @@ RSpec.describe "Admin dashboard", type: :request do
       with_business(business) do
         service = create(:service, name: "Corte")
         profile = create(:professional, user: user, services: [ service ])
-        create(:appointment, service: service, professional: profile, starts_at: 3.days.from_now, customer: create(:customer, name: "Ana Pérez"))
+        ana = create(:appointment, service: service, professional: profile, starts_at: 3.days.from_now, customer: create(:customer, name: "Ana Pérez"))
+        create(:appointment_event, :reschedule, appointment: ana, from: 2.days.from_now)
         create(:appointment, :confirmed, service: service, professional: profile, starts_at: 1.hour.from_now, customer: create(:customer, name: "Juan Ríos"))
         create(:appointment, starts_at: 1.hour.from_now, customer: create(:customer, name: "Someone Else's"))
       end
@@ -67,7 +68,7 @@ RSpec.describe "Admin dashboard", type: :request do
 
       get admin_root_path(business)
 
-      expect(response.body).to include("Pedidos pendientes", "Ana Pérez", "Turnos de hoy", "Juan Ríos")
+      expect(response.body).to include("Pedidos pendientes", "Ana Pérez", "Cambio de horario · antes mié 21 oct, 12:00", "Turnos de hoy", "Juan Ríos")
       expect(response.body).not_to include("Someone Else")
     end
 

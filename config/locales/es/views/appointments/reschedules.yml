@@ -1,0 +1,17 @@
+es:
+  appointments:
+    reschedules:
+      new:
+        title: "Cambiar el horario"
+        subtitle: "Elegí un horario nuevo. %{business} lo tiene que confirmar."
+        back: "Volver a tu turno"
+        current: "Tu horario actual"
+        heading: "¿Cuándo te queda mejor?"
+      confirmation:
+        new_time: "Horario nuevo"
+        warning: "Tu horario actual se libera ahora y el turno vuelve a quedar pendiente hasta que %{business} confirme el nuevo. Si lo rechaza o no responde a tiempo, te quedás sin turno."
+        other_time: "Elegir otro horario"
+        submit: "Pedir el cambio"
+      create:
+        requested: "Listo, pedimos el cambio de horario. El negocio lo va a confirmar."
+        slot_taken: "Ese horario ya no está disponible. Elegí otro."

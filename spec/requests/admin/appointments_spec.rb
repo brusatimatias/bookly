@@ -41,6 +41,29 @@ RSpec.describe "Admin appointments", type: :request do
       expect(response.body).to include("Reasignado de Sofía a Martín", "Cerramos ese día", manager.name)
     end
 
+    it "shows a customer's change of time, in the details and the history" do
+      zone = Time.find_zone!(business.time_zone)
+      in_business do
+        appointment.update!(starts_at: zone.local(2026, 10, 20, 10))
+        create(:appointment_event, :reschedule, appointment: appointment, from: zone.local(2026, 10, 19, 12))
+      end
+      sign_in_as(manager)
+
+      get admin_appointment_path(business, appointment)
+
+      expect(response.body).to include("Cambio de horario · antes lun 19 oct, 12:00", "Horario cambiado del lun 19 oct, 12:00 al mar 20 oct, 10:00",
+                                       "Cliente")
+    end
+
+    it "shows the customer's cancellation with their reason" do
+      in_business { appointment.cancel!(by: :customer, reason: "Me surgió algo") }
+      sign_in_as(manager)
+
+      get admin_appointment_path(business, appointment)
+
+      expect(response.body).to include("Cancelado", "Cliente", "Me surgió algo")
+    end
+
     it "lets professionals see their own appointments, without reassigning" do
       sign_in_as(own_membership.user)
 

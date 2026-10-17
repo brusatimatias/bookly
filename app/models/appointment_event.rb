@@ -25,4 +25,23 @@ class AppointmentEvent < ApplicationRecord
   def readonly?
     persisted?
   end
+
+  # The customer moved the appointment to another time (Appointment#reschedule!);
+  # the professional may have changed too.
+  def reschedule?
+    metadata.key?("from_starts_at")
+  end
+
+  # The business moved the appointment to another professional.
+  def reassignment?
+    metadata.key?("to_professional_id") && !reschedule?
+  end
+
+  def from_starts_at
+    Time.zone.iso8601(metadata["from_starts_at"]) if reschedule?
+  end
+
+  def to_starts_at
+    Time.zone.iso8601(metadata["to_starts_at"]) if reschedule?
+  end
 end

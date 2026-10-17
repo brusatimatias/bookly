@@ -33,6 +33,17 @@ RSpec.describe "Admin requests", type: :request do
     expect(response.body).to match(%r{Pedidos\s*<span class="badge-yellow ml-auto">2</span>})
   end
 
+  it "says which requests are a change of time, and the time they had" do
+    ana = in_business { Appointment.joins(:customer).find_by!(customers: { name: "Ana Pérez" }) }
+    in_business { create(:appointment_event, :reschedule, appointment: ana, from: ana.starts_at - 1.day) }
+    sign_in_as(create(:membership, :admin, business: business).user)
+
+    get admin_requests_path(business)
+
+    expect(response.body.scan("Cambio de horario · antes").size).to eq(1)
+    expect(response.body).to include("Cambio de horario · antes #{I18n.l(ana.starts_at.in_time_zone(business.time_zone) - 1.day, format: :weekday_hour, locale: :es)}")
+  end
+
   it "shows professionals only their own requests" do
     sign_in_as(own_membership.user)
 

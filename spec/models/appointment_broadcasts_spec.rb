@@ -20,6 +20,15 @@ RSpec.describe Appointment, "live updates", type: :model do
     expect { appointment.confirm!(by: create(:user)) }.to have_broadcasted_to(panel_stream).and have_broadcasted_to(availability_stream)
   end
 
+  it "refreshes the customer's page of that appointment only" do
+    appointment = create(:appointment)
+    other = create(:appointment, starts_at: appointment.starts_at + 2.hours)
+
+    expect { appointment.confirm!(by: create(:user)) }
+      .to have_broadcasted_to(turbo_stream_name(appointment.customer_stream)).with(a_string_including('action="refresh"'))
+    expect { appointment.reload.cancel!(by: :customer) }.not_to have_broadcasted_to(turbo_stream_name(other.customer_stream))
+  end
+
   it "doesn't refresh when nothing is saved" do
     appointment = create(:appointment)
 

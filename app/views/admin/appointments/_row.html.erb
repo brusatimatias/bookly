@@ -1,9 +1,10 @@
-<%# One appointment in a list, linking to its page. %>
+<%# One appointment in a list, linking to its page (preload its events). %>
 <%= link_to admin_appointment_path(appointment), id: dom_id(appointment), class: "flex items-center gap-4 px-6 py-4 transition-colors hover:bg-gray-50" do %>
   <%= professional_avatar(appointment.professional) %>
   <div class="min-w-0 flex-1">
     <p class="truncate font-medium text-gray-900"><%= appointment.customer.name %> · <%= appointment.service.name %></p>
     <p class="truncate text-sm text-gray-500"><%= format_period(appointment.starts_at, appointment.ends_at) %> · <%= appointment.professional.name %></p>
+    <%= appointment_rescheduled_note(appointment, class: "mt-1") %>
   </div>
   <%= appointment_status_badge(appointment) %>
 <% end %>

@@ -36,6 +36,18 @@ RSpec.describe AppointmentEvent, type: :model do
     expect(build(:appointment_event, to_status: "confirmed", actor_kind: :user, actor_user: user)).to be_valid
   end
 
+  it "tells a customer's reschedule from a business's reassignment" do
+    appointment = create(:appointment)
+    reschedule = build(:appointment_event, :reschedule, appointment: appointment, from: appointment.starts_at - 2.hours)
+    reassignment = build(:appointment_event, metadata: { "from_professional_id" => 1, "to_professional_id" => 2 })
+
+    expect(reschedule).to have_attributes(reschedule?: true, reassignment?: false, from_starts_at: appointment.starts_at - 2.hours,
+                                          to_starts_at: appointment.starts_at)
+    expect(reassignment).to have_attributes(reschedule?: false, reassignment?: true, from_starts_at: nil)
+    reschedule.metadata.merge!("from_professional_id" => 1, "to_professional_id" => 2)
+    expect(reschedule.reassignment?).to be(false)
+  end
+
   it "can't be changed once recorded" do
     event = create(:appointment_event)
 

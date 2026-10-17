@@ -94,6 +94,140 @@ RSpec.describe Appointment, "transitions", type: :model do
     it "doesn't apply to requests, which are rejected" do
       expect { appointment.cancel!(by: user, reason: "No") }.to raise_error(Appointment::InvalidTransition)
     end
+
+    describe "by the customer" do
+      # Tuesday 10:00 minus 12 hours: until Monday 22:00.
+      before { business.update!(cancellation_window_hours: 12) }
+
+      it "withdraws a request, with an optional reason" do
+        appointment.cancel!(by: :customer)
+
+        expect(appointment.reload).to be_cancelled
+        expect(appointment.events.last).to have_attributes(from_status: "pending", to_status: "cancelled", actor_kind: "customer", note: nil)
+      end
+
+      it "cancels a confirmed appointment until the cancellation window closes" do
+        confirmed_appointment
+        travel_to(zone.local(2026, 10, 19, 22))
+
+        appointment.cancel!(by: :customer, reason: "  Can't make it ")
+
+        expect(appointment.reload).to be_cancelled
+        expect(appointment.events.last).to have_attributes(from_status: "confirmed", actor_kind: "customer", note: "Can't make it")
+      end
+
+      it "is not possible once the window closed" do
+        confirmed_appointment
+        travel_to(zone.local(2026, 10, 19, 22, 1))
+
+        expect { appointment.cancel!(by: :customer) }.to raise_error(Appointment::InvalidTransition)
+        expect(appointment.reload).to be_confirmed
+      end
+
+      it "expires an overdue request instead" do
+        appointment
+        travel_to(appointment.request_expires_at)
+
+        expect { appointment.cancel!(by: :customer) }.to raise_error(Appointment::InvalidTransition)
+        expect(appointment.reload).to be_expired
+      end
+    end
+  end
+
+  describe "#reschedule!" do
+    let(:new_starts_at) { starts_at + 2.hours }
+
+    before { business.update!(cancellation_window_hours: 12) }
+
+    it "moves a confirmed appointment back to pending at the new time, freeing the old one" do
+      confirmed_appointment.reschedule!(new_starts_at)
+
+      expect(appointment.reload).to have_attributes(status: "pending", starts_at: new_starts_at, ends_at: new_starts_at + 30.minutes,
+                                                    professional: professional, request_expires_at: Time.current + 24.hours)
+      expect(appointment.events.last).to have_attributes(
+        from_status: "confirmed", to_status: "pending", actor_kind: "customer",
+        metadata: { "from_starts_at" => starts_at.utc.iso8601, "to_starts_at" => new_starts_at.utc.iso8601 }
+      )
+      expect(build(:appointment, service: service, professional: professional, starts_at: starts_at)).to be_valid
+    end
+
+    it "is remembered while the business answers" do
+      expect(confirmed_appointment.rescheduled_from).to be_nil
+
+      appointment.reschedule!(new_starts_at)
+      expect(appointment.reload.rescheduled_from).to eq(starts_at)
+
+      appointment.confirm!(by: user)
+      expect(appointment.reload.rescheduled_from).to be_nil
+    end
+
+    it "never gives the business until after the new time" do
+      business.update!(request_expiration_hours: 72)
+
+      confirmed_appointment.reschedule!(new_starts_at)
+
+      expect(appointment.reload.request_expires_at).to eq(new_starts_at)
+    end
+
+    it "can move to a time overlapping its own" do
+      confirmed_appointment.reschedule!(starts_at + 15.minutes)
+
+      expect(appointment.reload.starts_at).to eq(starts_at + 15.minutes)
+    end
+
+    it "changes the professional when given another one" do
+      other = professional_working_tuesdays(name: "Other")
+
+      confirmed_appointment.reschedule!(new_starts_at, other)
+
+      expect(appointment.reload.professional).to eq(other)
+      expect(appointment.events.last.metadata).to include("from_professional_id" => professional.id, "to_professional_id" => other.id)
+    end
+
+    it "rejects a time someone else holds, changing nothing" do
+      confirmed_appointment
+      create(:appointment, service: service, professional: professional, starts_at: new_starts_at)
+
+      expect { appointment.reschedule!(new_starts_at) }.to raise_error(ActiveRecord::RecordInvalid) { |error|
+        expect(error.record.errors).to be_of_kind(:base, :overlap)
+      }
+      expect(appointment.reload).to have_attributes(status: "confirmed", starts_at: starts_at)
+      expect(appointment.events.count).to eq(1)
+    end
+
+    it "only applies to confirmed appointments, to another time, until the window closes" do
+      expect { appointment.reschedule!(new_starts_at) }.to raise_error(Appointment::InvalidTransition)
+      expect { confirmed_appointment.reschedule!(starts_at) }.to raise_error(Appointment::InvalidTransition)
+
+      travel_to(zone.local(2026, 10, 19, 22, 1))
+      expect { appointment.reschedule!(new_starts_at) }.to raise_error(Appointment::InvalidTransition)
+      expect(appointment.reload).to have_attributes(status: "confirmed", starts_at: starts_at)
+    end
+  end
+
+  describe "what the customer can do" do
+    before { business.update!(cancellation_window_hours: 12) }
+
+    it "is withdrawing a request while it waits" do
+      expect(appointment).to have_attributes(customer_can_cancel?: true, customer_can_reschedule?: false)
+
+      travel_to(appointment.request_expires_at)
+      expect(appointment.customer_can_cancel?).to be(false)
+    end
+
+    it "is cancelling or rescheduling a confirmed appointment until the window closes" do
+      expect(confirmed_appointment).to have_attributes(customer_deadline: zone.local(2026, 10, 19, 22),
+                                                       customer_can_cancel?: true, customer_can_reschedule?: true)
+
+      travel_to(zone.local(2026, 10, 19, 22, 1))
+      expect(appointment).to have_attributes(customer_can_cancel?: false, customer_can_reschedule?: false)
+    end
+
+    it "is nothing once it's over" do
+      appointment.reject!(by: user, reason: "No")
+
+      expect(appointment).to have_attributes(customer_can_cancel?: false, customer_can_reschedule?: false)
+    end
   end
 
   describe "attendance" do

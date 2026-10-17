@@ -1,0 +1,17 @@
+en:
+  appointments:
+    reschedules:
+      new:
+        title: "Change the time"
+        subtitle: "Pick a new time. %{business} needs to confirm it."
+        back: "Back to your appointment"
+        current: "Your current time"
+        heading: "When suits you best?"
+      confirmation:
+        new_time: "New time"
+        warning: "Your current time is released now, and the appointment is pending again until %{business} confirms the new one. If it declines it or doesn't answer in time, you'll lose the appointment."
+        other_time: "Choose another time"
+        submit: "Request the change"
+      create:
+        requested: "Done, we requested the new time. The business will confirm it."
+        slot_taken: "That time is no longer available. Please choose another one."

@@ -14,6 +14,7 @@
               <%= request.customer.name %> · <%= request.service.name %>
             <% end %>
             <p class="truncate text-sm text-gray-500"><%= format_period(request.starts_at, request.ends_at) %> · <%= request.professional.name %></p>
+            <%= appointment_rescheduled_note(request, class: "mt-1") %>
             <p class="mt-1 flex items-center gap-1 text-xs text-yellow-700">
               <%= icon "clock", class: "size-3.5" %>
               <%= t(".expires", deadline: l(request.request_expires_at, format: :weekday_hour)) %>

@@ -1,0 +1,25 @@
+<% kind = @appointment.pending? ? "withdraw" : "cancel" %>
+<% content_for :title, t(".title.#{kind}") %>
+<% content_for :head, tag.meta(name: "robots", content: "noindex, nofollow") %>
+
+<section class="mx-auto max-w-2xl space-y-6">
+  <%= render "shared/page_header", title: t(".title.#{kind}"), subtitle: t(".subtitle.#{kind}", business: Current.business.name) %>
+
+  <%= render "appointments/details", appointment: @appointment %>
+
+  <%= form_with model: @event, scope: :cancellation, url: appointment_cancellation_path(appointment_token: appointment_token), method: :post,
+        class: "card card-body space-y-5" do |form| %>
+    <%= render "shared/form_errors", record: @event %>
+
+    <div class="field">
+      <%= form.label :note, t(".note"), class: "label" %>
+      <%= form.text_area :note, rows: 3, maxlength: 500, class: "input", placeholder: t(".placeholder") %>
+      <p class="hint"><%= t(".hint", business: Current.business.name) %></p>
+    </div>
+
+    <div class="flex flex-col-reverse gap-3 border-t border-gray-100 pt-5 sm:flex-row sm:items-center sm:justify-end">
+      <%= link_to t(".back"), appointment_path(token: appointment_token), class: "btn-ghost" %>
+      <%= form.submit t(".submit.#{kind}"), class: "btn-danger" %>
+    </div>
+  <% end %>
+</section>

@@ -1,0 +1,26 @@
+<%# The new time the customer picked, the warning and the button to ask for it. %>
+<div class="mx-auto max-w-2xl space-y-6">
+  <%= form_with url: appointment_reschedule_path(appointment_token: appointment_token), method: :post, class: "card card-body space-y-5" do |form| %>
+    <%= render "shared/form_errors", record: @reschedule if @reschedule %>
+    <%= form.hidden_field :starts_at, value: @slot.starts_at.iso8601 %>
+
+    <div class="flex items-center gap-4">
+      <span class="flex size-10 shrink-0 items-center justify-center rounded-lg bg-brand-50 text-brand-600"><%= icon "calendar", class: "size-5" %></span>
+      <div class="min-w-0">
+        <p class="text-xs font-medium tracking-wide text-gray-500 uppercase"><%= t(".new_time") %></p>
+        <p class="font-medium text-gray-900"><%= format_period(@slot.starts_at, @slot.starts_at + @appointment.service.duration_minutes.minutes) %></p>
+        <p class="text-sm text-gray-500"><%= t("shared.week_navigation.time_zone", zone: time_zone_label) %></p>
+      </div>
+    </div>
+
+    <div class="flex items-start gap-3 rounded-lg bg-yellow-50 p-4 text-sm text-yellow-800 ring-1 ring-yellow-600/20 ring-inset">
+      <%= icon "exclamation-circle", class: "mt-0.5 size-5 shrink-0 text-yellow-600" %>
+      <p><%= t(".warning", business: Current.business.name) %></p>
+    </div>
+
+    <div class="flex flex-col-reverse gap-3 border-t border-gray-100 pt-5 sm:flex-row sm:items-center sm:justify-end">
+      <%= link_to t(".other_time"), new_appointment_reschedule_path(appointment_token: appointment_token, week: @slot.starts_at.to_date), class: "btn-ghost" %>
+      <%= form.submit t(".submit"), class: "btn-primary" %>
+    </div>
+  <% end %>
+</div>

@@ -1,0 +1,9 @@
+es:
+  activemodel:
+    errors:
+      models:
+        appointment_reschedule:
+          attributes:
+            base:
+              slot_taken: "Ese horario ya no está disponible. Elegí otro."
+              overlaps_own_appointment: "Ya tenés otro turno que se superpone con este horario."
