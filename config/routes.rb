@@ -16,6 +16,8 @@ Rails.application.routes.draw do
   resource :locale, only: :update
   resource :dashboard, only: :show
   resources :invitations, param: :token, only: %i[ show update ]
+  get "signup", to: "signups#new", as: :new_signup
+  post "signup", to: "signups#create", as: :signup
 
   mount LetterOpenerWeb::Engine, at: "/letter_opener" if Rails.env.development?
 

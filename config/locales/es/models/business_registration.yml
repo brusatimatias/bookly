@@ -1,0 +1,17 @@
+es:
+  activemodel:
+    models:
+      business_registration:
+        one: "Registro de negocio"
+        other: "Registros de negocio"
+    attributes:
+      business_registration:
+        name: "Tu nombre"
+        email_address: "Email"
+        password: "Contraseña"
+        password_confirmation: "Confirmación de contraseña"
+        business_name: "Nombre del negocio"
+        slug: "Dirección web"
+        time_zone: "Zona horaria"
+        locale: "Idioma"
+        currency: "Moneda"

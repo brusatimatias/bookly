@@ -103,6 +103,12 @@ RSpec.describe Business do
       expect(build(:business, locale: "fr")).not_to be_valid
     end
 
+    it "accepts the listed currencies only" do
+      expect(build(:business, currency: "USD")).to be_valid
+      expect(build(:business, currency: "XYZ")).not_to be_valid
+      expect(build(:business, currency: nil)).not_to be_valid
+    end
+
     it "rejects an unknown status" do
       expect(build(:business, status: "closed")).not_to be_valid
     end

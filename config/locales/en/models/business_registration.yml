@@ -1,0 +1,17 @@
+en:
+  activemodel:
+    models:
+      business_registration:
+        one: "Business sign up"
+        other: "Business sign ups"
+    attributes:
+      business_registration:
+        name: "Your name"
+        email_address: "Email"
+        password: "Password"
+        password_confirmation: "Password confirmation"
+        business_name: "Business name"
+        slug: "Web address"
+        time_zone: "Time zone"
+        locale: "Language"
+        currency: "Currency"

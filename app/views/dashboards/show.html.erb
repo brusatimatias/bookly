@@ -1,7 +1,13 @@
 <% content_for :title, t(".title") %>
 
 <section class="mx-auto max-w-3xl">
-  <%= render "shared/page_header", title: t(".title"), subtitle: (t(".subtitle") if @memberships.any?) %>
+  <% new_business = capture do %>
+    <%= link_to new_signup_path, class: "btn-secondary" do %>
+      <%= icon "plus", class: "size-4" %> <%= t(".new") %>
+    <% end %>
+  <% end %>
+  <%= render "shared/page_header", title: t(".title"), subtitle: (t(".subtitle") if @memberships.any?),
+        actions: (new_business if @memberships.any?) %>
 
   <% if @memberships.any? %>
     <ul class="grid gap-4 sm:grid-cols-2">
@@ -25,6 +31,7 @@
       <% end %>
     </ul>
   <% else %>
-    <%= render "shared/empty_state", icon: "building", title: t(".empty"), message: t(".empty_hint") %>
+    <%= render "shared/empty_state", icon: "building", title: t(".empty"), message: t(".empty_hint"),
+          action: capture { link_to t(".new"), new_signup_path, class: "btn-primary" } %>
   <% end %>
 </section>

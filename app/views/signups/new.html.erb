@@ -1,0 +1,85 @@
+<% content_for :title, t(".title") %>
+
+<h1 class="text-xl font-bold text-gray-900"><%= t(".title") %></h1>
+<p class="mt-2 text-sm text-gray-600">
+  <%= @registration.new_account? ? t(".subtitle") : t(".signed_in_as", email: Current.user.email_address) %>
+</p>
+
+<%= form_with model: @registration, url: signup_path, class: "mt-6 space-y-5", data: { controller: "slug" } do |form| %>
+  <%= render "shared/form_errors", record: @registration %>
+
+  <% if @registration.new_account? %>
+    <h2 class="text-sm font-semibold text-gray-900"><%= t(".account") %></h2>
+
+    <div class="field">
+      <%= form.label :name, class: "label" %>
+      <%= form.text_field :name, required: true, autofocus: true, autocomplete: "name", class: "input" %>
+    </div>
+
+    <div class="field">
+      <%= form.label :email_address, class: "label" %>
+      <%= form.email_field :email_address, required: true, autocomplete: "username", class: "input" %>
+      <% if @registration.errors.of_kind?(:email_address, :taken) %>
+        <p class="hint">
+          <%= t(".email_taken") %>
+          <%= link_to t(".sign_in"), new_session_path(email_address: @registration.email_address), class: "link" %>
+        </p>
+      <% end %>
+    </div>
+
+    <div class="field">
+      <%= form.label :password, class: "label" %>
+      <%= form.password_field :password, required: true, autocomplete: "new-password", minlength: 8, maxlength: 72, class: "input" %>
+    </div>
+
+    <div class="field">
+      <%= form.label :password_confirmation, class: "label" %>
+      <%= form.password_field :password_confirmation, required: true, autocomplete: "new-password", minlength: 8, maxlength: 72, class: "input" %>
+    </div>
+
+    <h2 class="border-t border-gray-100 pt-5 text-sm font-semibold text-gray-900"><%= t(".business") %></h2>
+  <% end %>
+
+  <div class="field">
+    <%= form.label :business_name, class: "label" %>
+    <%= form.text_field :business_name, required: true, autofocus: !@registration.new_account?, class: "input",
+          data: { slug_target: "name", action: "slug#suggest" } %>
+  </div>
+
+  <div class="field">
+    <%= form.label :slug, class: "label" %>
+    <%= form.text_field :slug, pattern: "[a-z0-9]+(-[a-z0-9]+)*", maxlength: 60, autocapitalize: "none", spellcheck: false, class: "input",
+          data: { slug_target: "slug", action: "slug#edit" } %>
+    <p class="hint">
+      <%= t(".slug_hint") %>
+      <span class="font-medium text-gray-700"><%= request.host_with_port %>/<span data-slug-target="preview"><%= @registration.slug %></span></span>
+    </p>
+  </div>
+
+  <div class="field">
+    <%= form.label :time_zone, class: "label" %>
+    <%= form.select :time_zone, time_zone_options(@registration.time_zone), {}, class: "input" %>
+    <p class="hint"><%= t(".time_zone_hint") %></p>
+  </div>
+
+  <div class="field">
+    <%= form.label :locale, class: "label" %>
+    <%= form.select :locale, locale_options, {}, class: "input" %>
+    <p class="hint"><%= t(".locale_hint") %></p>
+  </div>
+
+  <div class="field">
+    <%= form.label :currency, class: "label" %>
+    <%= form.select :currency, currency_options, {}, class: "input" %>
+  </div>
+
+  <%= form.submit t(".submit"), class: "btn-primary btn-block" %>
+<% end %>
+
+<p class="mt-6 text-center text-sm text-gray-600">
+  <% if @registration.new_account? %>
+    <%= t(".have_account") %> <%= link_to t(".sign_in"), new_session_path, class: "link" %>
+  <% else %>
+    <%= link_to t(".back"), dashboard_path, class: "link" %>
+  <% end %>
+</p>

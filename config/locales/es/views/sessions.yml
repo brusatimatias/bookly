@@ -6,6 +6,8 @@ es:
       password: "Contraseña"
       submit: "Ingresar"
       forgot_password: "¿Olvidaste tu contraseña?"
+      no_account: "¿Todavía no usás Bookly?"
+      sign_up: "Registrá tu negocio"
     create:
       invalid: "El email o la contraseña no son correctos."
       rate_limited: "Demasiados intentos. Probá de nuevo en unos minutos."

@@ -9,6 +9,9 @@ class Business < ApplicationRecord
     passwords platform rails session sessions signup up
   ].freeze
 
+  # Currencies a business can charge in (ISO 4217 codes).
+  CURRENCIES = %w[ARS BRL CLP COP EUR MXN PEN USD UYU].freeze
+
   has_many :memberships, dependent: :restrict_with_exception
   has_many :members, through: :memberships, source: :user
   has_many :invitations, dependent: :restrict_with_exception
@@ -37,7 +40,7 @@ class Business < ApplicationRecord
     exclusion: { in: RESERVED_SLUGS, message: :reserved }
   validates :time_zone, inclusion: { in: ->(_) { TZInfo::Timezone.all_identifiers } }
   validates :locale, inclusion: { in: ->(_) { I18n.available_locales.map(&:to_s) } }
-  validates :currency, presence: true
+  validates :currency, inclusion: { in: CURRENCIES }
 
   # Upper bounds for the booking settings: generous, but they keep availability
   # from scanning years ahead or breaks longer than a working day.

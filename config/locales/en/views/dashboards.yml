@@ -4,4 +4,5 @@ en:
       title: "My businesses"
       empty: "You're not part of any business yet."
       subtitle: "Pick the business you want to work with."
-      empty_hint: "When a business invites you, you'll see it here."
+      empty_hint: "When a business invites you, you'll see it here. You can also create your own."
+      new: "Create a business"

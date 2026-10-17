@@ -1,0 +1,19 @@
+en:
+  signups:
+    new:
+      title: "Sign up your business"
+      subtitle: "Create your account and your business. Then we'll guide you to get your page ready for bookings."
+      signed_in_as: "You'll manage it with your account %{email}."
+      account: "Your account"
+      business: "Your business"
+      email_taken: "There's already an account with this email."
+      sign_in: "Sign in"
+      slug_hint: "Your page:"
+      time_zone_hint: "Your schedule and your page show times in this zone."
+      locale_hint: "The language of your public page and of the emails to your customers."
+      submit: "Create business"
+      have_account: "Already have an account?"
+      back: "Back to my businesses"
+    create:
+      created: "Done! %{business} has been created."
+      rate_limited: "Too many attempts. Try again later."

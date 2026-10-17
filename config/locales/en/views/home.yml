@@ -5,7 +5,8 @@ en:
       audience: "For barbershops, clinics, studios and courts"
       headline: "Your schedule, always in order"
       tagline: "Online appointment booking for businesses that work by schedule."
-      sign_in: "Sign in to my business"
+      sign_up: "Sign up my business"
+      sign_in: "Sign in"
       go_to_dashboard: "Go to my businesses"
       features:
         booking:
