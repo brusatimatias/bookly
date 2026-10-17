@@ -1,0 +1,19 @@
+es:
+  team_appointments_mailer:
+    greeting: "Hola, %{name}:"
+    view: "Ver en el panel"
+    reason: "Motivo del cliente"
+    reply: "Si respondés este email, le escribís a %{customer}."
+    new_request:
+      subject: "Nuevo pedido de turno: %{customer}, %{time}"
+      body: "%{customer} pidió un turno. Hay tiempo hasta el %{deadline} para confirmarlo o rechazarlo; si nadie responde, vence y el horario se libera."
+    customer_rescheduled:
+      subject: "%{customer} pidió cambiar el horario de su turno"
+      body: "%{customer} pidió pasar su turno del %{from} al %{to}. El horario anterior ya se liberó; hay tiempo hasta el %{deadline} para confirmar o rechazar el nuevo."
+    customer_cancelled:
+      cancelled:
+        subject: "%{customer} canceló su turno del %{time}"
+        body: "%{customer} canceló su turno del %{time} y el horario se liberó."
+      withdrawn:
+        subject: "%{customer} retiró su pedido de turno del %{time}"
+        body: "%{customer} retiró su pedido de turno del %{time} y el horario se liberó."

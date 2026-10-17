@@ -1,0 +1,19 @@
+<% customer = @appointment.customer -%>
+<%= t("team_appointments_mailer.greeting", name: @recipient.name) %>
+
+<%= @body %>
+<% if @reason.present? -%>
+
+<%= t("team_appointments_mailer.reason") %>:
+<%= @reason %>
+<% end -%>
+
+<%= render "mailers/appointment", appointment: @appointment -%>
+<%= Appointment.human_attribute_name(:customer) %>: <%= customer.name %> (<%= [ customer.email, customer.phone.presence ].compact.join(" · ") %>)
+<% if @appointment.customer_notes.present? -%>
+<%= Appointment.human_attribute_name(:customer_notes) %>: <%= @appointment.customer_notes %>
+<% end -%>
+
+<%= t("team_appointments_mailer.view") %>: <%= admin_appointment_url(@business, @appointment) %>
+
+<%= t("team_appointments_mailer.reply", customer: customer.name) %>

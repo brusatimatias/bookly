@@ -86,6 +86,13 @@ class Appointment < ApplicationRecord
     confirmed? && Time.current <= customer_deadline
   end
 
+  # Who on the team hears about what the customer does: the professional (when
+  # they have an account), the owner and the admins, each once.
+  def team_recipients
+    managers = User.where(id: Current.business!.memberships.where(role: %w[owner admin]).select(:user_id)).order(:id)
+    [ professional.user, *managers ].compact.uniq
+  end
+
   # The business accepts a request. `by` is the user answering it.
   def confirm!(by:)
     transition!(:confirmed, from: :pending, by: by)

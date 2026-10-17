@@ -3,7 +3,9 @@
 # details, a button and a closing note). Sent by AppointmentNotifier:
 # CustomerAppointmentsMailer.with(business:, appointment_id:, event_id:).confirmed
 class CustomerAppointmentsMailer < BusinessMailer
-  before_action :set_appointment
+  include AppointmentMail
+
+  before_action -> { @button = [ t("customer_appointments_mailer.view"), appointment_url(@business, @appointment.generate_token_for(:management)) ] }
 
   def requested
     @body = t(".body", business: @business.name, deadline: l(@appointment.request_expires_at, format: :weekday_hour))
@@ -56,12 +58,6 @@ class CustomerAppointmentsMailer < BusinessMailer
   end
 
   private
-    def set_appointment
-      @appointment = Appointment.includes(:service, :professional, :customer).find(params.fetch(:appointment_id))
-      @event = @appointment.events.find(params[:event_id]) if params[:event_id]
-      @button = [ t("customer_appointments_mailer.view"), appointment_url(@business, @appointment.generate_token_for(:management)) ]
-    end
-
     # Until when the customer may cancel or reschedule on their own.
     def changes_footer
       if @appointment.customer_can_reschedule?
