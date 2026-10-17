@@ -1,0 +1,57 @@
+<% content_for :title, t(".title") %>
+
+<%= render "shared/page_header", title: t(".title"), subtitle: t(".subtitle") %>
+
+<%= form_with url: platform_businesses_path, method: :get, class: "mb-6 flex flex-wrap gap-3", data: { turbo_action: "replace" } do |form| %>
+  <%= form.search_field :q, value: @query, placeholder: t(".search_placeholder"), "aria-label": t(".search"), class: "input min-w-0 flex-1 sm:max-w-sm" %>
+  <%= form.select :status, Business.statuses.keys.map { |status| [ Business.human_attribute_name("status.#{status}"), status ] },
+        { include_blank: t(".all_statuses"), selected: @status }, "aria-label": Business.human_attribute_name(:status), class: "input w-auto" %>
+  <%= form.submit t(".search"), name: nil, class: "btn-secondary" %>
+<% end %>
+
+<% if @businesses.any? %>
+  <ul class="card list-divided">
+    <% @businesses.each do |business| %>
+      <li>
+        <%= link_to platform_business_path(business), class: "flex items-center gap-4 px-6 py-4 hover:bg-gray-50" do %>
+          <span class="avatar"><%= initials(business.name) %></span>
+          <div class="min-w-0 flex-1">
+            <p class="flex flex-wrap items-center gap-2">
+              <span class="truncate font-medium text-gray-900"><%= business.name %></span>
+              <% if business.suspended? %>
+                <span class="badge-red"><%= Business.human_attribute_name("status.suspended") %></span>
+              <% end %>
+            </p>
+            <p class="truncate text-sm text-gray-500">/<%= business.slug %> · <%= business.owner&.email_address || t(".no_owner") %></p>
+          </div>
+          <dl class="hidden shrink-0 gap-6 text-right text-sm sm:flex">
+            <div>
+              <dt class="text-gray-500"><%= t(".members") %></dt>
+              <dd class="font-semibold text-gray-900"><%= @members_counts.fetch(business.id, 0) %></dd>
+            </div>
+            <div>
+              <dt class="text-gray-500"><%= t(".recent_appointments") %></dt>
+              <dd class="font-semibold text-gray-900"><%= @recent_appointments_counts.fetch(business.id, 0) %></dd>
+            </div>
+            <div>
+              <dt class="text-gray-500"><%= t(".created") %></dt>
+              <dd class="font-semibold text-gray-900"><%= l(business.created_at.to_date, format: :short) %></dd>
+            </div>
+          </dl>
+          <%= icon "arrow-right", class: "size-4 text-gray-400" %>
+        <% end %>
+      </li>
+    <% end %>
+  </ul>
+
+  <% if @page > 1 || @next_page %>
+    <nav class="mt-6 flex items-center justify-between" aria-label="<%= t(".pages") %>">
+      <% filters = { q: @query.presence, status: @status }.compact %>
+      <%= link_to t(".previous"), platform_businesses_path(**filters, page: @page - 1), class: "btn-secondary btn-sm" if @page > 1 %>
+      <span class="text-sm text-gray-500"><%= t(".page", page: @page) %></span>
+      <%= link_to t(".next"), platform_businesses_path(**filters, page: @page + 1), class: "btn-secondary btn-sm" if @next_page %>
+    </nav>
+  <% end %>
+<% else %>
+  <%= render "shared/empty_state", icon: "building", title: t(".empty"), message: (t(".empty_hint") if @query.present? || @status) %>
+<% end %>

@@ -1,0 +1,43 @@
+es:
+  platform:
+    businesses:
+      index:
+        title: "Negocios"
+        subtitle: "Todos los negocios de la plataforma, los más nuevos primero."
+        search: "Buscar"
+        search_placeholder: "Nombre, dirección web o email del dueño"
+        all_statuses: "Todos los estados"
+        no_owner: "Sin dueño"
+        members: "Miembros"
+        recent_appointments: "Turnos (30 días)"
+        created: "Alta"
+        pages: "Páginas"
+        previous: "Anterior"
+        next: "Siguiente"
+        page: "Página %{page}"
+        empty: "No hay negocios."
+        empty_hint: "Probá con otra búsqueda u otro estado."
+      show:
+        back: "← Negocios"
+        public_page: "Página pública"
+        suspend: "Suspender"
+        suspend_confirm: "¿Suspender %{business}? Su página pública y su panel dejan de estar disponibles hasta que lo reactives."
+        reactivate: "Reactivar"
+        reactivate_confirm: "¿Reactivar %{business}? Su página pública y su panel vuelven a estar disponibles."
+        bookable: "Recibe turnos"
+        setting_up: "En puesta en marcha"
+        suspended_at: "Suspendido el %{date}"
+        stats:
+          services: "Servicios activos"
+          professionals: "Profesionales reservables"
+          customers: "Clientes"
+          upcoming: "Turnos próximos"
+          recent: "Turnos (30 días)"
+        details: "Datos"
+        team:
+          one: "Equipo (1)"
+          other: "Equipo (%{count})"
+      suspend:
+        suspended: "Suspendimos %{business}."
+      reactivate:
+        reactivated: "Reactivamos %{business}."

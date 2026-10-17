@@ -19,6 +19,17 @@ Rails.application.routes.draw do
   get "signup", to: "signups#new", as: :new_signup
   post "signup", to: "signups#create", as: :signup
 
+  # The platform panel, for Bookly's own team (User#platform_admin).
+  namespace :platform do
+    root "businesses#index"
+    resources :businesses, only: %i[index show] do
+      member do
+        patch :suspend
+        patch :reactivate
+      end
+    end
+  end
+
   mount LetterOpenerWeb::Engine, at: "/letter_opener" if Rails.env.development?
 
   # Public business pages. Keep this scope last so it never shadows app routes;

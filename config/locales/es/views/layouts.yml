@@ -3,6 +3,7 @@ es:
     application:
       sign_in: "Iniciar sesión"
       dashboard: "Mis negocios"
+      platform: "Plataforma"
       sign_out: "Cerrar sesión"
       footer: "© %{year} Bookly · Reservas de turnos online"
       powered_by: "Reservas online con Bookly"

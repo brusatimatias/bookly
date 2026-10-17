@@ -1,0 +1,68 @@
+<% content_for :title, @business.name %>
+
+<%= link_to platform_businesses_path, class: "link mb-4 inline-flex items-center gap-1 text-sm" do %>
+  <%= t(".back") %>
+<% end %>
+
+<% actions = capture do %>
+  <%= link_to business_path(@business), class: "btn-secondary", target: "_blank" do %>
+    <%= icon "external-link", class: "size-4" %> <%= t(".public_page") %>
+  <% end %>
+  <% if @business.suspended? %>
+    <%= button_to t(".reactivate"), reactivate_platform_business_path(@business), method: :patch, class: "btn-primary",
+          form: { data: { turbo_confirm: t(".reactivate_confirm", business: @business.name) } } %>
+  <% else %>
+    <%= button_to t(".suspend"), suspend_platform_business_path(@business), method: :patch, class: "btn-danger",
+          form: { data: { turbo_confirm: t(".suspend_confirm", business: @business.name) } } %>
+  <% end %>
+<% end %>
+<%= render "shared/page_header", title: @business.name, subtitle: "/#{@business.slug}", actions: actions %>
+
+<div class="mb-6 flex flex-wrap gap-2">
+  <span class="<%= @business.suspended? ? "badge-red" : "badge-green" %>"><%= Business.human_attribute_name("status.#{@business.status}") %></span>
+  <span class="<%= @setup_complete ? "badge-green" : "badge-yellow" %>"><%= t(@setup_complete ? ".bookable" : ".setting_up") %></span>
+  <% if @business.suspended? %>
+    <span class="badge-gray"><%= t(".suspended_at", date: l(@business.suspended_at, format: :long)) %></span>
+  <% end %>
+</div>
+
+<div class="grid gap-4 sm:grid-cols-3 lg:grid-cols-5">
+  <% @stats.each do |stat, count| %>
+    <div class="card card-body">
+      <p class="text-sm text-gray-600"><%= t(".stats.#{stat}") %></p>
+      <p class="text-2xl font-bold text-gray-900"><%= count %></p>
+    </div>
+  <% end %>
+</div>
+
+<div class="mt-6 grid gap-6 lg:grid-cols-2">
+  <section class="card min-w-0">
+    <h2 class="border-b border-gray-100 px-6 py-4 font-semibold text-gray-900"><%= t(".details") %></h2>
+    <dl class="list-divided text-sm">
+      <% { contact_email: @business.contact_email, contact_phone: @business.contact_phone, address: @business.address,
+           time_zone: time_zone_label(@business.time_zone), locale: t("locale_names.#{@business.locale}"), currency: @business.currency,
+           created_at: l(@business.created_at, format: :long) }.each do |attribute, value| %>
+        <div class="flex justify-between gap-4 px-6 py-3">
+          <dt class="text-gray-500"><%= Business.human_attribute_name(attribute) %></dt>
+          <dd class="min-w-0 truncate text-right text-gray-900"><%= value.presence || "—" %></dd>
+        </div>
+      <% end %>
+    </dl>
+  </section>
+
+  <section class="card min-w-0">
+    <h2 class="border-b border-gray-100 px-6 py-4 font-semibold text-gray-900"><%= t(".team", count: @memberships.size) %></h2>
+    <ul class="list-divided text-sm">
+      <% @memberships.each do |membership| %>
+        <li class="flex items-center gap-3 px-6 py-3">
+          <span class="avatar"><%= initials(membership.user.name) %></span>
+          <div class="min-w-0 flex-1">
+            <p class="truncate font-medium text-gray-900"><%= membership.user.name %></p>
+            <p class="truncate text-gray-500"><%= membership.user.email_address %></p>
+          </div>
+          <span class="badge-brand shrink-0"><%= Membership.human_attribute_name("role.#{membership.role}") %></span>
+        </li>
+      <% end %>
+    </ul>
+  </section>
+</div>
