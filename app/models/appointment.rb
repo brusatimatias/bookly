@@ -36,6 +36,18 @@ class Appointment < ApplicationRecord
   scope :awaiting_answer, -> { pending.where("request_expires_at > ?", Time.current) }
   # What the agenda shows: requests, confirmed appointments and their attendance.
   scope :on_agenda, -> { where(status: %w[pending confirmed attended no_show]) }
+  # Confirmed appointments that haven't started and whose reminder is due (the
+  # business's reminder_hours_before before them; 0 turns them off) but not
+  # sent, in active businesses. One confirmed after its reminder was due gets
+  # none: the confirmation just told the customer. Run it across businesses.
+  scope :due_for_reminder, -> {
+    reminder_due_at = "appointments.starts_at - businesses.reminder_hours_before * interval '1 hour'"
+    confirmed.where(reminder_sent_at: nil, starts_at: Time.current..).joins(:business)
+      .where(businesses: { status: "active" }).where("businesses.reminder_hours_before > 0")
+      .where("#{reminder_due_at} <= ?", Time.current)
+      .where("NOT EXISTS (SELECT 1 FROM appointment_events WHERE appointment_events.appointment_id = appointments.id " \
+             "AND appointment_events.to_status = 'confirmed' AND appointment_events.created_at > #{reminder_due_at})")
+  }
   # Appointments whose time, break included, overlaps the range.
   scope :overlapping, ->(range) { where(starts_at: ...range.end).where("buffer_ends_at > ?", range.begin) }
 
@@ -86,6 +98,13 @@ class Appointment < ApplicationRecord
     confirmed? && Time.current <= customer_deadline
   end
 
+  # Who on the team hears about what the customer does: the professional (when
+  # they have an account), the owner and the admins, each once.
+  def team_recipients
+    managers = User.where(id: Current.business!.memberships.where(role: %w[owner admin]).select(:user_id)).order(:id)
+    [ professional.user, *managers ].compact.uniq
+  end
+
   # The business accepts a request. `by` is the user answering it.
   def confirm!(by:)
     transition!(:confirmed, from: :pending, by: by)
@@ -121,6 +140,8 @@ class Appointment < ApplicationRecord
         self.professional = new_professional
       end
       self.starts_at = new_starts_at
+      # The new time, once confirmed, gets its own reminder.
+      self.reminder_sent_at = nil
       self.request_expires_at = [ Current.business!.request_expiration_hours.hours.from_now, new_starts_at ].min
       metadata
     end

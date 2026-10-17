@@ -8,6 +8,7 @@ es:
           schedule: "Horarios"
           window: "Cuándo se puede reservar"
           requests: "Solicitudes y cancelaciones"
+          reminders: "Recordatorios"
         cancel: "Cancelar"
         submit: "Guardar configuración"
       number:
@@ -27,5 +28,7 @@ es:
         request_expiration_hours_hint: "Cuánto tiempo tiene el negocio para confirmar una solicitud antes de que venza y libere el horario. Nunca vence después del turno."
         cancellation_window_hours: "Ventana de cancelación"
         cancellation_window_hours_hint: "Hasta cuántas horas antes del turno el cliente puede cancelarlo o reprogramarlo por su cuenta."
+        reminder_hours_before: "Recordatorio antes del turno"
+        reminder_hours_before_hint: "Cuántas horas antes de un turno confirmado le mandamos un recordatorio por email al cliente. Con 0, no se mandan."
       update:
         updated: "Guardamos la configuración de reservas."

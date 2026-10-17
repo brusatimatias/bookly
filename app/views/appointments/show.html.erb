@@ -46,6 +46,16 @@
 
   <%= render "appointments/details", appointment: @appointment, professional_note: professional_note %>
 
+  <% if @appointment.confirmed? && !@appointment.started? %>
+    <div class="card card-body flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+      <p class="text-sm text-gray-600"><%= t(".calendar.message") %></p>
+      <%= link_to appointment_path(token: appointment_token, format: :ics), class: "btn-secondary shrink-0", data: { turbo: false } do %>
+        <%= icon "calendar", class: "size-4" %>
+        <%= t(".calendar.add") %>
+      <% end %>
+    </div>
+  <% end %>
+
   <% if @appointment.customer_can_cancel? %>
     <div class="card card-body flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
       <p class="text-sm text-gray-600">

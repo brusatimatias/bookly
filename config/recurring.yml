@@ -3,6 +3,9 @@ default: &default
   expire_requests:
     class: ExpireRequestsJob
     schedule: every minute
+  send_reminders:
+    class: SendRemindersJob
+    schedule: every 5 minutes
 
 development:
   <<: *default

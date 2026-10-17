@@ -151,6 +151,14 @@ RSpec.describe Appointment, "transitions", type: :model do
       expect(build(:appointment, service: service, professional: professional, starts_at: starts_at)).to be_valid
     end
 
+    it "lets the new time have its own reminder" do
+      confirmed_appointment.update!(reminder_sent_at: Time.current)
+
+      appointment.reschedule!(new_starts_at)
+
+      expect(appointment.reload.reminder_sent_at).to be_nil
+    end
+
     it "is remembered while the business answers" do
       expect(confirmed_appointment.rescheduled_from).to be_nil
 

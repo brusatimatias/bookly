@@ -1,0 +1,42 @@
+es:
+  customer_appointments_mailer:
+    greeting: "Hola, %{name}:"
+    view: "Ver mi turno"
+    book_again: "Pedir otro turno"
+    reason: "Motivo de %{business}"
+    changes:
+      open: "Podés cancelarlo o cambiar el horario desde el link hasta el %{deadline}."
+      closed: "Para cancelarlo o cambiarlo, contactá a %{business}."
+    requested:
+      subject: "Recibimos tu pedido de turno en %{business}"
+      body: "El horario ya está reservado para vos. %{business} tiene hasta el %{deadline} para confirmarlo; te avisamos por email cuando responda."
+      footer: "Guardá este email: desde el link podés ver el estado del pedido o retirarlo."
+    confirmed:
+      subject: "Tu turno en %{business} está confirmado"
+      body: "¡Listo! %{business} confirmó tu turno. Te esperamos."
+    rejected:
+      subject: "%{business} no pudo confirmar tu pedido de turno"
+      body: "%{business} rechazó tu pedido y el horario se liberó. Podés pedir otro cuando quieras."
+    cancelled:
+      by_business:
+        subject: "%{business} canceló tu turno"
+        body: "%{business} canceló tu turno y el horario se liberó. Podés pedir otro cuando quieras."
+      by_customer:
+        subject: "Cancelaste tu turno en %{business}"
+        body: "Tu turno quedó cancelado y el horario se liberó."
+      withdrawn:
+        subject: "Retiraste tu pedido de turno en %{business}"
+        body: "Tu pedido quedó retirado y el horario se liberó."
+    expired:
+      subject: "Tu pedido de turno en %{business} venció"
+      body: "%{business} no respondió a tiempo y el horario se liberó. Podés pedir otro cuando quieras."
+    rescheduled:
+      subject: "Recibimos tu cambio de horario en %{business}"
+      body: "Pediste pasar tu turno del %{from} a este horario, que ya está reservado para vos. %{business} tiene hasta el %{deadline} para confirmarlo; te avisamos por email cuando responda."
+      footer: "Tu horario anterior ya se liberó: si %{business} rechaza el nuevo o no responde a tiempo, perdés el turno."
+    reassigned:
+      subject: "Cambió el profesional de tu turno en %{business}"
+      body: "%{business} reasignó tu turno: ahora te atiende %{professional}. El día y el horario no cambian."
+    reminder:
+      subject: "Recordatorio: tu turno en %{business} es el %{time}"
+      body: "Te recordamos tu turno en %{business} el %{time}. Te esperamos."

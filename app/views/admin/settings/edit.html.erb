@@ -8,7 +8,8 @@
 
     <% { schedule: [ [ :slot_interval_minutes, :minutes, 1 ], [ :buffer_minutes, :minutes, 0 ] ],
          window: [ [ :min_booking_notice_hours, :hours, 0 ], [ :booking_horizon_days, :days, 1 ] ],
-         requests: [ [ :request_expiration_hours, :hours, 1 ], [ :cancellation_window_hours, :hours, 0 ] ] }.each do |section, settings| %>
+         requests: [ [ :request_expiration_hours, :hours, 1 ], [ :cancellation_window_hours, :hours, 0 ] ],
+         reminders: [ [ :reminder_hours_before, :hours, 0 ] ] }.each do |section, settings| %>
       <section class="space-y-5">
         <h2 class="border-b border-gray-100 pb-2 font-semibold text-gray-900"><%= t(".sections.#{section}") %></h2>
         <% settings.each do |attribute, unit, min| %>

@@ -1,0 +1,19 @@
+en:
+  team_appointments_mailer:
+    greeting: "Hi %{name},"
+    view: "View in the panel"
+    reason: "Customer's reason"
+    reply: "Reply to this email to write to %{customer}."
+    new_request:
+      subject: "New appointment request: %{customer}, %{time}"
+      body: "%{customer} requested an appointment. There's time until %{deadline} to confirm or decline it; if nobody answers, it expires and the time is released."
+    customer_rescheduled:
+      subject: "%{customer} asked to change the time of their appointment"
+      body: "%{customer} asked to move their appointment from %{from} to %{to}. The previous time was already released; there's time until %{deadline} to confirm or decline the new one."
+    customer_cancelled:
+      cancelled:
+        subject: "%{customer} cancelled their appointment on %{time}"
+        body: "%{customer} cancelled their appointment on %{time} and the time was released."
+      withdrawn:
+        subject: "%{customer} withdrew their appointment request for %{time}"
+        body: "%{customer} withdrew their appointment request for %{time} and the time was released."

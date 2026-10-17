@@ -41,5 +41,8 @@ es:
       withdraw: "Retirar pedido"
       cancel: "Cancelar turno"
       reschedule: "Cambiar horario"
+      calendar:
+        message: "Agregalo a tu calendario para tenerlo a mano. Si el turno cambia, te mandamos el archivo actualizado por email."
+        add: "Agregar al calendario"
       contact: "Contacto de %{business}"
       business_page: "Página del negocio"

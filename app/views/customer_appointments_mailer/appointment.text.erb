@@ -1,0 +1,16 @@
+<%= t("customer_appointments_mailer.greeting", name: @appointment.customer.name) %>
+
+<%= @body %>
+<% if @reason.present? -%>
+
+<%= t("customer_appointments_mailer.reason", business: @business.name) %>:
+<%= @reason %>
+<% end -%>
+
+<%= render "mailers/appointment", appointment: @appointment -%>
+
+<%= @button.first %>: <%= @button.last %>
+<% if @footer -%>
+
+<%= @footer %>
+<% end -%>

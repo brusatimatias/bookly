@@ -3,7 +3,9 @@ require "rails_helper"
 RSpec.describe Appointment, "live updates", type: :model do
   let(:business) { create(:business) }
 
-  around { |example| with_business(business) { example.run } }
+  # In the morning, so the factory's appointment (tomorrow at 10:00) is still
+  # outside the cancellation window.
+  around { |example| travel_to(Time.zone.local(2026, 10, 14, 8)) { with_business(business) { example.run } } }
 
   def panel_stream(of = business) = turbo_stream_name(Appointment.panel_stream(of))
   def availability_stream(of = business) = turbo_stream_name(Appointment.availability_stream(of))

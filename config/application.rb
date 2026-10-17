@@ -42,6 +42,10 @@ module Bookly
     config.i18n.default_locale = :es
     config.i18n.load_path += Dir[Rails.root.join("config/locales/**/*.yml")]
 
+    # Address every email is sent from. Emails about a business show its name
+    # and take replies at its contact email (BusinessMailer).
+    config.x.mail_from = ENV.fetch("BOOKLY_MAIL_FROM", "no-reply@bookly.test")
+
     # Don't generate system test files.
     config.generators.system_tests = nil
   end

@@ -1,0 +1,35 @@
+<% customer = @appointment.customer %>
+<p style="margin:0 0 16px;font-weight:600;"><%= t("team_appointments_mailer.greeting", name: @recipient.name) %></p>
+
+<p style="margin:0 0 24px;"><%= @body %></p>
+
+<% if @reason.present? %>
+  <div style="margin:0 0 24px;padding:12px 16px;background:#f9fafb;border:1px solid #e5e7eb;border-radius:8px;">
+    <p style="margin:0;font-size:12px;font-weight:500;letter-spacing:0.05em;text-transform:uppercase;color:#6b7280;"><%= t("team_appointments_mailer.reason") %></p>
+    <p style="margin:4px 0 0;white-space:pre-line;color:#374151;"><%= @reason %></p>
+  </div>
+<% end %>
+
+<%= render "mailers/appointment", appointment: @appointment %>
+
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:0 0 24px;border:1px solid #e5e7eb;border-radius:8px;">
+  <tr>
+    <td style="padding:12px 16px;">
+      <p style="margin:0;font-size:12px;font-weight:500;letter-spacing:0.05em;text-transform:uppercase;color:#6b7280;"><%= Appointment.human_attribute_name(:customer) %></p>
+      <p style="margin:2px 0 0;font-weight:600;color:#111827;"><%= customer.name %></p>
+      <p style="margin:0;font-size:14px;color:#6b7280;"><%= [ customer.email, customer.phone.presence ].compact.join(" · ") %></p>
+    </td>
+  </tr>
+  <% if @appointment.customer_notes.present? %>
+    <tr>
+      <td style="padding:12px 16px;border-top:1px solid #e5e7eb;">
+        <p style="margin:0;font-size:12px;font-weight:500;letter-spacing:0.05em;text-transform:uppercase;color:#6b7280;"><%= Appointment.human_attribute_name(:customer_notes) %></p>
+        <p style="margin:2px 0 0;white-space:pre-line;color:#374151;"><%= @appointment.customer_notes %></p>
+      </td>
+    </tr>
+  <% end %>
+</table>
+
+<p style="margin:0 0 24px;"><%= email_button t("team_appointments_mailer.view"), admin_appointment_url(@business, @appointment) %></p>
+
+<p style="margin:0;color:#6b7280;font-size:13px;"><%= t("team_appointments_mailer.reply", customer: customer.name) %></p>

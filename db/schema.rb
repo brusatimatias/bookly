@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_10_15_120000) do
+ActiveRecord::Schema[8.1].define(version: 2026_10_17_120000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "btree_gist"
   enable_extension "pg_catalog.plpgsql"
@@ -95,6 +95,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_15_120000) do
     t.index ["business_id", "starts_at"], name: "index_appointments_on_business_id_and_starts_at"
     t.index ["professional_id", "starts_at"], name: "index_appointments_on_professional_id_and_starts_at"
     t.index ["request_expires_at"], name: "index_appointments_on_request_expires_at_pending", where: "((status)::text = 'pending'::text)"
+    t.index ["starts_at"], name: "index_appointments_awaiting_reminder", where: "(((status)::text = 'confirmed'::text) AND (reminder_sent_at IS NULL))"
     t.check_constraint "buffer_ends_at >= ends_at", name: "appointments_buffer_after_end"
     t.check_constraint "buffer_minutes >= 0", name: "appointments_buffer_non_negative"
     t.check_constraint "ends_at > starts_at", name: "appointments_end_after_start"
@@ -123,12 +124,14 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_15_120000) do
     t.datetime "suspended_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "reminder_hours_before", default: 24, null: false
     t.index ["slug"], name: "index_businesses_on_slug", unique: true
     t.check_constraint "booking_horizon_days > 0", name: "businesses_booking_horizon_positive"
     t.check_constraint "buffer_minutes >= 0", name: "businesses_buffer_non_negative"
     t.check_constraint "cancellation_window_hours >= 0", name: "businesses_cancellation_window_non_negative"
     t.check_constraint "locale::text = ANY (ARRAY['es'::character varying::text, 'en'::character varying::text])", name: "businesses_locale_valid"
     t.check_constraint "min_booking_notice_hours >= 0", name: "businesses_min_booking_notice_non_negative"
+    t.check_constraint "reminder_hours_before >= 0", name: "businesses_reminder_hours_before_non_negative"
     t.check_constraint "request_expiration_hours > 0", name: "businesses_request_expiration_positive"
     t.check_constraint "slot_interval_minutes > 0", name: "businesses_slot_interval_positive"
     t.check_constraint "slug::text ~ '^[a-z0-9]+(-[a-z0-9]+)*$'::text", name: "businesses_slug_format"

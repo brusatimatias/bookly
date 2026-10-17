@@ -20,6 +20,7 @@ Early development. What works today:
 - **Online requests:** customers book from the business's page without an account: service, professional (or any), a free time and their contact details. The request holds the time until the business answers, and the customer gets a personal link to see it. With "any professional" the least busy free one is assigned.
 - **Request management:** the business confirms or rejects requests (a rejection needs a reason, which the customer sees), reassigns appointments to another free professional, cancels confirmed ones with a reason and marks attendance once they start. Professionals answer their own; owners and admins any. Requests nobody answers expire on their own, and every change is kept in the appointment's history.
 - **Managing by personal link:** customers withdraw a request, or cancel or reschedule a confirmed appointment until the business's cancellation window closes, from their personal link. Rescheduling frees the old time at once and the appointment waits for the business's confirmation again; the panel marks it as a change of time.
+- **Emails and reminders:** customers get an email for every change to their appointment (request received, confirmed, rejected or cancelled with the business's reason, expired, moved to another professional, change of time received) and a reminder before it, as many hours ahead as the business sets (24 by default, or none). Confirmed appointments come with a calendar file (`.ics`), also downloadable from the customer's page, and a cancellation file when they leave the calendar. The professional, the owner and the admins hear about new requests, changes of time and cancellations from customers. Emails go out in the business's name and language, and replies reach the business (or, for the team, the customer).
 - **Live agenda:** a weekly agenda per professional (or of everyone), a requests list and a dashboard with pending requests and today's appointments. They update by themselves when a request comes in or an appointment changes, and so do the public page's week of free times and the customer's appointment page.
 - **Consistent, responsive UI:** a landing page, public business pages, sign in screens and a business panel with sidebar navigation that collapses into a menu on phones.
 - **Spanish and English** throughout, Spanish by default. Pages outside a business follow the browser's language and offer a language switcher; business pages and emails use the business's language.
@@ -35,9 +36,13 @@ Early development. What works today:
 - [x] Public appointment request
 - [x] Request management and live schedule (confirm, reject, reassign, expiration)
 - [x] Appointment management by personal link (cancel, reschedule)
-- [ ] Emails and reminders
-- [ ] Business onboarding and platform panel
-- [ ] Subdomains and branding (optional)
+- [x] Emails and reminders
+- [ ] Business onboarding and platform panel (completes the MVP)
+- [ ] Project documentation: architecture, diagrams and design decisions
+
+After the MVP, step by step:
+
+- [ ] Subdomains and branding
 - [ ] Schema-per-business migration (comparative exercise)
 - [ ] Deployment
 
@@ -54,7 +59,7 @@ bin/rails db:seed         # sample businesses and users
 bin/dev                   # web server on http://localhost:3000, background jobs and Tailwind watcher
 ```
 
-Background jobs (Solid Queue, `bin/jobs`) and live updates (Solid Cable) use their own databases in development too (`bookly_development_queue` and `bookly_development_cable`, created by `bin/setup`). `bin/dev` runs the jobs; without them requests don't expire and emails aren't sent.
+Background jobs (Solid Queue, `bin/jobs`) and live updates (Solid Cable) use their own databases in development too (`bookly_development_queue` and `bookly_development_cable`, created by `bin/setup`). `bin/dev` runs the jobs; without them requests don't expire, reminders aren't sent and no email goes out.
 
 Sample businesses:
 
@@ -70,9 +75,11 @@ Sample users, all with the password `password` (sign in at http://localhost:3000
 | martin@barberiacentro.example | Professional in both businesses |
 | sam@downtownstudio.example | Owner of Downtown Studio |
 
-Both businesses come with services, professionals, weekly hours, a few upcoming blocks and some appointments in the coming days, with their history. Barbería Centro also gets, whenever it has none, a request expiring in two hours, an appointment that started an hour ago and a change of time waiting for an answer (Lucas Vera), to try answering requests and marking attendance in the panel (Pedidos / Agenda). To try a request, use the booking button on a business page ("Pedir un turno" / "Book an appointment"). Barbería Centro also has an inactive service and a professional profile without an account (Sofía Torres), to try inviting someone from their profile.
+Both businesses come with services, professionals, weekly hours, a few upcoming blocks and some appointments in the coming days, with their history. Barbería Centro also gets, whenever it has none, a request expiring in two hours, an appointment that started an hour ago and a change of time waiting for an answer (Lucas Vera), to try answering requests and marking attendance in the panel (Pedidos / Agenda). To try a request, use the booking button on a business page ("Pedir un turno" / "Book an appointment"). Barbería Centro also has an inactive service and a professional profile without an account (Sofía Torres), to try inviting someone from their profile, plus a rejected request, an appointment the business cancelled and an expired request.
 
-There is no public sign up yet: new team members join through invitations. Emails sent in development (invitations, password resets) can be read at http://localhost:3000/letter_opener.
+There is no public sign up yet: new team members join through invitations.
+
+Emails sent in development (invitations, password resets, appointment emails and reminders) can be read at http://localhost:3000/letter_opener. Seeding sends none; every appointment email can be previewed with the seeded data at http://localhost:3000/rails/mailers. Emails are sent from `no-reply@bookly.test` unless `BOOKLY_MAIL_FROM` says otherwise.
 
 ## Tests and checks
 
