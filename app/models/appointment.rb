@@ -162,11 +162,15 @@ class Appointment < ApplicationRecord
   # refreshes itself when an appointment is created or changes.
   def self.panel_stream(business) = [ business, :appointments ]
   def self.availability_stream(business) = [ business, :availability ]
+  # The customer's page of this appointment, which refreshes itself when the
+  # business answers or changes it.
+  def customer_stream = [ self, :customer ]
 
   private
     def broadcast_refresh
       Turbo::StreamsChannel.broadcast_refresh_to(*Appointment.panel_stream(business))
       Turbo::StreamsChannel.broadcast_refresh_to(*Appointment.availability_stream(business))
+      Turbo::StreamsChannel.broadcast_refresh_to(*customer_stream)
     end
 
     # Price and break are copied once; the end follows the start. A request

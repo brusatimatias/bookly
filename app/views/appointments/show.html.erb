@@ -1,6 +1,7 @@
 <% content_for :title, t(".title", business: Current.business.name) %>
 <%# A personal link: keep it out of search engines. %>
 <% content_for :head, tag.meta(name: "robots", content: "noindex, nofollow") %>
+<%= refresh_on_appointment_changes @appointment.customer_stream %>
 
 <% professional_note = if @reassigned
                         t(".reassigned", business: Current.business.name)

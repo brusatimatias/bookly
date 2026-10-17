@@ -5,9 +5,10 @@ module AppointmentsHelper
   }.freeze
 
   # Makes the page refresh itself (morphing, keeping the scroll) when an
-  # appointment of the business changes: stream is Appointment.panel_stream or
-  # Appointment.availability_stream. Only for pages without forms to fill, so a
-  # refresh never wipes what someone is typing.
+  # appointment changes: stream is Appointment.panel_stream,
+  # Appointment.availability_stream (any of the business's) or
+  # appointment.customer_stream (that one). Only for pages without forms to
+  # fill, so a refresh never wipes what someone is typing.
   def refresh_on_appointment_changes(stream)
     content_for :head, turbo_refreshes_with(method: :morph, scroll: :preserve)
     turbo_stream_from(*stream)

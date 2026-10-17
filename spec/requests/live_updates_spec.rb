@@ -63,6 +63,26 @@ RSpec.describe "Live updates", type: :request do
       expect(refreshes_by_morphing?).to be(true)
     end
 
+    it "subscribes the customer's appointment page to that appointment's stream only" do
+      token = in_business { appointment.generate_token_for(:management) }
+      other = in_business { create(:appointment, service: service, professional: professional, starts_at: appointment.starts_at + 1.hour) }
+
+      get appointment_path(business, token)
+
+      expect(subscribed_to?(appointment.customer_stream)).to be(true)
+      expect(subscribed_to?(other.customer_stream)).to be(false)
+      expect(subscribed_to?(Appointment.panel_stream(business))).to be(false)
+      expect(refreshes_by_morphing?).to be(true)
+    end
+
+    it "leaves the cancellation and reschedule forms out" do
+      token = in_business { appointment.generate_token_for(:management) }
+
+      get new_appointment_cancellation_path(business, token)
+
+      expect(response.body).not_to include("turbo-cable-stream-source")
+    end
+
     it "leaves the other steps out" do
       get new_booking_path(business)
 

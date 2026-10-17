@@ -128,8 +128,9 @@ def seed_appointments(appointments)
 end
 
 # Something to do in the panel, unless there already is: a request that
-# expires in two hours and an appointment that started an hour ago, to mark its
-# attendance. Unlike the ones above, they're added to existing data too.
+# expires in two hours, an appointment that started an hour ago, to mark its
+# attendance, and a confirmed appointment the customer asked to move. Unlike
+# the ones above, they're added to existing data too.
 def seed_panel_examples(professional:, service:)
   zone = Time.find_zone!(Current.business.time_zone)
 
@@ -144,6 +145,15 @@ def seed_panel_examples(professional:, service:)
     customer = Customer.find_or_create_by!(email: "pedro@example.com") { |new_customer| new_customer.name = "Pedro Gil" }
     Appointment.create!(service: service, professional: professional, customer: customer, status: :confirmed,
                         starts_at: 1.hour.ago.in_time_zone(zone).beginning_of_hour)
+  end
+
+  unless Appointment.awaiting_answer.includes(:events).any?(&:rescheduled_from)
+    customer = Customer.find_or_create_by!(email: "lucas@example.com") { |new_customer| new_customer.name = "Lucas Vera" }
+    date = (zone.today + 4..).find { |day| professional.working_hours.exists?(day_of_week: day.wday) }
+    appointment = Appointment.create!(service: service, professional: professional, customer: customer, starts_at: zone.parse("#{date} 09:00"))
+    appointment.events.create!(to_status: "pending", actor_kind: :customer)
+    appointment.confirm!(by: Current.business.owner)
+    appointment.reschedule!(zone.parse("#{date} 12:00"))
   end
 end
 
