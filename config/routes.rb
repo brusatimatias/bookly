@@ -41,6 +41,10 @@ Rails.application.routes.draw do
 
       resource :team, only: :show
       resource :business, only: %i[edit update]
+      # The setup assistant: /setup opens the step to do next.
+      get "setup", to: "setups#show", as: :setup
+      get "setup/:step", to: "setups#show", as: :setup_step, constraints: { step: Regexp.union(BusinessSetup::STEPS) }
+      patch "setup/:step", to: "setups#update", constraints: { step: Regexp.union(BusinessSetup::STEPS - [ "done" ]) }
       resource :settings, only: %i[edit update]
       resources :memberships, only: %i[update destroy]
       resources :invitations, only: %i[new create destroy] do

@@ -1,0 +1,25 @@
+<%# For the owner, until the business can take bookings: what's left, and the way back to the assistant. %>
+<section class="card mb-6 overflow-hidden ring-brand-600/30">
+  <div class="flex flex-wrap items-center justify-between gap-4 bg-brand-50 px-6 py-4">
+    <div>
+      <h2 class="font-semibold text-brand-900"><%= t(".title") %></h2>
+      <p class="mt-1 text-sm text-brand-800"><%= t(".message") %></p>
+    </div>
+    <%= link_to admin_setup_path, class: "btn-primary" do %>
+      <%= t(".continue") %> <%= icon "arrow-right", class: "size-4" %>
+    <% end %>
+  </div>
+  <ul class="list-divided text-sm">
+    <% BusinessSetup::TASKS.each do |task| %>
+      <% done = setup.done?(task) %>
+      <li class="flex items-center gap-3 px-6 py-3">
+        <% if done %>
+          <%= icon "check-circle", class: "text-green-600" %>
+        <% else %>
+          <span class="size-5 shrink-0 rounded-full border-2 border-gray-300" aria-hidden="true"></span>
+        <% end %>
+        <span class="<%= done ? "text-gray-500 line-through" : "text-gray-900" %>"><%= t(".tasks.#{task}") %></span>
+      </li>
+    <% end %>
+  </ul>
+</section>

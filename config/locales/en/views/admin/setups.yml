@@ -1,0 +1,79 @@
+en:
+  admin:
+    setups:
+      show:
+        title: "Getting started"
+        subtitle: "Get %{business} ready to take bookings in a few steps."
+      steps:
+        label: "Setup steps"
+        details: "Details"
+        service: "Service"
+        professional: "Professional"
+        hours: "Hours"
+        done: "Done"
+      navigation:
+        back: "Back"
+        next: "Next"
+      details:
+        title: "Business details"
+        intro: "How your customers find and reach you. Fill them in now or later from Settings."
+        address_hint: "Shown on your page, in the emails and in each appointment's calendar file."
+        skip: "Skip"
+        submit: "Save and continue"
+      service:
+        yours: "Your services"
+        first: "Your first service"
+        another: "Add another service"
+        intro: "What your customers will be able to book, with its duration and price."
+        name_placeholder: "Haircut"
+        duration: "Duration (min)"
+        price: "Price (%{currency})"
+        more_hint: "The description and the break between appointments can be added later from Services."
+        submit: "Add service"
+      professional:
+        needs_service: "Add a service first"
+        needs_service_hint: "Each professional offers some of the business's services."
+        add_service: "Add a service"
+        yours: "Who works here"
+        services:
+          zero: "No services"
+          one: "1 service"
+          other: "%{count} services"
+        first: "Who takes the appointments?"
+        another: "Add someone else"
+        intro: "Each professional offers all your active services. You can change that, add their photo or invite them to create their account from Professionals."
+        myself_hint: "Do you take appointments yourself?"
+        myself: "I do"
+        name: "Someone else's name"
+        name_hint: "They don't need an account: invite them whenever you like."
+        submit: "Add professional"
+      hours:
+        needs_professional: "Add someone who takes appointments first"
+        needs_professional_hint: "Hours belong to each professional."
+        add_professional: "Add a professional"
+        professionals: "Professionals"
+        edit_week: "Edit the week"
+        without_hours: "No hours"
+        title: "Opening hours"
+        intro: "They're set for %{names}."
+        hint: "You can fine tune each one's week later, with several ranges per day, from Professionals."
+        submit: "Save hours"
+      done:
+        title: "Your page is ready!"
+        message: "Your customers can now request appointments. Share this link:"
+        view_page: "View my page"
+        panel: "Go to the panel"
+        next_title: "What's next"
+        next:
+          team:
+            title: "Invite your team"
+            description: "Each professional manages their schedule with their own account."
+          schedules:
+            title: "Fine tune the hours"
+            description: "Several ranges per day, and blocks for vacations or errands."
+          booking:
+            title: "Review the booking rules"
+            description: "Intervals, minimum notice, cancellations and reminders."
+      update:
+        service_added: "%{name} added."
+        professional_added: "%{name} added."

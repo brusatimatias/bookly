@@ -1,6 +1,6 @@
 # Signing up a business (/signup). Without an account it creates the owner's
 # too; signed in users add the business to theirs. Either way they land in the
-# new business's panel, signed in.
+# new business's setup assistant, signed in.
 class SignupsController < ApplicationController
   layout "auth"
   allow_unauthenticated_access
@@ -17,7 +17,7 @@ class SignupsController < ApplicationController
     if @registration.save
       start_new_session_for @registration.user if @registration.new_account?
       business = @registration.business
-      redirect_to admin_root_path(business_slug: business), notice: I18n.with_locale(business.locale) { t(".created", business: business.name) }
+      redirect_to admin_setup_step_path("details", business_slug: business), notice: I18n.with_locale(business.locale) { t(".created", business: business.name) }
     else
       # Signing in with the account that already has the email brings them back here.
       session[:return_to_after_authenticating] = new_signup_url if @registration.errors.of_kind?(:email_address, :taken)

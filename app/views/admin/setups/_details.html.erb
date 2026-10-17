@@ -1,0 +1,34 @@
+<%= form_with model: @business, url: admin_setup_step_path("details"), method: :patch, class: "card card-body space-y-5" do |form| %>
+  <div>
+    <h2 class="font-semibold text-gray-900"><%= t(".title") %></h2>
+    <p class="mt-1 text-sm text-gray-600"><%= t(".intro") %></p>
+  </div>
+
+  <%= render "shared/form_errors", record: @business %>
+
+  <div class="field">
+    <%= form.label :name, class: "label" %>
+    <%= form.text_field :name, required: true, maxlength: 100, class: "input" %>
+  </div>
+
+  <div class="field">
+    <%= form.label :contact_email, class: "label" %>
+    <%= form.email_field :contact_email, class: "input" %>
+  </div>
+
+  <div class="field">
+    <%= form.label :contact_phone, class: "label" %>
+    <%= form.telephone_field :contact_phone, maxlength: 30, autofocus: true, class: "input" %>
+  </div>
+
+  <div class="field">
+    <%= form.label :address, class: "label" %>
+    <%= form.text_field :address, maxlength: 200, class: "input" %>
+    <p class="hint"><%= t(".address_hint") %></p>
+  </div>
+
+  <div class="flex items-center justify-end gap-3 border-t border-gray-100 pt-5">
+    <%= link_to t(".skip"), admin_setup_step_path("service"), class: "btn-ghost" %>
+    <%= form.submit t(".submit"), class: "btn-primary" %>
+  </div>
+<% end %>

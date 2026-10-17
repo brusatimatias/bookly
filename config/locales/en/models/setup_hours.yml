@@ -1,0 +1,19 @@
+en:
+  activemodel:
+    models:
+      setup_hours:
+        one: "Opening hours"
+        other: "Opening hours"
+    attributes:
+      setup_hours:
+        days: "Days"
+        start_time: "From"
+        end_time: "To"
+    errors:
+      models:
+        setup_hours:
+          attributes:
+            days:
+              blank: "pick at least one"
+            end_time:
+              after_start: "must be after the start time"

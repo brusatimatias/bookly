@@ -22,7 +22,7 @@ RSpec.describe "Signups", type: :request do
 
       business = Business.find_by!(slug: "barberia-centro")
       expect(User.find_by!(email_address: "lucia@example.com").membership_for(business)).to be_owner
-      expect(response).to redirect_to(admin_root_path(business))
+      expect(response).to redirect_to(admin_setup_step_path(business, "details"))
 
       follow_redirect!
       expect(response).to have_http_status(:ok)
@@ -83,7 +83,7 @@ RSpec.describe "Signups", type: :request do
 
       business = Business.find_by!(slug: "barberia-centro")
       expect(user.membership_for(business)).to be_owner
-      expect(response).to redirect_to(admin_root_path(business))
+      expect(response).to redirect_to(admin_setup_step_path(business, "details"))
     end
   end
 

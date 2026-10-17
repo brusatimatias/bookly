@@ -1,5 +1,6 @@
 class Admin::DashboardsController < Admin::BaseController
   def show
+    @setup = BusinessSetup.new if Current.membership.owner?
     @members_count = Current.business.memberships.count
     @pending_invitations_count = Current.business.invitations.pending.count
     @active_services_count = Current.business.services.active.count

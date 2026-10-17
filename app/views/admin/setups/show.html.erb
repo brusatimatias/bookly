@@ -1,0 +1,7 @@
+<% content_for :title, t(".title") %>
+
+<div class="mx-auto max-w-2xl">
+  <%= render "shared/page_header", title: t(".title"), subtitle: t(".subtitle", business: Current.business.name) %>
+  <%= render "steps", setup: @setup, current: @step %>
+  <%= render partial: @step %>
+</div>
