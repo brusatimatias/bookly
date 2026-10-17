@@ -125,6 +125,30 @@ RSpec.describe "Appointments", type: :request do
     expect(response.body).not_to include("Motivo de", "Me surgió algo")
   end
 
+  describe "adding it to a calendar" do
+    it "offers the .ics for a confirmed appointment" do
+      in_business { appointment.confirm!(by: create(:user)) }
+
+      get appointment_path(business, token)
+      expect(response.body).to include("Agregar al calendario", appointment_path(business, token, format: :ics))
+
+      get appointment_path(business, token, format: :ics)
+      expect(response).to have_http_status(:ok)
+      expect(response.media_type).to eq("text/calendar")
+      expect(response.headers["Content-Disposition"]).to include('filename="turno.ics"')
+      # Long lines are folded: unfold them first.
+      expect(response.body.gsub("\r\n ", "")).to include("METHOD:PUBLISH", "DTSTART:20261016T180000Z", "/barberia-centro/appointments/#{token}")
+    end
+
+    it "has no .ics for other statuses" do
+      get appointment_path(business, token)
+      expect(response.body).not_to include("Agregar al calendario")
+
+      get appointment_path(business, token, format: :ics)
+      expect(response).to have_http_status(:not_found)
+    end
+  end
+
   it "keeps the price the appointment was booked with" do
     token
     in_business { service.update!(price_cents: 20_000_00) }

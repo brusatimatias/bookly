@@ -1,0 +1,5 @@
+en:
+  appointment_calendar:
+    filename: "appointment"
+    summary: "%{service} – %{business}"
+    description: "Professional: %{professional}\nView, cancel or change the appointment: %{url}"

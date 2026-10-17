@@ -41,5 +41,8 @@ en:
       withdraw: "Withdraw request"
       cancel: "Cancel appointment"
       reschedule: "Change time"
+      calendar:
+        message: "Add it to your calendar to keep it handy. If the appointment changes, we'll email you the updated file."
+        add: "Add to calendar"
       contact: "Contact %{business}"
       business_page: "Business page"

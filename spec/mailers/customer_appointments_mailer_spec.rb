@@ -34,6 +34,11 @@ RSpec.describe CustomerAppointmentsMailer, type: :mailer do
     mail.text_part.body.to_s
   end
 
+  # The .ics attached to the email, if any.
+  def calendar(mail)
+    mail.attachments.find { |attachment| attachment.mime_type == "text/calendar" }&.decoded
+  end
+
   def link_token(mail)
     text(mail)[%r{/appointments/(\S+)}, 1]
   end
@@ -60,6 +65,8 @@ RSpec.describe CustomerAppointmentsMailer, type: :mailer do
 
       expect(mail.subject).to eq("Tu turno en Barbería Centro está confirmado")
       expect(text(mail)).to include("Barbería Centro confirmó tu turno.", "desde el link hasta el jue 15 oct, 15:00.")
+      expect(mail.attachments.map(&:filename)).to eq([ "turno.ics" ])
+      expect(calendar(mail)).to include("METHOD:PUBLISH", "DTSTART:20261016T180000Z", "SUMMARY:Corte de pelo – Barbería Centro")
     end
 
     it "sends the customer to the business once the window closed" do
@@ -93,6 +100,7 @@ RSpec.describe CustomerAppointmentsMailer, type: :mailer do
 
       expect(mail.subject).to eq("Barbería Centro canceló tu turno")
       expect(text(mail)).to include("Motivo de Barbería Centro:\nEl profesional está enfermo.")
+      expect(calendar(mail)).to include("METHOD:CANCEL")
     end
 
     it "is a receipt when the customer cancelled, without their reason" do
@@ -115,6 +123,7 @@ RSpec.describe CustomerAppointmentsMailer, type: :mailer do
 
       expect(mail.subject).to eq("Retiraste tu pedido de turno en Barbería Centro")
       expect(text(mail)).to include("Tu pedido quedó retirado")
+      expect(calendar(mail)).to be_nil
     end
   end
 
@@ -127,6 +136,7 @@ RSpec.describe CustomerAppointmentsMailer, type: :mailer do
       mail = mailer(last_event).expired
 
       expect(mail.subject).to eq("Tu pedido de turno en Barbería Centro venció")
+      expect(calendar(mail)).to be_nil
       expect(text(mail)).to include("Barbería Centro no respondió a tiempo", "Pedir otro turno")
     end
   end
@@ -145,6 +155,7 @@ RSpec.describe CustomerAppointmentsMailer, type: :mailer do
       expect(text(mail)).to include("Pediste pasar tu turno del vie 16 oct, 15:00 a este horario",
                                     "tiene hasta el jue 15 oct, 08:00 para confirmarlo", "vie 16 oct, 17:00 – 17:30",
                                     "si Barbería Centro rechaza el nuevo o no responde a tiempo, perdés el turno.")
+      expect(calendar(mail)).to include("METHOD:CANCEL")
     end
   end
 
@@ -161,6 +172,19 @@ RSpec.describe CustomerAppointmentsMailer, type: :mailer do
 
       expect(mail.subject).to eq("Cambió el profesional de tu turno en Barbería Centro")
       expect(text(mail)).to include("ahora te atiende Sofía Torres. El día y el horario no cambian.", "podés ver el estado del pedido")
+      expect(calendar(mail)).to be_nil
+    end
+
+    it "brings the updated .ics when the appointment was confirmed" do
+      event = in_business do
+        other = create(:professional, name: "Sofía Torres", services: [ service ])
+        create(:working_hour, professional: other, day_of_week: 5, start_time: "09:00", end_time: "18:00")
+        appointment.confirm!(by: member)
+        appointment.reassign!(other, by: member)
+        appointment.events.last
+      end
+
+      expect(calendar(mailer(event).reassigned)).to include("METHOD:PUBLISH", "Profesional: Sofía Torres")
     end
   end
 

@@ -1,0 +1,5 @@
+es:
+  appointment_calendar:
+    filename: "turno"
+    summary: "%{service} – %{business}"
+    description: "Profesional: %{professional}\nVer, cancelar o cambiar el turno: %{url}"
