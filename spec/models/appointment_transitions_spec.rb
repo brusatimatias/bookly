@@ -151,6 +151,16 @@ RSpec.describe Appointment, "transitions", type: :model do
       expect(build(:appointment, service: service, professional: professional, starts_at: starts_at)).to be_valid
     end
 
+    it "is remembered while the business answers" do
+      expect(confirmed_appointment.rescheduled_from).to be_nil
+
+      appointment.reschedule!(new_starts_at)
+      expect(appointment.reload.rescheduled_from).to eq(starts_at)
+
+      appointment.confirm!(by: user)
+      expect(appointment.reload.rescheduled_from).to be_nil
+    end
+
     it "never gives the business until after the new time" do
       business.update!(request_expiration_hours: 72)
 

@@ -17,16 +17,30 @@ module AppointmentsHelper
     tag.span Appointment.human_attribute_name("status.#{appointment.status}"), class: STATUS_BADGES.fetch(appointment.status)
   end
 
-  # What an event did: "Request sent", "Confirmed", "Reassigned: Ana → Pablo".
+  # What an event did: "Request sent", "Confirmed", "Reassigned from Ana to
+  # Pablo", "Moved from Mon 19 Oct, 12:00 to Mon 19 Oct, 10:00".
   # professional_names maps the ids in a reassignment's metadata to names.
   def appointment_event_title(event, professional_names = {})
     if event.from_status.nil?
       t("appointments.events.created")
-    elsif event.metadata.key?("to_professional_id")
+    elsif event.reschedule?
+      t("appointments.events.rescheduled", from: l(event.from_starts_at, format: :weekday_hour), to: l(event.to_starts_at, format: :weekday_hour))
+    elsif event.reassignment?
       from, to = event.metadata.values_at("from_professional_id", "to_professional_id").map { |id| professional_names.fetch(id, "—") }
       t("appointments.events.reassigned", from: from, to: to)
     else
       Appointment.human_attribute_name("status.#{event.to_status}")
+    end
+  end
+
+  # For a request that comes from a reschedule, a line saying so with the time
+  # it had before (nil otherwise). Preload the events for lists.
+  def appointment_rescheduled_note(appointment, **options)
+    from = appointment.rescheduled_from or return
+    # Wraps instead of truncating: the previous time is what matters.
+    tag.p class: [ "flex items-start gap-1 text-xs text-brand-700", options[:class] ] do
+      safe_join([ icon("arrows-right-left", class: "mt-px size-3.5 shrink-0"),
+                  tag.span(t("appointments.rescheduled_from", from: l(from, format: :weekday_hour))) ])
     end
   end
 

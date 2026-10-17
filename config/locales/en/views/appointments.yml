@@ -7,6 +7,8 @@ en:
     events:
       created: "Request sent"
       reassigned: "Reassigned from %{from} to %{to}"
+      rescheduled: "Moved from %{from} to %{to}"
+    rescheduled_from: "New time · was %{from}"
     show:
       title: "Your appointment · %{business}"
       heading:

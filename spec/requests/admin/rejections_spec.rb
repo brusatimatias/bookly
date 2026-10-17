@@ -20,6 +20,14 @@ RSpec.describe "Admin rejections", type: :request do
     expect(response.body).to include("Rechazar pedido", "Ana Pérez", "Motivo", "El cliente lo va a ver")
   end
 
+  it "warns that rejecting a change of time leaves the customer without an appointment" do
+    with_business(business) { create(:appointment_event, :reschedule, appointment: appointment) }
+
+    get new_admin_appointment_rejection_path(business, appointment)
+
+    expect(response.body).to include("Cambio de horario · antes", "si lo rechazás el cliente se queda sin turno")
+  end
+
   it "rejects the request with the reason" do
     post admin_appointment_rejection_path(business, appointment), params: { rejection: { note: "Cerramos ese día" } }
 

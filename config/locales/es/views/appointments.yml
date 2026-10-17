@@ -7,6 +7,8 @@ es:
     events:
       created: "Pedido enviado"
       reassigned: "Reasignado de %{from} a %{to}"
+      rescheduled: "Horario cambiado del %{from} al %{to}"
+    rescheduled_from: "Cambio de horario · antes %{from}"
     show:
       title: "Tu turno · %{business}"
       heading:

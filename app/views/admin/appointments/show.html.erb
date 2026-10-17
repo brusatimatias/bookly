@@ -14,6 +14,7 @@
             <dt class="text-xs font-medium tracking-wide text-gray-500 uppercase"><%= Appointment.human_attribute_name(:status) %></dt>
             <% if @appointment.pending? %>
               <dd class="text-sm text-gray-600"><%= t(".expires", deadline: l(@appointment.request_expires_at, format: :weekday_hour)) %></dd>
+              <dd><%= appointment_rescheduled_note(@appointment, class: "mt-1 text-sm") %></dd>
             <% end %>
           </div>
           <dd><%= appointment_status_badge(@appointment) %></dd>

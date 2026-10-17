@@ -64,6 +64,12 @@ class Appointment < ApplicationRecord
     pending? && request_expires_at <= Time.current
   end
 
+  # For a request that comes from a reschedule: the time it had before. Reads
+  # the events (preload them for lists).
+  def rescheduled_from
+    events.reverse.find { |event| event.to_status == "pending" }&.from_starts_at if pending?
+  end
+
   # Until when the customer may cancel or reschedule a confirmed appointment
   # on their own (the business's cancellation window); later, they contact
   # the business.
