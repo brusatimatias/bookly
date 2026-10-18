@@ -1,0 +1,238 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1440" height="1295" viewBox="0 0 1440 1295" font-family="Helvetica, Arial, sans-serif">
+  <!-- Class diagram of app/models. Keep in sync with db/schema.rb. -->
+  <style>
+    .box { fill: #ffffff; stroke: #333333; stroke-width: 1.5; }
+    .head { fill: #eef2f7; stroke: #333333; stroke-width: 1.5; }
+    .title { font-size: 15px; font-weight: bold; font-style: italic; fill: #111111; }
+    .field { font-family: Menlo, Consolas, monospace; font-size: 12px; fill: #222222; }
+    .constraint { font-family: Menlo, Consolas, monospace; font-size: 12px; fill: #b45309; }
+    .note { font-family: Menlo, Consolas, monospace; font-size: 11px; fill: #777777; }
+    .rel { stroke: #333333; stroke-width: 1.5; fill: none; }
+    .dashed { stroke-dasharray: 6 4; }
+    .mult { font-size: 13px; fill: #111111; }
+    .label { font-size: 12px; font-style: italic; fill: #555555; }
+    .zone { fill: none; stroke: #94a3b8; stroke-width: 1.5; stroke-dasharray: 10 6; }
+    .zone-title { font-size: 16px; font-weight: bold; fill: #475569; }
+    .zone-note { font-size: 13px; fill: #64748b; }
+    .legend { font-size: 13px; fill: #555555; }
+  </style>
+  <rect width="1440" height="1295" fill="#ffffff"/>
+
+  <rect class="zone" x="20" y="20" width="1400" height="480" rx="14"/>
+  <text class="zone-title" x="40" y="48">Global tables</text>
+  <text class="zone-note" x="170" y="48">not BusinessScoped: how users reach their businesses</text>
+  <rect class="zone" x="20" y="530" width="1400" height="630" rx="14"/>
+  <text class="zone-title" x="40" y="558">Per-business tables (BusinessScoped)</text>
+  <text class="zone-note" x="345" y="558">business_id on every row (see below)</text>
+
+  <!-- User -->
+  <rect class="box" x="50" y="90" width="270" height="130"/>
+  <rect class="head" x="50" y="90" width="270" height="30"/>
+  <text class="title" x="185" y="110" text-anchor="middle">User</text>
+  <text class="field" x="60" y="138">id</text>
+  <text class="field" x="60" y="156">name</text>
+  <text class="field" x="60" y="174">email_address  (unique)</text>
+  <text class="field" x="60" y="192">password_digest</text>
+  <text class="field" x="60" y="210">platform_admin: boolean</text>
+
+  <!-- Session -->
+  <rect class="box" x="50" y="300" width="270" height="112"/>
+  <rect class="head" x="50" y="300" width="270" height="30"/>
+  <text class="title" x="185" y="320" text-anchor="middle">Session</text>
+  <text class="field" x="60" y="348">user_id</text>
+  <text class="field" x="60" y="366">ip_address</text>
+  <text class="field" x="60" y="384">user_agent</text>
+  <text class="note" x="60" y="402">signed cookie: session id</text>
+
+  <!-- Membership -->
+  <rect class="box" x="420" y="90" width="300" height="130"/>
+  <rect class="head" x="420" y="90" width="300" height="30"/>
+  <text class="title" x="570" y="110" text-anchor="middle">Membership</text>
+  <text class="field" x="430" y="138">business_id</text>
+  <text class="field" x="430" y="156">user_id</text>
+  <text class="field" x="430" y="174">role: owner | admin | professional</text>
+  <text class="field" x="430" y="192">unique (business_id, user_id)</text>
+  <text class="field" x="430" y="210">one owner per business</text>
+
+  <!-- Business -->
+  <rect class="box" x="800" y="70" width="310" height="310"/>
+  <rect class="head" x="800" y="70" width="310" height="30"/>
+  <text class="title" x="955" y="90" text-anchor="middle">Business</text>
+  <text class="field" x="810" y="118">slug  (unique: /:business_slug)</text>
+  <text class="field" x="810" y="136">name</text>
+  <text class="field" x="810" y="154">time_zone · locale (es | en)</text>
+  <text class="field" x="810" y="172">currency</text>
+  <text class="field" x="810" y="190">contact_email · contact_phone</text>
+  <text class="field" x="810" y="208">address</text>
+  <text class="field" x="810" y="226">slot_interval_minutes</text>
+  <text class="field" x="810" y="244">buffer_minutes</text>
+  <text class="field" x="810" y="262">min_booking_notice_hours</text>
+  <text class="field" x="810" y="280">booking_horizon_days</text>
+  <text class="field" x="810" y="298">request_expiration_hours</text>
+  <text class="field" x="810" y="316">cancellation_window_hours</text>
+  <text class="field" x="810" y="334">reminder_hours_before</text>
+  <text class="field" x="810" y="352">status: active | suspended</text>
+  <text class="field" x="810" y="370">suspended_at</text>
+
+  <!-- Invitation -->
+  <rect class="box" x="1170" y="90" width="230" height="184"/>
+  <rect class="head" x="1170" y="90" width="230" height="30"/>
+  <text class="title" x="1285" y="110" text-anchor="middle">Invitation</text>
+  <text class="field" x="1180" y="138">business_id</text>
+  <text class="field" x="1180" y="156">email</text>
+  <text class="field" x="1180" y="174">role: admin | professional</text>
+  <text class="field" x="1180" y="192">invited_by_id</text>
+  <text class="field" x="1180" y="210">professional_id  (optional)</text>
+  <text class="field" x="1180" y="228">expires_at  (7 days)</text>
+  <text class="field" x="1180" y="246">accepted_at</text>
+  <text class="note" x="1180" y="264">token: not stored</text>
+
+  <path class="rel" d="M320,140 L420,140"/>
+  <text class="mult" x="330" y="134" text-anchor="start">1</text>
+  <text class="mult" x="410" y="134" text-anchor="end">*</text>
+  <path class="rel" d="M185,216 L185,300"/>
+  <text class="mult" x="193" y="232" text-anchor="start">1</text>
+  <text class="mult" x="193" y="284" text-anchor="start">*</text>
+  <path class="rel" d="M800,140 L720,140"/>
+  <text class="mult" x="790" y="134" text-anchor="end">1</text>
+  <text class="mult" x="730" y="134" text-anchor="start">*</text>
+  <path class="rel" d="M1110,140 L1170,140"/>
+  <text class="mult" x="1120" y="134" text-anchor="start">1</text>
+  <text class="mult" x="1160" y="134" text-anchor="end">*</text>
+  <path class="rel" d="M260,90 L260,62 L1340,62 L1340,90"/>
+  <text class="mult" x="268" y="74" text-anchor="start">1</text>
+  <text class="mult" x="1348" y="74" text-anchor="start">*</text>
+  <text class="label" x="640" y="57" text-anchor="middle">invited_by</text>
+  <!-- Service -->
+  <rect class="box" x="50" y="610" width="290" height="148"/>
+  <rect class="head" x="50" y="610" width="290" height="30"/>
+  <text class="title" x="195" y="630" text-anchor="middle">Service</text>
+  <text class="field" x="60" y="658">name  (unique per business)</text>
+  <text class="field" x="60" y="676">duration_minutes</text>
+  <text class="field" x="60" y="694">price_cents</text>
+  <text class="field" x="60" y="712">buffer_minutes  (nil: business's)</text>
+  <text class="field" x="60" y="730">active</text>
+  <text class="note" x="60" y="748">description: Action Text</text>
+
+  <!-- ProfessionalService -->
+  <rect class="box" x="430" y="640" width="240" height="76"/>
+  <rect class="head" x="430" y="640" width="240" height="30"/>
+  <text class="title" x="550" y="660" text-anchor="middle">ProfessionalService</text>
+  <text class="field" x="440" y="688">professional_id</text>
+  <text class="field" x="440" y="706">service_id</text>
+
+  <!-- Professional -->
+  <rect class="box" x="760" y="610" width="290" height="148"/>
+  <rect class="head" x="760" y="610" width="290" height="30"/>
+  <text class="title" x="905" y="630" text-anchor="middle">Professional</text>
+  <text class="field" x="770" y="658">user_id  (optional): a member,</text>
+  <text class="field" x="770" y="676">  FK (business_id, user_id)</text>
+  <text class="field" x="770" y="694">  → memberships</text>
+  <text class="field" x="770" y="712">name</text>
+  <text class="field" x="770" y="730">active</text>
+  <text class="note" x="770" y="748">photo: Active Storage</text>
+
+  <!-- WorkingHour -->
+  <rect class="box" x="1130" y="610" width="270" height="112"/>
+  <rect class="head" x="1130" y="610" width="270" height="30"/>
+  <text class="title" x="1265" y="630" text-anchor="middle">WorkingHour</text>
+  <text class="field" x="1140" y="658">professional_id</text>
+  <text class="field" x="1140" y="676">day_of_week  (0 = Sunday)</text>
+  <text class="field" x="1140" y="694">start_time · end_time  (local)</text>
+  <text class="constraint" x="1140" y="712">⊘ no overlap per day</text>
+
+  <!-- TimeBlock -->
+  <rect class="box" x="1130" y="800" width="270" height="112"/>
+  <rect class="head" x="1130" y="800" width="270" height="30"/>
+  <text class="title" x="1265" y="820" text-anchor="middle">TimeBlock</text>
+  <text class="field" x="1140" y="848">professional_id</text>
+  <text class="field" x="1140" y="866">starts_at · ends_at  (UTC)</text>
+  <text class="field" x="1140" y="884">reason</text>
+  <text class="constraint" x="1140" y="902">⊘ no overlap</text>
+
+  <!-- Customer -->
+  <rect class="box" x="50" y="900" width="290" height="112"/>
+  <rect class="head" x="50" y="900" width="290" height="30"/>
+  <text class="title" x="195" y="920" text-anchor="middle">Customer</text>
+  <text class="field" x="60" y="948">email  (unique per business)</text>
+  <text class="field" x="60" y="966">name</text>
+  <text class="field" x="60" y="984">phone</text>
+  <text class="note" x="60" y="1002">no account</text>
+
+  <!-- Appointment -->
+  <rect class="box" x="430" y="790" width="320" height="292"/>
+  <rect class="head" x="430" y="790" width="320" height="30"/>
+  <text class="title" x="590" y="810" text-anchor="middle">Appointment</text>
+  <text class="field" x="440" y="838">service_id · professional_id</text>
+  <text class="field" x="440" y="856">customer_id</text>
+  <text class="field" x="440" y="874">status: pending | confirmed |</text>
+  <text class="field" x="440" y="892">  rejected | expired | cancelled |</text>
+  <text class="field" x="440" y="910">  attended | no_show</text>
+  <text class="field" x="440" y="928">starts_at · ends_at · buffer_ends_at</text>
+  <text class="field" x="440" y="946">price_cents · buffer_minutes  (copied)</text>
+  <text class="field" x="440" y="964">request_expires_at</text>
+  <text class="field" x="440" y="982">any_professional</text>
+  <text class="field" x="440" y="1000">customer_notes</text>
+  <text class="field" x="440" y="1018">reminder_sent_at</text>
+  <text class="constraint" x="440" y="1036">⊘ no double booking (pending,</text>
+  <text class="constraint" x="440" y="1054">  confirmed): professional and</text>
+  <text class="constraint" x="440" y="1072">  starts_at...buffer_ends_at</text>
+
+  <!-- AppointmentEvent -->
+  <rect class="box" x="830" y="930" width="290" height="184"/>
+  <rect class="head" x="830" y="930" width="290" height="30"/>
+  <text class="title" x="975" y="950" text-anchor="middle">AppointmentEvent</text>
+  <text class="field" x="840" y="978">appointment_id</text>
+  <text class="field" x="840" y="996">from_status  (nil on creation)</text>
+  <text class="field" x="840" y="1014">to_status</text>
+  <text class="field" x="840" y="1032">actor_kind: customer | user | system</text>
+  <text class="field" x="840" y="1050">actor_user_id  (optional)</text>
+  <text class="field" x="840" y="1068">note  (the team's reason)</text>
+  <text class="field" x="840" y="1086">metadata: jsonb</text>
+  <text class="note" x="840" y="1104">read only once saved</text>
+
+  <path class="rel" d="M340,665 L430,665"/>
+  <text class="mult" x="350" y="659" text-anchor="start">1</text>
+  <text class="mult" x="420" y="659" text-anchor="end">*</text>
+  <path class="rel" d="M670,665 L760,665"/>
+  <text class="mult" x="680" y="659" text-anchor="start">*</text>
+  <text class="mult" x="750" y="659" text-anchor="end">1</text>
+  <path class="rel" d="M1050,650 L1130,650"/>
+  <text class="mult" x="1060" y="644" text-anchor="start">1</text>
+  <text class="mult" x="1120" y="644" text-anchor="end">*</text>
+  <path class="rel" d="M1050,700 L1090,700 L1090,850 L1130,850"/>
+  <text class="mult" x="1060" y="694" text-anchor="start">1</text>
+  <text class="mult" x="1120" y="844" text-anchor="end">*</text>
+  <path class="rel" d="M195,760 L195,820 L430,820"/>
+  <text class="mult" x="203" y="776" text-anchor="start">1</text>
+  <text class="mult" x="420" y="814" text-anchor="end">*</text>
+  <path class="rel" d="M340,955 L430,955"/>
+  <text class="mult" x="350" y="949" text-anchor="start">1</text>
+  <text class="mult" x="420" y="949" text-anchor="end">*</text>
+  <path class="rel" d="M905,758 L905,850 L750,850"/>
+  <text class="mult" x="913" y="774" text-anchor="start">1</text>
+  <text class="mult" x="760" y="844" text-anchor="start">*</text>
+  <path class="rel" d="M750,990 L830,990"/>
+  <text class="mult" x="760" y="984" text-anchor="start">1</text>
+  <text class="mult" x="820" y="984" text-anchor="end">*</text>
+  <path class="rel dashed" d="M570,216 L570,575 L980,575 L980,610"/>
+  <text class="mult" x="578" y="232" text-anchor="start">0..1</text>
+  <text class="mult" x="988" y="594" text-anchor="start">0..1</text>
+  <text class="label" x="775" y="570" text-anchor="middle">profile linked to a member's account</text>
+  <path class="rel dashed" d="M1370,270 L1370,570 L1030,570 L1030,610"/>
+  <text class="mult" x="1378" y="286" text-anchor="start">*</text>
+  <text class="mult" x="1038" y="594" text-anchor="start">0..1</text>
+  <text class="label" x="1360" y="300" text-anchor="end">takes over a profile</text>
+  <path class="rel dashed" d="M150,216 L150,280 L30,280 L30,1180 L975,1180 L975,1100"/>
+  <text class="mult" x="158" y="232" text-anchor="start">0..1</text>
+  <text class="mult" x="983" y="1116" text-anchor="start">*</text>
+  <text class="label" x="500" y="1196" text-anchor="middle">actor_user: who in the team made the change</text>
+  <path class="rel" d="M955,374 L955,500"/>
+  <text class="mult" x="965" y="392">1</text>
+  <text class="label" x="965" y="440">has many: every per-business table</text>
+  <text class="mult" x="965" y="495">*</text>
+
+  <text class="legend" x="40" y="1230">─── association (multiplicity at each end)    - - - reference across zones    <tspan fill="#b45309">⊘ exclusion constraint (btree_gist)</tspan>: overlapping ranges are rejected by the database</text>
+  <text class="legend" x="40" y="1252">Per-business tables: business_id on every row, unique (business_id, id), and composite foreign keys (business_id, x_id) between them, so the database rejects rows that mix businesses.</text>
+  <text class="legend" x="40" y="1274">Every table has an id; instants are stored in UTC. Services and professionals are deactivated, never deleted. Active Storage and Action Text tables are left out.</text>
+</svg>
