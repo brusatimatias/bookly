@@ -51,6 +51,13 @@ seed_member(studio, role: :professional, name: "Martín Gómez", email_address: 
 potrero = Business.find_by!(slug: "el-potrero")
 seed_member(potrero, role: :owner, name: "Hernán Molina", email_address: "hernan@elpotrero.example")
 
+# Bookly's own team: the platform panel (/platform), in no business.
+User.find_or_create_by!(email_address: "admin@bookly.example") do |user|
+  user.name = "Equipo Bookly"
+  user.password = "password"
+  user.platform_admin = true
+end
+
 # Services and professionals are per business, so they're created with the
 # business as the current tenant.
 def seed_service(name, duration_minutes:, price:, description:, buffer_minutes: nil)
