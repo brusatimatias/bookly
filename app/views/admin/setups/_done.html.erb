@@ -1,0 +1,31 @@
+<section class="card card-body text-center">
+  <span class="mx-auto flex size-14 items-center justify-center rounded-full bg-green-50 text-green-600"><%= icon "check-circle", class: "size-8" %></span>
+  <h2 class="mt-4 text-xl font-bold text-gray-900"><%= t(".title") %></h2>
+  <p class="mt-2 text-sm text-gray-600"><%= t(".message") %></p>
+  <p class="mt-4 break-all"><%= link_to business_url(Current.business), business_url(Current.business), class: "link font-medium", target: "_blank" %></p>
+
+  <div class="mt-6 flex flex-wrap justify-center gap-3">
+    <%= link_to business_path(Current.business), class: "btn-primary", target: "_blank" do %>
+      <%= icon "external-link", class: "size-4" %> <%= t(".view_page") %>
+    <% end %>
+    <%= link_to t(".panel"), admin_root_path, class: "btn-secondary" %>
+  </div>
+</section>
+
+<section class="card mt-6">
+  <h2 class="border-b border-gray-100 px-6 py-4 font-semibold text-gray-900"><%= t(".next_title") %></h2>
+  <ul class="list-divided text-sm">
+    <% [ [ "users", :team, admin_team_path ], [ "clock", :schedules, admin_professionals_path ], [ "cog", :booking, edit_admin_settings_path ] ].each do |icon_name, item, path| %>
+      <li>
+        <%= link_to path, class: "flex items-center gap-3 px-6 py-4 hover:bg-gray-50" do %>
+          <%= icon icon_name, class: "size-5 shrink-0 text-brand-600" %>
+          <span class="min-w-0 flex-1">
+            <span class="block font-medium text-gray-900"><%= t(".next.#{item}.title") %></span>
+            <span class="block text-gray-500"><%= t(".next.#{item}.description") %></span>
+          </span>
+          <%= icon "arrow-right", class: "size-4 shrink-0 text-gray-400" %>
+        <% end %>
+      </li>
+    <% end %>
+  </ul>
+</section>

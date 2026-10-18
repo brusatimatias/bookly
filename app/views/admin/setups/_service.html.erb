@@ -1,0 +1,48 @@
+<div class="space-y-6">
+  <% if @services.any? %>
+    <section class="card">
+      <h2 class="border-b border-gray-100 px-6 py-4 font-semibold text-gray-900"><%= t(".yours") %></h2>
+      <ul class="list-divided">
+        <% @services.each do |service| %>
+          <li class="flex items-center justify-between gap-4 px-6 py-4 text-sm">
+            <span class="font-medium text-gray-900"><%= service.name %></span>
+            <span class="shrink-0 text-gray-500"><%= format_duration(service.duration_minutes) %> · <%= format_price(service.price_cents) %></span>
+          </li>
+        <% end %>
+      </ul>
+    </section>
+  <% end %>
+
+  <%= form_with model: @service, url: admin_setup_step_path("service"), method: :patch, class: "card card-body space-y-5" do |form| %>
+    <div>
+      <h2 class="font-semibold text-gray-900"><%= t(@services.any? ? ".another" : ".first") %></h2>
+      <p class="mt-1 text-sm text-gray-600"><%= t(".intro") %></p>
+    </div>
+
+    <%= render "shared/form_errors", record: @service %>
+
+    <div class="field">
+      <%= form.label :name, class: "label" %>
+      <%= form.text_field :name, required: true, autofocus: @services.none?, placeholder: t(".name_placeholder"), class: "input" %>
+    </div>
+
+    <div class="grid gap-5 sm:grid-cols-2">
+      <div class="field">
+        <%= form.label :duration_minutes, t(".duration"), class: "label" %>
+        <%= form.number_field :duration_minutes, required: true, min: 1, max: Service::MAX_DURATION_MINUTES, class: "input" %>
+      </div>
+
+      <div class="field">
+        <%= form.label :price, t(".price", currency: Current.business.currency), class: "label" %>
+        <%= form.number_field :price, value: (format("%.2f", @service.price) if @service.price), required: true, min: 0, step: 0.01, class: "input" %>
+      </div>
+    </div>
+    <p class="hint -mt-3"><%= t(".more_hint") %></p>
+
+    <div class="flex justify-end border-t border-gray-100 pt-5">
+      <%= form.submit t(".submit"), class: @services.any? ? "btn-secondary" : "btn-primary" %>
+    </div>
+  <% end %>
+</div>
+
+<%= render "navigation", step: "service", forward: @setup.service? %>

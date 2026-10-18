@@ -1,0 +1,19 @@
+es:
+  activemodel:
+    models:
+      setup_hours:
+        one: "Horarios de atención"
+        other: "Horarios de atención"
+    attributes:
+      setup_hours:
+        days: "Días"
+        start_time: "Desde"
+        end_time: "Hasta"
+    errors:
+      models:
+        setup_hours:
+          attributes:
+            days:
+              blank: "elegí al menos uno"
+            end_time:
+              after_start: "debe ser posterior a la hora de inicio"

@@ -5,7 +5,8 @@ es:
       audience: "Para barberías, consultorios, estudios y canchas"
       headline: "Tu agenda, siempre en orden"
       tagline: "Reservas de turnos online para negocios que atienden por agenda."
-      sign_in: "Ingresar a mi negocio"
+      sign_up: "Registrar mi negocio"
+      sign_in: "Ingresar"
       go_to_dashboard: "Ir a mis negocios"
       features:
         booking:

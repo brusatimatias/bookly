@@ -52,6 +52,37 @@ RSpec.describe "Admin dashboard", type: :request do
     expect(response).to have_http_status(:service_unavailable)
   end
 
+  describe "setup checklist" do
+    it "shows the owner what's left until the business takes bookings" do
+      create(:membership, :owner, business: business, user: user)
+      with_business(business) { create(:service) }
+      sign_in_as(user)
+
+      get admin_root_path(business)
+
+      expect(response.body).to include("Poné en marcha tu negocio", "Cargar un servicio", "Sumar a alguien que lo ofrezca", admin_setup_path(business))
+    end
+
+    it "goes away once the business can take bookings" do
+      create(:membership, :owner, business: business, user: user)
+      with_business(business) { create(:professional, :with_hours, services: [ create(:service) ]) }
+      sign_in_as(user)
+
+      get admin_root_path(business)
+
+      expect(response.body).not_to include("Poné en marcha tu negocio")
+    end
+
+    it "is only for the owner" do
+      create(:membership, :admin, business: business, user: user)
+      sign_in_as(user)
+
+      get admin_root_path(business)
+
+      expect(response.body).not_to include("Poné en marcha tu negocio")
+    end
+  end
+
   describe "requests and today's appointments" do
     it "shows the member's pending requests and today's appointments" do
       travel_to(Time.find_zone!(business.time_zone).local(2026, 10, 19, 12))

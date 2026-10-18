@@ -1,0 +1,11 @@
+<%# Back to the previous step, and on to the next one once this one is done
+    (next_label: what the forward link says, e.g. "Skip"). %>
+<% index = BusinessSetup::STEPS.index(step) %>
+<div class="mt-6 flex items-center justify-between gap-3">
+  <%= link_to t(".back"), admin_setup_step_path(BusinessSetup::STEPS[index - 1]), class: "btn-ghost" if index.positive? %>
+  <% if local_assigns[:forward] %>
+    <%= link_to admin_setup_step_path(BusinessSetup::STEPS[index + 1]), class: "btn-primary ml-auto" do %>
+      <%= t(".next") %> <%= icon "arrow-right", class: "size-4" %>
+    <% end %>
+  <% end %>
+</div>

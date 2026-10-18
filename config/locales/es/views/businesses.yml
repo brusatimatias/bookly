@@ -9,6 +9,11 @@ es:
       no_services_hint: "Volvé a visitarnos pronto."
       book: "Reservar"
       book_appointment: "Pedir un turno"
+    regional_fields:
+      time_zone_hint: "Los horarios de tu agenda y de tu página se muestran en esta zona."
+      time_zone_change: "Los turnos ya pedidos conservan su momento; los horarios de trabajo se leen en la nueva zona."
+      locale_hint: "El idioma de tu página pública y de los emails a tus clientes."
+      currency_change: "Los precios no se convierten: revisalos después de cambiar la moneda."
     unavailable:
       title: "Negocio no disponible"
       message: "Este negocio no está disponible en este momento."

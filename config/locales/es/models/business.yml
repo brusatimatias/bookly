@@ -23,6 +23,7 @@ es:
         booking_horizon_days: "Horizonte máximo de reserva (días)"
         status: "Estado"
         suspended_at: "Suspendido el"
+        created_at: "Alta"
       business/status:
         active: "Activo"
         suspended: "Suspendido"

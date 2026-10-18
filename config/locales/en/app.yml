@@ -4,6 +4,16 @@ en:
   locale_names:
     es: "Español"
     en: "English"
+  currencies:
+    ARS: "Argentine peso"
+    BRL: "Brazilian real"
+    CLP: "Chilean peso"
+    COP: "Colombian peso"
+    EUR: "Euro"
+    MXN: "Mexican peso"
+    PEN: "Peruvian sol"
+    USD: "US dollar"
+    UYU: "Uruguayan peso"
   formatting:
     duration:
       hours: "%{count} h"

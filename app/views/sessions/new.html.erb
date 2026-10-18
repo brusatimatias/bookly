@@ -18,3 +18,7 @@
 
   <%= form.submit t(".submit"), class: "btn-primary btn-block" %>
 <% end %>
+
+<p class="mt-6 text-center text-sm text-gray-600">
+  <%= t(".no_account") %> <%= link_to t(".sign_up"), new_signup_path, class: "link" %>
+</p>

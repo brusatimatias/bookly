@@ -3,6 +3,8 @@
 
 <%= render "shared/page_header", title: t(".heading", name: Current.user.name), subtitle: t(".subtitle", business: Current.business.name) %>
 
+<%= render "setup", setup: @setup if @setup && !@setup.complete? %>
+
 <% if Current.membership.manager? %>
   <div class="grid gap-4 sm:grid-cols-2">
     <%= link_to admin_team_path, class: "card card-body flex items-center gap-4 transition hover:ring-brand-600/40" do %>

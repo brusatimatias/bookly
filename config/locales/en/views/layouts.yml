@@ -3,6 +3,7 @@ en:
     application:
       sign_in: "Sign in"
       dashboard: "My businesses"
+      platform: "Platform"
       sign_out: "Sign out"
       footer: "© %{year} Bookly · Online appointment booking"
       powered_by: "Online booking by Bookly"

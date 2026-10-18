@@ -16,6 +16,19 @@ Rails.application.routes.draw do
   resource :locale, only: :update
   resource :dashboard, only: :show
   resources :invitations, param: :token, only: %i[ show update ]
+  get "signup", to: "signups#new", as: :new_signup
+  post "signup", to: "signups#create", as: :signup
+
+  # The platform panel, for Bookly's own team (User#platform_admin).
+  namespace :platform do
+    root "businesses#index"
+    resources :businesses, only: %i[index show] do
+      member do
+        patch :suspend
+        patch :reactivate
+      end
+    end
+  end
 
   mount LetterOpenerWeb::Engine, at: "/letter_opener" if Rails.env.development?
 
@@ -38,6 +51,11 @@ Rails.application.routes.draw do
       root "dashboards#show"
 
       resource :team, only: :show
+      resource :business, only: %i[edit update]
+      # The setup assistant: /setup opens the step to do next.
+      get "setup", to: "setups#show", as: :setup
+      get "setup/:step", to: "setups#show", as: :setup_step, constraints: { step: Regexp.union(BusinessSetup::STEPS) }
+      patch "setup/:step", to: "setups#update", constraints: { step: Regexp.union(BusinessSetup::STEPS - [ "done" ]) }
       resource :settings, only: %i[edit update]
       resources :memberships, only: %i[update destroy]
       resources :invitations, only: %i[new create destroy] do

@@ -36,6 +36,15 @@ RSpec.describe "Dashboard", type: :request do
     expect(response.body).to include("Barbería Centro", "Dueño", "Downtown Studio", "Profesional")
   end
 
+  it "takes platform admins without a business to the platform panel" do
+    user.update!(platform_admin: true)
+    sign_in_as(user)
+
+    get dashboard_path
+
+    expect(response).to redirect_to(platform_root_path)
+  end
+
   it "explains when the user has no businesses" do
     sign_in_as(user)
 

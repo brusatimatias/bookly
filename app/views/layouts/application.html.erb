@@ -14,6 +14,9 @@
           <% end %>
 
           <% if authenticated? %>
+            <% if Current.user.platform_admin? %>
+              <%= link_to t(".platform"), platform_root_path, class: "btn-ghost btn-sm" %>
+            <% end %>
             <%= link_to t(".dashboard"), dashboard_path, class: "btn-ghost btn-sm" %>
             <span class="hidden items-center gap-2 text-sm text-gray-700 sm:flex">
               <span class="avatar size-8 text-xs"><%= initials(Current.user.name) %></span>

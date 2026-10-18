@@ -16,3 +16,11 @@ es:
         no_requests: "No hay pedidos esperando respuesta."
         today: "Turnos de hoy"
         no_appointments_today: "No hay turnos para hoy."
+      setup:
+        title: "Poné en marcha tu negocio"
+        message: "Te falta poco para que tus clientes puedan pedir turnos."
+        continue: "Continuar"
+        tasks:
+          service: "Cargar un servicio"
+          professional: "Sumar a alguien que lo ofrezca"
+          hours: "Cargar sus horarios"

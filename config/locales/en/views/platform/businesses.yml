@@ -1,0 +1,43 @@
+en:
+  platform:
+    businesses:
+      index:
+        title: "Businesses"
+        subtitle: "Every business on the platform, newest first."
+        search: "Search"
+        search_placeholder: "Name, web address or owner's email"
+        all_statuses: "All statuses"
+        no_owner: "No owner"
+        members: "Members"
+        recent_appointments: "Appointments (30 days)"
+        created: "Signed up"
+        pages: "Pages"
+        previous: "Previous"
+        next: "Next"
+        page: "Page %{page}"
+        empty: "No businesses."
+        empty_hint: "Try another search or status."
+      show:
+        back: "← Businesses"
+        public_page: "Public page"
+        suspend: "Suspend"
+        suspend_confirm: "Suspend %{business}? Its public page and panel stay unavailable until you reactivate it."
+        reactivate: "Reactivate"
+        reactivate_confirm: "Reactivate %{business}? Its public page and panel become available again."
+        bookable: "Takes bookings"
+        setting_up: "Setting up"
+        suspended_at: "Suspended on %{date}"
+        stats:
+          services: "Active services"
+          professionals: "Bookable professionals"
+          customers: "Customers"
+          upcoming: "Upcoming appointments"
+          recent: "Appointments (30 days)"
+        details: "Details"
+        team:
+          one: "Team (1)"
+          other: "Team (%{count})"
+      suspend:
+        suspended: "%{business} suspended."
+      reactivate:
+        reactivated: "%{business} reactivated."

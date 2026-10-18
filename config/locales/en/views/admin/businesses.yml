@@ -1,0 +1,18 @@
+en:
+  admin:
+    businesses:
+      edit:
+        title: "Business details"
+        subtitle: "How your business presents itself to customers on your page and in emails."
+        sections:
+          business: "Business"
+          contact: "Contact"
+          regional: "Time zone, language and currency"
+        slug_hint: "The web address can't be changed: your customers already have links to it."
+        contact_hint: "Shown on your public page and in the emails to your customers."
+        contact_email_hint: "Customers' replies to appointment emails reach this address."
+        address_hint: "Shown in the emails and in each appointment's calendar file."
+        cancel: "Cancel"
+        submit: "Save details"
+      update:
+        updated: "Business details saved."

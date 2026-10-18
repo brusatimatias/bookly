@@ -23,6 +23,7 @@ en:
         booking_horizon_days: "Maximum booking horizon (days)"
         status: "Status"
         suspended_at: "Suspended at"
+        created_at: "Signed up"
       business/status:
         active: "Active"
         suspended: "Suspended"

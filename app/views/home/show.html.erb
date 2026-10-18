@@ -10,9 +10,10 @@
         <%= t(".go_to_dashboard") %> <%= icon "arrow-right", class: "size-4" %>
       <% end %>
     <% else %>
-      <%= link_to new_session_path, class: "btn-primary" do %>
-        <%= t(".sign_in") %> <%= icon "arrow-right", class: "size-4" %>
+      <%= link_to new_signup_path, class: "btn-primary" do %>
+        <%= t(".sign_up") %> <%= icon "arrow-right", class: "size-4" %>
       <% end %>
+      <%= link_to t(".sign_in"), new_session_path, class: "btn-secondary" %>
     <% end %>
   </div>
 </section>

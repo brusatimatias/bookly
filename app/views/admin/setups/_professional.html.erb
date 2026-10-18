@@ -1,0 +1,52 @@
+<div class="space-y-6">
+  <% if !@setup.service? %>
+    <%= render "shared/empty_state", icon: "tag", title: t(".needs_service"), message: t(".needs_service_hint"),
+          action: capture { link_to t(".add_service"), admin_setup_step_path("service"), class: "btn-primary" } %>
+  <% else %>
+    <% if @professionals.any? %>
+      <section class="card">
+        <h2 class="border-b border-gray-100 px-6 py-4 font-semibold text-gray-900"><%= t(".yours") %></h2>
+        <ul class="list-divided">
+          <% @professionals.each do |professional| %>
+            <li class="flex items-center gap-3 px-6 py-4 text-sm">
+              <span class="avatar"><%= initials(professional.name) %></span>
+              <span class="min-w-0 flex-1 truncate font-medium text-gray-900"><%= professional.name %></span>
+              <span class="shrink-0 text-gray-500"><%= t(".services", count: professional.services.count(&:active?)) %></span>
+            </li>
+          <% end %>
+        </ul>
+      </section>
+    <% end %>
+
+    <section class="card card-body space-y-5">
+      <div>
+        <h2 class="font-semibold text-gray-900"><%= t(@professionals.any? ? ".another" : ".first") %></h2>
+        <p class="mt-1 text-sm text-gray-600"><%= t(".intro") %></p>
+      </div>
+
+      <%= render "shared/form_errors", record: @professional %>
+
+      <% unless @offers_own %>
+        <div class="flex flex-wrap items-center justify-between gap-3 rounded-lg bg-brand-50 p-4">
+          <p class="text-sm text-brand-900"><%= t(".myself_hint") %></p>
+          <%= button_to t(".myself", name: Current.user.name), admin_setup_step_path("professional"), method: :patch, params: { myself: 1 },
+                class: "btn-primary btn-sm" %>
+        </div>
+      <% end %>
+
+      <%= form_with model: @professional, url: admin_setup_step_path("professional"), method: :patch, class: "space-y-5" do |form| %>
+        <div class="field">
+          <%= form.label :name, t(".name"), class: "label" %>
+          <%= form.text_field :name, required: true, class: "input" %>
+          <p class="hint"><%= t(".name_hint") %></p>
+        </div>
+
+        <div class="flex justify-end">
+          <%= form.submit t(".submit"), class: "btn-secondary" %>
+        </div>
+      <% end %>
+    </section>
+  <% end %>
+</div>
+
+<%= render "navigation", step: "professional", forward: @setup.professional? %>

@@ -1,6 +1,10 @@
 en:
   admin:
     settings:
+      tabs:
+        label: "Settings"
+        business: "Business"
+        booking: "Booking"
       edit:
         title: "Booking settings"
         subtitle: "The rules used to compute the times customers can request."
