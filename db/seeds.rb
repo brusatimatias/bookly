@@ -15,6 +15,20 @@ Business.find_or_create_by!(slug: "downtown-studio") do |business|
   business.contact_email = "hello@downtownstudio.example"
 end
 
+# A football court: the "professionals" are its pitches, bookable by the hour.
+Business.find_or_create_by!(slug: "el-potrero") do |business|
+  business.name = "El Potrero Fútbol 5"
+  business.contact_email = "reservas@elpotrero.example"
+  business.contact_phone = "+54 11 5555-0303"
+  business.address = "Av. Directorio 3200, CABA"
+  business.slot_interval_minutes = 60
+  business.min_booking_notice_hours = 1
+  business.booking_horizon_days = 30
+  business.request_expiration_hours = 6
+  business.cancellation_window_hours = 12
+  business.reminder_hours_before = 3
+end
+
 # Users sign in with the password "password".
 def seed_member(business, role:, name:, email_address:)
   user = User.find_or_create_by!(email_address: email_address) do |new_user|
@@ -33,6 +47,9 @@ studio = Business.find_by!(slug: "downtown-studio")
 seed_member(studio, role: :owner, name: "Sam Carter", email_address: "sam@downtownstudio.example")
 # Same person in two businesses with different roles.
 seed_member(studio, role: :professional, name: "Martín Gómez", email_address: "martin@barberiacentro.example")
+
+potrero = Business.find_by!(slug: "el-potrero")
+seed_member(potrero, role: :owner, name: "Hernán Molina", email_address: "hernan@elpotrero.example")
 
 # Services and professionals are per business, so they're created with the
 # business as the current tenant.
@@ -109,6 +126,26 @@ Current.set(business: studio) do
   seed_working_hours(alex, (1..5) => [ %w[10:00 18:00] ])
 
   seed_time_block(alex, from: [ 3, "12:00" ], to: [ 3, "13:00" ], reason: "Dentist")
+end
+
+Current.set(business: potrero) do
+  five = seed_service("Fútbol 5 · 1 hora", duration_minutes: 60, price: 45_000,
+                      description: "Cancha de césped sintético para 10 jugadores. Incluye pelota y pecheras.")
+  five_long = seed_service("Fútbol 5 · 1 hora y media", duration_minutes: 90, price: 65_000,
+                           description: "El mismo partido, con media hora más para el tercer tiempo adentro de la cancha.")
+  seven = seed_service("Fútbol 7 · 1 hora", duration_minutes: 60, price: 70_000,
+                       description: "Cancha grande para 14 jugadores, techada.")
+
+  # Pitches, not people: profiles without an account.
+  pitch_one = seed_professional("Cancha 1", services: [ five, five_long ])
+  pitch_two = seed_professional("Cancha 2", services: [ five, five_long ])
+  big_pitch = seed_professional("Cancha grande", services: [ seven ])
+
+  # Ranges don't cross midnight, so the last game starts at 22:00.
+  [ pitch_one, pitch_two ].each { |pitch| seed_working_hours(pitch, (0..6) => [ %w[09:00 23:00] ]) }
+  seed_working_hours(big_pitch, (1..5) => [ %w[17:00 23:00] ], [ 6, 0 ] => [ %w[10:00 23:00] ])
+
+  seed_time_block(pitch_two, from: [ 4, "09:00" ], to: [ 4, "13:00" ], reason: "Mantenimiento del césped")
 end
 
 # A few appointments in the coming days, only for businesses that have none
@@ -229,6 +266,21 @@ AppointmentNotifier.silence do
     seed_appointments([
       { at: [ 1, "11:00" ], professional: Professional.find_by!(name: "Alex Kim"), service: Service.find_by!(name: "Color"),
         status: :confirmed, name: "Jordan Lee", email: "jordan@example.com" }
+    ])
+    seed_appointment_events
+  end
+
+  Current.set(business: potrero) do
+    pitch_one = Professional.find_by!(name: "Cancha 1")
+    five = Service.find_by!(name: "Fútbol 5 · 1 hora")
+
+    seed_appointments([
+      { at: [ 1, "20:00" ], professional: pitch_one, service: five, status: :confirmed, name: "Facundo Álvarez", email: "facundo@example.com" },
+      { at: [ 1, "21:00" ], professional: Professional.find_by!(name: "Cancha 2"), service: Service.find_by!(name: "Fútbol 5 · 1 hora y media"),
+        status: :pending, name: "Rocío Benítez", email: "rocio@example.com", customer_notes: "Somos de la oficina, ¿hay vestuario?" },
+      { at: [ 2, "19:00" ], professional: Professional.find_by!(name: "Cancha grande"), service: Service.find_by!(name: "Fútbol 7 · 1 hora"),
+        status: :confirmed, name: "Leandro Ortiz", email: "leandro@example.com" },
+      { at: [ 3, "22:00" ], professional: pitch_one, service: five, status: :confirmed, name: "Facundo Álvarez", email: "facundo@example.com" }
     ])
     seed_appointment_events
   end
