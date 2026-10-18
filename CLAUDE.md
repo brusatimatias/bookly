@@ -18,6 +18,7 @@ Multi-tenant appointment booking app, built in stages. Done so far:
 - Appointment management by personal link: customers withdraw requests, and cancel or reschedule confirmed appointments within the cancellation window; see "Appointment management by link".
 - Emails about every appointment change to the customer (with `.ics` calendar files) and about customers' actions to the team, plus reminders before confirmed appointments; see "Emails and reminders".
 - Business sign up, the owner's setup assistant, the business's details in settings and the platform panel; see "Sign up, setup and platform panel". This completes the MVP.
+- Project documentation: the README (features, architecture, data model, design decisions, security, testing) with diagrams and screenshots in `doc/`; see "Documentation".
 
 Owners sign up their business at `/signup`; everyone else joins a business by invitation.
 
@@ -42,6 +43,12 @@ bin/ci                         # local CI pipeline defined in config/ci.rb
 Seeds (`bin/rails db:seed`) create three businesses (a barbershop, an English-speaking studio and a football court whose "professionals" are its pitches) with members, services, hours and appointments (plus, in Barbería Centro, a request about to expire, an appointment to mark attendance and a customer's pending change of time whenever there are none, and a rejected, a business-cancelled and an expired one for the email previews); every seeded user's password is `password`, and `admin@bookly.example` is a platform admin. Seeding emails nobody (`AppointmentNotifier.silence`). In development, sent emails are browsable at `/letter_opener`, and every email can be previewed with the seeded data at `/rails/mailers` (previews in `spec/mailers/previews`).
 
 `bin/ci` (config/ci.rb) mirrors the GitHub workflow (.github/workflows/ci.yml): RuboCop, bundler-audit, importmap audit, Brakeman, and RSpec. The GitHub `test` job runs against a Postgres service via `DATABASE_URL`.
+
+## Documentation
+
+- The README is the project's documentation: features, architecture, data model, design decisions (multi-tenancy, availability and double booking, the appointment lifecycle, emails, live updates, time zones), security, testing and getting started. Update the parts a change touches, and the roadmap, with each stage.
+- `doc/architecture.svg` and `doc/class-diagram.svg` are hand-written SVG: edit the XML directly. Update the architecture for a new component, job, database or external service, and the class diagram for a new table, association, notable column or constraint. Check them rendered before committing: `google-chrome --headless=new --hide-scrollbars --window-size=1440,1300 --screenshot=/tmp/diagram.png file://$PWD/doc/class-diagram.svg`.
+- `doc/screenshots/` are taken from the seeded data, in Spanish, at 1280×800 (the phone one at 390×844, 2x), with headless Chrome. Retake the ones whose screen changes. Seed a scratch database for them, never the development one: `createdb`, then `DATABASE_URL=postgres:///<name> bin/rails db:schema:load:primary db:seed` and a server on another port with the same `DATABASE_URL`, then `dropdb`. Don't run `db:create`, `db:drop` or `db:schema:load` with only `DATABASE_URL`: it overrides the primary database alone, so they also act on `bookly_development_queue` and `_cable`.
 
 ## Stack / architecture
 
