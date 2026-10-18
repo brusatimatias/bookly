@@ -1,0 +1,186 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1440" height="1060" viewBox="0 0 1440 1060" font-family="Arial, Helvetica, sans-serif">
+  <!-- Bookly's architecture. Keep in sync with the README's "Architecture" section. -->
+  <defs>
+    <marker id="arrow-black" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#111"/>
+    </marker>
+    <marker id="arrow-purple" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#7c3aed"/>
+    </marker>
+    <marker id="arrow-orange" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#ea580c"/>
+    </marker>
+    <marker id="arrow-green" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#1e8e3e"/>
+    </marker>
+    <marker id="arrow-db" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#336791"/>
+    </marker>
+  </defs>
+
+  <rect width="1440" height="1060" fill="#ffffff"/>
+
+  <!-- Browsers -->
+  <rect x="40" y="40" width="290" height="165" rx="16" fill="#fff" stroke="#dc2626" stroke-width="4"/>
+  <text x="185" y="78" text-anchor="middle" font-size="21" font-weight="bold" fill="#111">Customer</text>
+  <text x="185" y="108" text-anchor="middle" font-size="17" fill="#dc2626">no account</text>
+  <text x="185" y="138" text-anchor="middle" font-size="14" fill="#444">business page · booking steps</text>
+  <text x="185" y="160" text-anchor="middle" font-size="14" fill="#444">personal link: cancel, reschedule</text>
+  <text x="185" y="182" text-anchor="middle" font-size="14" fill="#444">in the business's language</text>
+
+  <rect x="350" y="40" width="290" height="165" rx="16" fill="#fff" stroke="#dc2626" stroke-width="4"/>
+  <text x="495" y="78" text-anchor="middle" font-size="21" font-weight="bold" fill="#111">Business team</text>
+  <text x="495" y="108" text-anchor="middle" font-size="17" fill="#dc2626">owner · admin · professional</text>
+  <text x="495" y="138" text-anchor="middle" font-size="14" fill="#444">sign up · setup assistant</text>
+  <text x="495" y="160" text-anchor="middle" font-size="14" fill="#444">requests · live agenda · settings</text>
+  <text x="495" y="182" text-anchor="middle" font-size="14" fill="#444">team invitations</text>
+
+  <rect x="660" y="40" width="290" height="165" rx="16" fill="#fff" stroke="#dc2626" stroke-width="4"/>
+  <text x="805" y="78" text-anchor="middle" font-size="21" font-weight="bold" fill="#111">Platform admin</text>
+  <text x="805" y="108" text-anchor="middle" font-size="17" fill="#dc2626">Bookly's own team</text>
+  <text x="805" y="138" text-anchor="middle" font-size="14" fill="#444">every business, searchable</text>
+  <text x="805" y="160" text-anchor="middle" font-size="14" fill="#444">activity and team</text>
+  <text x="805" y="182" text-anchor="middle" font-size="14" fill="#444">suspend · reactivate</text>
+
+  <!-- Browsers <-> Rails -->
+  <line x1="150" y1="207" x2="150" y2="316" stroke="#111" stroke-width="2.5" marker-end="url(#arrow-black)"/>
+  <line x1="460" y1="207" x2="460" y2="316" stroke="#111" stroke-width="2.5" marker-end="url(#arrow-black)"/>
+  <line x1="770" y1="207" x2="770" y2="316" stroke="#111" stroke-width="2.5" marker-end="url(#arrow-black)"/>
+  <text x="140" y="250" text-anchor="end" font-size="15" font-weight="bold" fill="#111">HTML</text>
+  <text x="140" y="270" text-anchor="end" font-size="13" fill="#444">Turbo Drive</text>
+  <text x="450" y="250" text-anchor="end" font-size="15" font-weight="bold" fill="#111">HTML</text>
+  <text x="450" y="270" text-anchor="end" font-size="13" fill="#444">session cookie</text>
+  <text x="760" y="250" text-anchor="end" font-size="15" font-weight="bold" fill="#111">HTML</text>
+  <text x="760" y="270" text-anchor="end" font-size="13" fill="#444">session cookie</text>
+
+  <line x1="230" y1="316" x2="230" y2="209" stroke="#7c3aed" stroke-width="2.5" stroke-dasharray="8 6" marker-end="url(#arrow-purple)"/>
+  <line x1="540" y1="316" x2="540" y2="209" stroke="#7c3aed" stroke-width="2.5" stroke-dasharray="8 6" marker-end="url(#arrow-purple)"/>
+  <text x="245" y="250" font-size="15" font-weight="bold" fill="#7c3aed">refresh</text>
+  <text x="245" y="270" font-size="13" fill="#7c3aed">WebSocket /cable</text>
+  <text x="555" y="250" font-size="15" font-weight="bold" fill="#7c3aed">refresh</text>
+  <text x="555" y="270" font-size="13" fill="#7c3aed">WebSocket /cable</text>
+
+  <!-- Rails -->
+  <rect x="40" y="320" width="940" height="480" rx="16" fill="#fff" stroke="#111" stroke-width="4"/>
+  <text x="510" y="356" text-anchor="middle" font-size="22" font-weight="bold" fill="#111">Rails 8.1 · Puma behind Thruster</text>
+  <text x="510" y="381" text-anchor="middle" font-size="14" fill="#444">Hotwire (Turbo 8 + Stimulus, importmap) · Tailwind 4 · i18n es/en · Kamal + Docker</text>
+
+  <rect x="65" y="400" width="280" height="118" rx="10" fill="#f8fafc" stroke="#94a3b8" stroke-width="1.5"/>
+  <text x="205" y="425" text-anchor="middle" font-size="17" font-weight="bold" fill="#111">Public pages</text>
+  <text x="205" y="449" text-anchor="middle" font-size="13" fill="#444">/:slug · /:slug/book</text>
+  <text x="205" y="469" text-anchor="middle" font-size="13" fill="#444">/:slug/appointments/:token</text>
+  <text x="205" y="489" text-anchor="middle" font-size="13" fill="#444">token link, no account</text>
+  <text x="205" y="509" text-anchor="middle" font-size="13" fill="#444">writes rate limited per IP</text>
+
+  <rect x="370" y="400" width="280" height="118" rx="10" fill="#f8fafc" stroke="#94a3b8" stroke-width="1.5"/>
+  <text x="510" y="425" text-anchor="middle" font-size="17" font-weight="bold" fill="#111">Business panel</text>
+  <text x="510" y="449" text-anchor="middle" font-size="13" fill="#444">/:slug/admin · Admin::</text>
+  <text x="510" y="469" text-anchor="middle" font-size="13" fill="#444">members only (404 otherwise)</text>
+  <text x="510" y="489" text-anchor="middle" font-size="13" fill="#444">require_owner / require_manager</text>
+  <text x="510" y="509" text-anchor="middle" font-size="13" fill="#444">professionals see their own</text>
+
+  <rect x="675" y="400" width="280" height="118" rx="10" fill="#f8fafc" stroke="#94a3b8" stroke-width="1.5"/>
+  <text x="815" y="425" text-anchor="middle" font-size="17" font-weight="bold" fill="#111">Platform panel</text>
+  <text x="815" y="449" text-anchor="middle" font-size="13" fill="#444">/platform · Platform::</text>
+  <text x="815" y="469" text-anchor="middle" font-size="13" fill="#444">platform_admin only (404)</text>
+  <text x="815" y="489" text-anchor="middle" font-size="13" fill="#444">reads across businesses,</text>
+  <text x="815" y="509" text-anchor="middle" font-size="13" fill="#444">explicitly</text>
+
+  <rect x="65" y="533" width="280" height="118" rx="10" fill="#f8fafc" stroke="#94a3b8" stroke-width="1.5"/>
+  <text x="205" y="558" text-anchor="middle" font-size="17" font-weight="bold" fill="#111">Tenant context</text>
+  <text x="205" y="582" text-anchor="middle" font-size="13" fill="#444">SetCurrentBusiness: slug →</text>
+  <text x="205" y="602" text-anchor="middle" font-size="13" fill="#444">Current.business, locale, zone</text>
+  <text x="205" y="622" text-anchor="middle" font-size="13" fill="#444">BusinessScoped filters queries</text>
+  <text x="205" y="642" text-anchor="middle" font-size="13" fill="#444">and fails closed without one</text>
+
+  <rect x="370" y="533" width="280" height="118" rx="10" fill="#f8fafc" stroke="#94a3b8" stroke-width="1.5"/>
+  <text x="510" y="558" text-anchor="middle" font-size="17" font-weight="bold" fill="#111">Booking domain</text>
+  <text x="510" y="582" text-anchor="middle" font-size="13" fill="#444">Availability: free times</text>
+  <text x="510" y="602" text-anchor="middle" font-size="13" fill="#444">transitions lock the row</text>
+  <text x="510" y="622" text-anchor="middle" font-size="13" fill="#444">form objects: request, reschedule,</text>
+  <text x="510" y="642" text-anchor="middle" font-size="13" fill="#444">sign up, setup</text>
+
+  <rect x="675" y="533" width="280" height="118" rx="10" fill="#f8fafc" stroke="#94a3b8" stroke-width="1.5"/>
+  <text x="815" y="558" text-anchor="middle" font-size="17" font-weight="bold" fill="#111">After commit</text>
+  <text x="815" y="582" text-anchor="middle" font-size="13" fill="#444">AppointmentEvent →</text>
+  <text x="815" y="602" text-anchor="middle" font-size="13" fill="#444">AppointmentNotifier (mails)</text>
+  <text x="815" y="622" text-anchor="middle" font-size="13" fill="#444">Appointment → refresh broadcast</text>
+  <text x="815" y="642" text-anchor="middle" font-size="13" fill="#444">nothing for a rolled back change</text>
+
+  <rect x="65" y="666" width="280" height="118" rx="10" fill="#f8fafc" stroke="#94a3b8" stroke-width="1.5"/>
+  <text x="205" y="691" text-anchor="middle" font-size="17" font-weight="bold" fill="#111">Authentication</text>
+  <text x="205" y="715" text-anchor="middle" font-size="13" fill="#444">Rails 8 generator</text>
+  <text x="205" y="735" text-anchor="middle" font-size="13" fill="#444">signed session cookie</text>
+  <text x="205" y="755" text-anchor="middle" font-size="13" fill="#444">sign up · invitations (single use)</text>
+  <text x="205" y="775" text-anchor="middle" font-size="13" fill="#444">password reset</text>
+
+  <rect x="370" y="666" width="280" height="118" rx="10" fill="#f8fafc" stroke="#94a3b8" stroke-width="1.5"/>
+  <text x="510" y="691" text-anchor="middle" font-size="17" font-weight="bold" fill="#111">Mailers</text>
+  <text x="510" y="715" text-anchor="middle" font-size="13" fill="#444">BusinessMailer sets the tenant,</text>
+  <text x="510" y="735" text-anchor="middle" font-size="13" fill="#444">its language and time zone</text>
+  <text x="510" y="755" text-anchor="middle" font-size="13" fill="#444">customer and team emails</text>
+  <text x="510" y="775" text-anchor="middle" font-size="13" fill="#444">.ics files (icalendar)</text>
+
+  <rect x="675" y="666" width="280" height="118" rx="10" fill="#f8fafc" stroke="#94a3b8" stroke-width="1.5"/>
+  <text x="815" y="691" text-anchor="middle" font-size="17" font-weight="bold" fill="#111">Live updates</text>
+  <text x="815" y="715" text-anchor="middle" font-size="13" fill="#444">Action Cable, Turbo 8 refreshes</text>
+  <text x="815" y="735" text-anchor="middle" font-size="13" fill="#444">signed stream names</text>
+  <text x="815" y="755" text-anchor="middle" font-size="13" fill="#444">no data in the broadcast: pages</text>
+  <text x="815" y="775" text-anchor="middle" font-size="13" fill="#444">reload with their own permissions</text>
+
+  <!-- Solid Queue -->
+  <rect x="1050" y="500" width="350" height="230" rx="16" fill="#fff" stroke="#ea580c" stroke-width="4"/>
+  <text x="1225" y="538" text-anchor="middle" font-size="22" font-weight="bold" fill="#111">Solid Queue · bin/jobs</text>
+  <text x="1225" y="568" text-anchor="middle" font-size="17" fill="#ea580c">own process, same app code</text>
+  <text x="1225" y="602" text-anchor="middle" font-size="14" fill="#444">ExpireRequestsJob, every minute:</text>
+  <text x="1225" y="622" text-anchor="middle" font-size="14" fill="#444">frees the times nobody answered</text>
+  <text x="1225" y="652" text-anchor="middle" font-size="14" fill="#444">SendRemindersJob, every 5 minutes:</text>
+  <text x="1225" y="672" text-anchor="middle" font-size="14" fill="#444">claims each reminder once</text>
+  <text x="1225" y="702" text-anchor="middle" font-size="14" fill="#444">email deliveries (deliver_later)</text>
+
+  <line x1="982" y1="600" x2="1046" y2="600" stroke="#ea580c" stroke-width="2.5" marker-end="url(#arrow-orange)"/>
+  <text x="1015" y="590" text-anchor="middle" font-size="13" fill="#ea580c">enqueue</text>
+
+  <!-- SMTP and inboxes -->
+  <rect x="1050" y="320" width="350" height="120" rx="16" fill="#fff" stroke="#1e8e3e" stroke-width="4"/>
+  <text x="1225" y="358" text-anchor="middle" font-size="22" font-weight="bold" fill="#111">SMTP</text>
+  <text x="1225" y="388" text-anchor="middle" font-size="17" fill="#1e8e3e">letter_opener in development</text>
+  <text x="1225" y="418" text-anchor="middle" font-size="14" fill="#444">from the platform, in the business's name</text>
+
+  <line x1="1225" y1="498" x2="1225" y2="444" stroke="#1e8e3e" stroke-width="2.5" marker-end="url(#arrow-green)"/>
+  <text x="1240" y="476" font-size="13" fill="#1e8e3e">send</text>
+
+  <rect x="1050" y="40" width="350" height="165" rx="16" fill="#fff" stroke="#1e8e3e" stroke-width="4"/>
+  <text x="1225" y="78" text-anchor="middle" font-size="21" font-weight="bold" fill="#111">Inboxes and calendars</text>
+  <text x="1225" y="108" text-anchor="middle" font-size="17" fill="#1e8e3e">customers and the team</text>
+  <text x="1225" y="138" text-anchor="middle" font-size="14" fill="#444">every change, reminders before</text>
+  <text x="1225" y="160" text-anchor="middle" font-size="14" fill="#444">.ics: same UID, growing SEQUENCE,</text>
+  <text x="1225" y="182" text-anchor="middle" font-size="14" fill="#444">so calendars update the event</text>
+
+  <line x1="1225" y1="318" x2="1225" y2="209" stroke="#1e8e3e" stroke-width="2.5" marker-end="url(#arrow-green)"/>
+  <text x="1240" y="266" font-size="13" fill="#1e8e3e">email · replies go to the business</text>
+
+  <!-- Databases -->
+  <line x1="300" y1="802" x2="300" y2="874" stroke="#336791" stroke-width="2.5" marker-end="url(#arrow-db)"/>
+  <text x="315" y="844" font-size="14" font-weight="bold" fill="#336791">Active Record</text>
+  <path d="M245,892 L245,962 A55,14 0 0 0 355,962 L355,892" fill="#336791"/>
+  <ellipse cx="300" cy="892" rx="55" ry="14" fill="#4a86b5"/>
+  <text x="300" y="1000" text-anchor="middle" font-size="18" fill="#111">PostgreSQL · bookly</text>
+  <text x="375" y="900" font-size="14" fill="#444">global: businesses, users, sessions, memberships, invitations</text>
+  <text x="375" y="920" font-size="14" fill="#444">per business: business_id on every row, composite foreign keys</text>
+  <text x="375" y="940" font-size="14" fill="#444">no double booking: exclusion constraints (btree_gist)</text>
+  <text x="375" y="960" font-size="14" fill="#444">check constraints mirror the validations</text>
+
+  <line x1="880" y1="802" x2="880" y2="874" stroke="#336791" stroke-width="2.5" marker-end="url(#arrow-db)"/>
+  <text x="895" y="844" font-size="14" font-weight="bold" fill="#336791">Solid Cable pub/sub</text>
+  <path d="M825,892 L825,962 A55,14 0 0 0 935,962 L935,892" fill="#336791"/>
+  <ellipse cx="880" cy="892" rx="55" ry="14" fill="#4a86b5"/>
+  <text x="880" y="1000" text-anchor="middle" font-size="18" fill="#111">bookly_cable</text>
+
+  <line x1="1225" y1="732" x2="1225" y2="874" stroke="#336791" stroke-width="2.5" marker-start="url(#arrow-db)" marker-end="url(#arrow-db)"/>
+  <text x="1240" y="810" font-size="14" font-weight="bold" fill="#336791">jobs, recurring tasks</text>
+  <path d="M1170,892 L1170,962 A55,14 0 0 0 1280,962 L1280,892" fill="#336791"/>
+  <ellipse cx="1225" cy="892" rx="55" ry="14" fill="#4a86b5"/>
+  <text x="1225" y="1000" text-anchor="middle" font-size="18" fill="#111">bookly_queue</text>
+  <text x="1225" y="1030" text-anchor="middle" font-size="13" fill="#444">(+ bookly_cache in production; no Redis)</text>
+</svg>
