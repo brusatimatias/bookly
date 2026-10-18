@@ -1,0 +1,79 @@
+es:
+  admin:
+    setups:
+      show:
+        title: "Puesta en marcha"
+        subtitle: "Dejá %{business} listo para recibir turnos en pocos pasos."
+      steps:
+        label: "Pasos de la puesta en marcha"
+        details: "Datos"
+        service: "Servicio"
+        professional: "Profesional"
+        hours: "Horarios"
+        done: "Listo"
+      navigation:
+        back: "Atrás"
+        next: "Siguiente"
+      details:
+        title: "Datos del negocio"
+        intro: "Cómo te encuentran y te contactan tus clientes. Podés completarlos ahora o más tarde desde Configuración."
+        address_hint: "Aparece en tu página, en los emails y en el archivo de calendario de cada turno."
+        skip: "Omitir"
+        submit: "Guardar y seguir"
+      service:
+        yours: "Tus servicios"
+        first: "Tu primer servicio"
+        another: "Agregar otro servicio"
+        intro: "Lo que tus clientes van a poder reservar, con su duración y precio."
+        name_placeholder: "Corte de pelo"
+        duration: "Duración (min)"
+        price: "Precio (%{currency})"
+        more_hint: "La descripción y el descanso entre turnos se cargan después desde Servicios."
+        submit: "Agregar servicio"
+      professional:
+        needs_service: "Primero cargá un servicio"
+        needs_service_hint: "Cada profesional ofrece servicios del negocio."
+        add_service: "Cargar un servicio"
+        yours: "Quiénes atienden"
+        services:
+          zero: "Sin servicios"
+          one: "1 servicio"
+          other: "%{count} servicios"
+        first: "¿Quién atiende?"
+        another: "Agregar a alguien más"
+        intro: "Cada profesional ofrece todos tus servicios activos. Podés cambiarlo, sumar su foto o invitarlo a crear su cuenta desde Profesionales."
+        myself_hint: "¿Atendés vos?"
+        myself: "Atiendo yo"
+        name: "Nombre de otra persona"
+        name_hint: "Puede no tener cuenta: la invitás cuando quieras."
+        submit: "Agregar profesional"
+      hours:
+        needs_professional: "Primero sumá a alguien que atienda"
+        needs_professional_hint: "Los horarios son de cada profesional."
+        add_professional: "Sumar un profesional"
+        professionals: "Profesionales"
+        edit_week: "Editar la semana"
+        without_hours: "Sin horarios"
+        title: "Horarios de atención"
+        intro: "Se cargan para %{names}."
+        hint: "Después podés ajustar la semana de cada uno, con varias franjas por día, desde Profesionales."
+        submit: "Guardar horarios"
+      done:
+        title: "¡Tu página está lista!"
+        message: "Tus clientes ya pueden pedir turnos. Compartí este link:"
+        view_page: "Ver mi página"
+        panel: "Ir al panel"
+        next_title: "Para seguir"
+        next:
+          team:
+            title: "Invitá a tu equipo"
+            description: "Cada profesional gestiona su agenda con su propia cuenta."
+          schedules:
+            title: "Ajustá los horarios"
+            description: "Varias franjas por día y bloqueos para vacaciones o trámites."
+          booking:
+            title: "Revisá las reglas de reserva"
+            description: "Intervalos, aviso mínimo, cancelaciones y recordatorios."
+      update:
+        service_added: "Agregamos %{name}."
+        professional_added: "Sumamos a %{name}."

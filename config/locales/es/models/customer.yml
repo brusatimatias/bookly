@@ -1,0 +1,17 @@
+es:
+  activerecord:
+    models:
+      customer:
+        one: "Cliente"
+        other: "Clientes"
+    attributes:
+      customer:
+        email: "Email"
+        name: "Nombre"
+        phone: "Teléfono"
+    errors:
+      models:
+        customer:
+          attributes:
+            email:
+              taken: "ya está registrado en este negocio"

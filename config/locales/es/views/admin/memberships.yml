@@ -1,0 +1,9 @@
+es:
+  admin:
+    memberships:
+      destroy:
+        removed: "Quitamos a %{name} del equipo."
+        owner: "El dueño no puede quitarse del equipo."
+      update:
+        changed: "%{name} ahora tiene el rol %{role}."
+        not_changed: "El rol de dueño no se puede asignar ni cambiar."

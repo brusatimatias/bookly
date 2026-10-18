@@ -1,0 +1,25 @@
+es:
+  layouts:
+    application:
+      sign_in: "Iniciar sesión"
+      dashboard: "Mis negocios"
+      platform: "Plataforma"
+      sign_out: "Cerrar sesión"
+      footer: "© %{year} Bookly · Reservas de turnos online"
+      powered_by: "Reservas online con Bookly"
+    admin:
+      navigation: "Panel del negocio"
+      home: "Inicio"
+      agenda: "Agenda"
+      requests: "Pedidos"
+      services: "Servicios"
+      professionals: "Profesionales"
+      time_blocks: "Bloqueos"
+      availability: "Disponibilidad"
+      settings: "Configuración"
+      team: "Equipo"
+      public_page: "Página pública"
+      my_businesses: "Mis negocios"
+      sign_out: "Cerrar sesión"
+      open_menu: "Abrir menú"
+      close_menu: "Cerrar menú"

@@ -1,0 +1,41 @@
+en:
+  admin:
+    services:
+      index:
+        title: "Services"
+        subtitle: "What the business offers, with its duration and price."
+        new: "New service"
+        edit: "Edit"
+        deactivate: "Deactivate"
+        deactivate_confirm: "Deactivate %{name}? It will no longer show on the public page, but keeps its professionals."
+        reactivate: "Reactivate"
+        inactive: "Inactive"
+        no_professionals: "No professionals"
+        professionals:
+          one: "1 professional"
+          other: "%{count} professionals"
+        empty: "No services yet."
+        empty_hint: "Add the services the business offers so customers can book them."
+        empty_hint_member: "Once the business adds its services, you'll see them here."
+      form:
+        duration: "Duration (min)"
+        buffer: "Buffer (min)"
+        price: "Price (%{currency})"
+        buffer_hint: "Optional break after each appointment. Leave it blank to use the business's (%{minutes} min)."
+        description_hint: "Shown on the business's public page."
+        cancel: "Cancel"
+        create: "Create service"
+        update: "Save changes"
+      new:
+        title: "New service"
+        subtitle: "Customers will see it when requesting an appointment."
+      edit:
+        title: "Edit %{name}"
+      create:
+        created: "Created the service %{name}."
+      update:
+        updated: "Saved the changes to %{name}."
+      deactivate:
+        deactivated: "Deactivated %{name}."
+      reactivate:
+        reactivated: "Reactivated %{name}."

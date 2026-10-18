@@ -1,0 +1,20 @@
+es:
+  home:
+    show:
+      title: "Bookly — Reservas online"
+      audience: "Para barberías, consultorios, estudios y canchas"
+      headline: "Tu agenda, siempre en orden"
+      tagline: "Reservas de turnos online para negocios que atienden por agenda."
+      sign_up: "Registrar mi negocio"
+      sign_in: "Ingresar"
+      go_to_dashboard: "Ir a mis negocios"
+      features:
+        booking:
+          title: "Reservas sin cuenta"
+          description: "Tus clientes eligen servicio, profesional y horario, y solicitan el turno en pocos pasos."
+        schedule:
+          title: "Agenda al día"
+          description: "Confirmá o rechazá solicitudes y mirá la agenda de cada profesional actualizada al instante."
+        team:
+          title: "Todo tu equipo"
+          description: "Invitá a tus profesionales: cada uno gestiona su agenda con su propio acceso."

@@ -1,0 +1,89 @@
+<% content_for :title, t(".title") %>
+
+<% invite_button = capture do %>
+  <%= link_to new_admin_invitation_path, class: "btn-primary" do %>
+    <%= icon "plus", class: "size-4" %> <%= t(".invite") %>
+  <% end %>
+<% end %>
+<%= render "shared/page_header", title: t(".title"), subtitle: t(".subtitle"),
+      actions: (invite_button if Current.membership.owner?) %>
+
+<section class="card">
+  <h2 class="border-b border-gray-100 px-6 py-4 font-semibold text-gray-900"><%= t(".members") %></h2>
+  <ul class="list-divided">
+    <% @memberships.each do |membership| %>
+      <% profile = @profiles[membership.user_id] %>
+      <li class="flex flex-col gap-3 px-6 py-4 sm:flex-row sm:items-center sm:gap-4" id="<%= dom_id(membership) %>">
+        <div class="flex min-w-0 flex-1 items-center gap-4">
+          <span class="avatar"><%= initials(membership.user.name) %></span>
+          <div class="min-w-0 flex-1">
+            <p class="truncate font-medium text-gray-900">
+              <%= membership.user.name %>
+              <% if membership.user == Current.user %>
+                <span class="ml-1 text-sm font-normal text-gray-500"><%= t(".you") %></span>
+              <% end %>
+            </p>
+            <p class="truncate text-sm text-gray-500"><%= membership.user.email_address %></p>
+            <div class="mt-1 flex flex-wrap items-center gap-2">
+              <span class="<%= membership.owner? ? "badge-brand" : "badge-gray" %>"><%= Membership.human_attribute_name("role.#{membership.role}") %></span>
+              <% if profile %>
+                <span class="badge-gray"><%= t(".bookable_profile") %></span>
+              <% end %>
+            </div>
+          </div>
+        </div>
+        <% if Current.membership.owner? && !membership.owner? %>
+          <div class="flex items-center gap-2 pl-14 sm:pl-0">
+            <% new_role = membership.admin? ? "professional" : "admin" %>
+            <%= button_to t(".make_#{new_role}"), admin_membership_path(membership), method: :patch, params: { role: new_role },
+                  form: { data: { turbo_confirm: t(".make_#{new_role}_confirm", name: membership.user.name) } },
+                  class: "btn-secondary btn-sm" %>
+            <%= button_to t(".remove"), admin_membership_path(membership), method: :delete,
+                  form: { data: { turbo_confirm: t(profile ? ".remove_confirm_with_profile" : ".remove_confirm", name: membership.user.name) } },
+                  class: "btn-ghost btn-sm text-red-600 hover:bg-red-50 hover:text-red-700" %>
+          </div>
+        <% end %>
+      </li>
+    <% end %>
+  </ul>
+</section>
+
+<section class="mt-8">
+  <h2 class="mb-4 font-semibold text-gray-900"><%= t(".pending_invitations") %></h2>
+
+  <% if @invitations.any? %>
+    <ul class="card list-divided">
+      <% @invitations.each do |invitation| %>
+        <li class="flex flex-wrap items-center gap-4 px-6 py-4" id="<%= dom_id(invitation) %>">
+          <span class="flex size-9 items-center justify-center rounded-full bg-gray-100 text-gray-500"><%= icon "envelope", class: "size-4" %></span>
+          <div class="min-w-0 flex-1">
+            <p class="truncate font-medium text-gray-900"><%= invitation.email %></p>
+            <div class="mt-1 flex flex-wrap items-center gap-2">
+              <span class="badge-gray"><%= Invitation.human_attribute_name("role.#{invitation.role}") %></span>
+              <% if invitation.professional %>
+                <span class="badge-brand"><%= t(".profile", name: invitation.professional.name) %></span>
+              <% end %>
+              <% if invitation.expired? %>
+                <span class="badge-red"><%= t(".expired") %></span>
+              <% else %>
+                <span class="badge-yellow"><%= t(".expires", date: l(invitation.expires_at, format: :short)) %></span>
+              <% end %>
+            </div>
+          </div>
+          <% if Current.membership.owner? %>
+            <div class="flex items-center gap-2">
+              <%= button_to t(".resend"), resend_admin_invitation_path(invitation), class: "btn-secondary btn-sm" %>
+              <%= button_to t(".revoke"), admin_invitation_path(invitation), method: :delete,
+                    form: { data: { turbo_confirm: t(".revoke_confirm", email: invitation.email) } },
+                    class: "btn-ghost btn-sm text-red-600 hover:bg-red-50 hover:text-red-700" %>
+            </div>
+          <% end %>
+        </li>
+      <% end %>
+    </ul>
+  <% else %>
+    <%= render "shared/empty_state", icon: "envelope", title: t(".no_invitations"),
+          message: (t(".no_invitations_hint") if Current.membership.owner?),
+          action: (invite_button if Current.membership.owner?) %>
+  <% end %>
+</section>

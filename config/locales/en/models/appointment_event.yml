@@ -1,0 +1,18 @@
+en:
+  activerecord:
+    models:
+      appointment_event:
+        one: "Appointment event"
+        other: "Appointment events"
+    attributes:
+      appointment_event:
+        appointment: "Appointment"
+        from_status: "Previous status"
+        to_status: "New status"
+        actor_kind: "Actor"
+        actor_user: "User"
+        note: "Reason"
+      appointment_event/actor_kind:
+        customer: "Customer"
+        user: "Business team"
+        system: "System"

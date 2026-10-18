@@ -1,0 +1,30 @@
+<% content_for :title, t(".title") %>
+
+<div class="mx-auto max-w-2xl">
+  <%= render "shared/page_header", title: t(".title"), subtitle: t(".subtitle") %>
+
+  <div class="space-y-6">
+    <%= render "admin/appointments/card", appointment: @appointment %>
+
+    <% if @candidates.any? %>
+      <%= form_with scope: :reassignment, url: admin_appointment_reassignment_path(@appointment), method: :post, class: "card card-body space-y-5" do |form| %>
+        <%= render "shared/form_errors", record: @appointment %>
+
+        <div class="field">
+          <%= form.label :professional_id, Appointment.human_attribute_name(:professional), class: "label" %>
+          <%= form.collection_select :professional_id, @candidates, :id, :name,
+                { include_blank: t(".choose"), selected: params.dig(:reassignment, :professional_id) }, required: true, class: "input" %>
+          <p class="hint"><%= t(".hint") %></p>
+        </div>
+
+        <div class="flex items-center justify-end gap-3 border-t border-gray-100 pt-5">
+          <%= link_to t(".back"), admin_appointment_path(@appointment), class: "btn-ghost" %>
+          <%= form.submit t(".submit"), class: "btn-primary" %>
+        </div>
+      <% end %>
+    <% else %>
+      <%= render "shared/empty_state", icon: "users", title: t(".empty"), message: t(".empty_hint"),
+            action: capture { link_to t(".back"), admin_appointment_path(@appointment), class: "btn-secondary" } %>
+    <% end %>
+  </div>
+</div>

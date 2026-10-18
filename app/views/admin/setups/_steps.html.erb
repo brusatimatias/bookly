@@ -1,0 +1,20 @@
+<%# The assistant's steps, each a link; tasks already done show a check. %>
+<% current_index = BusinessSetup::STEPS.index(current) %>
+<ol class="mb-6 flex items-center gap-2 text-sm" aria-label="<%= t(".label") %>">
+  <% BusinessSetup::STEPS.each_with_index do |step, index| %>
+    <% done = BusinessSetup::TASKS.include?(step) ? setup.done?(step) : index < current_index %>
+    <% state = step == current ? :current : (done ? :done : :upcoming) %>
+    <li class="flex min-w-0 items-center gap-2 <%= "flex-1" unless index == BusinessSetup::STEPS.size - 1 %>" <%= "aria-current=step" if state == :current %>>
+      <%= link_to admin_setup_step_path(step), class: "flex min-w-0 items-center gap-2" do %>
+        <span class="flex size-7 shrink-0 items-center justify-center rounded-full text-xs font-semibold
+                     <%= { done: "bg-brand-600 text-white", current: "bg-white text-brand-700 ring-2 ring-brand-600", upcoming: "bg-gray-100 text-gray-500" }[state] %>">
+          <%= state == :done ? "✓" : index + 1 %>
+        </span>
+        <span class="<%= state == :current ? "shrink-0 font-semibold text-gray-900" : "hidden truncate text-gray-500 sm:inline" %>"><%= t(".#{step}") %></span>
+      <% end %>
+      <% unless index == BusinessSetup::STEPS.size - 1 %>
+        <span class="h-px flex-1 bg-gray-200" aria-hidden="true"></span>
+      <% end %>
+    </li>
+  <% end %>
+</ol>

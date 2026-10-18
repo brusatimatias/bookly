@@ -1,0 +1,26 @@
+es:
+  admin:
+    dashboards:
+      show:
+        title: "Panel · %{business}"
+        heading: "Hola, %{name}"
+        subtitle: "Este es el panel de %{business}."
+        members: "Miembros del equipo"
+        active_services: "Servicios activos"
+        active_professionals: "Profesionales activos"
+        pending_invitations: "Invitaciones pendientes"
+        requests: "Pedidos pendientes"
+        all_requests:
+          one: "Ver el pedido"
+          other: "Ver los %{count}"
+        no_requests: "No hay pedidos esperando respuesta."
+        today: "Turnos de hoy"
+        no_appointments_today: "No hay turnos para hoy."
+      setup:
+        title: "Poné en marcha tu negocio"
+        message: "Te falta poco para que tus clientes puedan pedir turnos."
+        continue: "Continuar"
+        tasks:
+          service: "Cargar un servicio"
+          professional: "Sumar a alguien que lo ofrezca"
+          hours: "Cargar sus horarios"

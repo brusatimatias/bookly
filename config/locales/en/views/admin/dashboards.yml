@@ -1,0 +1,26 @@
+en:
+  admin:
+    dashboards:
+      show:
+        title: "Panel · %{business}"
+        heading: "Hi, %{name}"
+        subtitle: "This is the %{business} panel."
+        members: "Team members"
+        active_services: "Active services"
+        active_professionals: "Active professionals"
+        pending_invitations: "Pending invitations"
+        requests: "Pending requests"
+        all_requests:
+          one: "See the request"
+          other: "See all %{count}"
+        no_requests: "No requests waiting for an answer."
+        today: "Today's appointments"
+        no_appointments_today: "No appointments today."
+      setup:
+        title: "Get your business started"
+        message: "You're almost ready for your customers to request appointments."
+        continue: "Continue"
+        tasks:
+          service: "Add a service"
+          professional: "Add someone who offers it"
+          hours: "Set their hours"

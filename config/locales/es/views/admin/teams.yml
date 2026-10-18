@@ -1,0 +1,26 @@
+es:
+  admin:
+    teams:
+      show:
+        title: "Equipo"
+        invite: "Invitar"
+        members: "Miembros"
+        pending_invitations: "Invitaciones pendientes"
+        no_invitations: "No hay invitaciones pendientes."
+        expires: "vence el %{date}"
+        expired: "vencida"
+        profile: "Perfil: %{name}"
+        resend: "Reenviar"
+        revoke: "Revocar"
+        revoke_confirm: "¿Revocar la invitación a %{email}? El link dejará de funcionar."
+        subtitle: "Las personas que trabajan en el negocio y sus roles."
+        you: "(vos)"
+        no_invitations_hint: "Invitá a tus profesionales para que gestionen su agenda."
+        bookable_profile: "Perfil de profesional"
+        remove: "Quitar"
+        remove_confirm: "¿Quitar a %{name} del equipo? Va a perder el acceso al panel."
+        remove_confirm_with_profile: "¿Quitar a %{name} del equipo? Va a perder el acceso al panel y su perfil de profesional va a quedar inactivo."
+        make_admin: "Hacer administrador"
+        make_admin_confirm: "¿Hacer administrador a %{name}? Va a poder gestionar el negocio y ver todas las agendas."
+        make_professional: "Hacer profesional"
+        make_professional_confirm: "¿Hacer profesional a %{name}? Va a ver solo su propia agenda."

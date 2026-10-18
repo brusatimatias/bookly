@@ -1,0 +1,14 @@
+en:
+  admin:
+    agendas:
+      show:
+        title: "Agenda"
+        subtitle: "The week's appointments: requests, confirmed ones and their attendance."
+        subtitle_own: "Your week's appointments: requests, confirmed ones and their attendance."
+        filter: "Professional"
+        all_professionals: "All"
+        apply: "Filter"
+        today: "Today"
+        no_appointments: "No appointments"
+        no_profile: "You don't have a professional profile."
+        no_profile_hint: "Once the business links you to a profile, your agenda shows up here."

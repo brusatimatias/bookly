@@ -1,0 +1,19 @@
+<%# Previous and next week around the shown one (Monday first), with the time
+    zone. Pass first:/last: (dates) to disable going before or past them:
+      render "shared/week_navigation", week:, week_url: ->(date) { ... } %>
+<div class="mb-4 flex items-center justify-between gap-3">
+  <% first_week = local_assigns[:first] && week <= first %>
+  <%= link_to week_url.call(week - 7), class: "btn-secondary btn-sm #{"pointer-events-none opacity-40" if first_week}",
+        aria: { disabled: first_week } do %>
+    <span aria-hidden="true">←</span> <span class="hidden sm:inline"><%= t("shared.week_navigation.previous_week") %></span>
+  <% end %>
+  <p class="text-center font-medium text-gray-900">
+    <%= l(week, format: :weekday) %> – <%= l(week + 6, format: :weekday) %>
+    <span class="block text-xs font-normal text-gray-500"><%= t("shared.week_navigation.time_zone", zone: time_zone_label) %></span>
+  </p>
+  <% last_week = local_assigns[:last] && week + 7 > last %>
+  <%= link_to week_url.call(week + 7), class: "btn-secondary btn-sm #{"pointer-events-none opacity-40" if last_week}",
+        aria: { disabled: last_week } do %>
+    <span class="hidden sm:inline"><%= t("shared.week_navigation.next_week") %></span> <span aria-hidden="true">→</span>
+  <% end %>
+</div>

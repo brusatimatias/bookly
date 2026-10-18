@@ -1,0 +1,37 @@
+<% content_for :title, t(".title") %>
+
+<section class="mx-auto max-w-3xl">
+  <% new_business = capture do %>
+    <%= link_to new_signup_path, class: "btn-secondary" do %>
+      <%= icon "plus", class: "size-4" %> <%= t(".new") %>
+    <% end %>
+  <% end %>
+  <%= render "shared/page_header", title: t(".title"), subtitle: (t(".subtitle") if @memberships.any?),
+        actions: (new_business if @memberships.any?) %>
+
+  <% if @memberships.any? %>
+    <ul class="grid gap-4 sm:grid-cols-2">
+      <% @memberships.each do |membership| %>
+        <% business = membership.business %>
+        <li>
+          <%= link_to admin_root_path(business_slug: business), class: "card card-body group flex items-center gap-4 transition hover:ring-brand-600/40" do %>
+            <span class="avatar size-12 text-base"><%= initials(business.name) %></span>
+            <div class="min-w-0 flex-1">
+              <p class="truncate font-semibold text-gray-900"><%= business.name %></p>
+              <div class="mt-1 flex flex-wrap gap-2">
+                <span class="badge-brand"><%= Membership.human_attribute_name("role.#{membership.role}") %></span>
+                <% if business.suspended? %>
+                  <span class="badge-red"><%= Business.human_attribute_name("status.suspended") %></span>
+                <% end %>
+              </div>
+            </div>
+            <%= icon "arrow-right", class: "text-gray-400 transition group-hover:text-brand-600" %>
+          <% end %>
+        </li>
+      <% end %>
+    </ul>
+  <% else %>
+    <%= render "shared/empty_state", icon: "building", title: t(".empty"), message: t(".empty_hint"),
+          action: capture { link_to t(".new"), new_signup_path, class: "btn-primary" } %>
+  <% end %>
+</section>

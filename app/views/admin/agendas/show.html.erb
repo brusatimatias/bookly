@@ -1,0 +1,73 @@
+<% content_for :title, t(".title") %>
+<%= refresh_on_appointment_changes Appointment.panel_stream(Current.business) %>
+
+<% manager = Current.membership.manager? %>
+<%= render "shared/page_header", title: t(".title"), subtitle: t(manager ? ".subtitle" : ".subtitle_own") %>
+
+<%# Each status with its color, for the legend and the appointments. %>
+<% styles = {
+     "pending" => "border-yellow-400 bg-yellow-50 text-yellow-900",
+     "confirmed" => "border-brand-500 bg-brand-50 text-brand-900",
+     "attended" => "border-green-500 bg-green-50 text-green-900",
+     "no_show" => "border-gray-300 bg-gray-50 text-gray-500"
+   } %>
+
+<% if !manager && Current.membership.professional_profile.nil? %>
+  <%= render "shared/empty_state", icon: "calendar", title: t(".no_profile"), message: t(".no_profile_hint") %>
+<% else %>
+  <% if manager && @professionals.any? %>
+    <%= form_with url: admin_agenda_path, method: :get, class: "mb-6 flex items-center gap-3", data: { controller: "auto-submit" } do %>
+      <%= hidden_field_tag :week, @week.iso8601 %>
+      <%= label_tag :professional_id, t(".filter"), class: "label shrink-0" %>
+      <%= select_tag :professional_id, options_from_collection_for_select(@professionals, :id, :name, @professional&.id),
+            include_blank: t(".all_professionals"), class: "input sm:w-72", data: { action: "auto-submit#submit" } %>
+      <noscript><%= submit_tag t(".apply"), name: nil, class: "btn-secondary btn-sm" %></noscript>
+    <% end %>
+  <% end %>
+
+  <%= render "shared/week_navigation", week: @week,
+        week_url: ->(date) { admin_agenda_path(week: date.iso8601, professional_id: @professional&.id) } %>
+
+  <ul class="mb-4 flex flex-wrap items-center gap-x-4 gap-y-2 text-xs text-gray-600">
+    <% styles.each do |status, style| %>
+      <li class="flex items-center gap-1.5">
+        <span class="size-3 rounded-sm border-l-4 <%= style %>"></span><%= Appointment.human_attribute_name("status.#{status}") %>
+      </li>
+    <% end %>
+  </ul>
+
+  <% show_professional = manager && @professional.nil? %>
+  <ol class="grid gap-3 lg:grid-cols-7">
+    <% (@week..(@week + 6)).each do |date| %>
+      <% appointments = @days.fetch(date, []) %>
+      <li class="card min-w-0 p-4 lg:p-2.5 <%= "bg-gray-50/60 shadow-none" if appointments.empty? %>" id="<%= "day-#{date.iso8601}" %>">
+        <p class="flex items-center gap-1 text-sm font-semibold <%= appointments.any? ? "text-gray-900" : "text-gray-500" %>">
+          <%= l(date, format: :weekday) %>
+          <% if date == Time.zone.today %>
+            <span class="badge-brand"><%= t(".today") %></span>
+          <% end %>
+        </p>
+        <% if appointments.any? %>
+          <ul class="mt-3 space-y-2">
+            <% appointments.each do |appointment| %>
+              <li>
+                <%= link_to admin_appointment_path(appointment), id: dom_id(appointment),
+                      class: "block rounded-md border-l-4 px-2.5 py-2 text-sm transition hover:brightness-95 #{styles.fetch(appointment.status)}",
+                      title: Appointment.human_attribute_name("status.#{appointment.status}") do %>
+                  <span class="block font-semibold"><%= l(appointment.starts_at, format: :hour) %></span>
+                  <span class="block truncate <%= "line-through" if appointment.no_show? %>"><%= appointment.customer.name %></span>
+                  <span class="block truncate text-xs opacity-80"><%= appointment.service.name %></span>
+                  <% if show_professional %>
+                    <span class="block truncate text-xs opacity-80"><%= appointment.professional.name %></span>
+                  <% end %>
+                <% end %>
+              </li>
+            <% end %>
+          </ul>
+        <% else %>
+          <p class="mt-2 text-sm text-gray-500"><%= t(".no_appointments") %></p>
+        <% end %>
+      </li>
+    <% end %>
+  </ol>
+<% end %>

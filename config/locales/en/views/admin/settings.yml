@@ -1,0 +1,38 @@
+en:
+  admin:
+    settings:
+      tabs:
+        label: "Settings"
+        business: "Business"
+        booking: "Booking"
+      edit:
+        title: "Booking settings"
+        subtitle: "The rules used to compute the times customers can request."
+        sections:
+          schedule: "Times"
+          window: "When customers can book"
+          requests: "Requests and cancellations"
+          reminders: "Reminders"
+        cancel: "Cancel"
+        submit: "Save settings"
+      number:
+        units:
+          minutes: "min"
+          hours: "hours"
+          days: "days"
+        slot_interval_minutes: "Start interval"
+        slot_interval_minutes_hint: "How often times are offered, counting from the start of each working range. With 30 min: 9:00, 9:30, 10:00…"
+        buffer_minutes: "Break between appointments"
+        buffer_minutes_hint: "Free time after each appointment, unless the service has its own. Appointments already requested keep theirs."
+        min_booking_notice_hours: "Minimum notice"
+        min_booking_notice_hours_hint: "How far ahead an appointment must be requested. With 2 hours, at 10:00 the first time offered is 12:00."
+        booking_horizon_days: "Booking horizon"
+        booking_horizon_days_hint: "How many days ahead customers can request appointments."
+        request_expiration_hours: "Request expiration"
+        request_expiration_hours_hint: "How long the business has to confirm a request before it expires and frees the time. It never expires after the appointment."
+        cancellation_window_hours: "Cancellation window"
+        cancellation_window_hours_hint: "Up to how many hours before the appointment customers can cancel or reschedule it themselves."
+        reminder_hours_before: "Reminder before the appointment"
+        reminder_hours_before_hint: "How many hours before a confirmed appointment we email the customer a reminder. With 0, none are sent."
+      update:
+        updated: "Booking settings saved."

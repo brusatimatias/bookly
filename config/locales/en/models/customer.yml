@@ -1,0 +1,17 @@
+en:
+  activerecord:
+    models:
+      customer:
+        one: "Customer"
+        other: "Customers"
+    attributes:
+      customer:
+        email: "Email"
+        name: "Name"
+        phone: "Phone"
+    errors:
+      models:
+        customer:
+          attributes:
+            email:
+              taken: "is already registered in this business"

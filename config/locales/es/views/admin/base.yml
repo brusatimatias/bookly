@@ -1,0 +1,3 @@
+es:
+  admin:
+    access_denied: "No tenés permiso para acceder a esa sección."

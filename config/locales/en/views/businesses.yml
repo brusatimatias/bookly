@@ -1,0 +1,19 @@
+en:
+  businesses:
+    show:
+      phone: "Phone"
+      email: "Email"
+      services: "Services"
+      professionals: "Professionals"
+      no_services: "No services published yet."
+      no_services_hint: "Please check back soon."
+      book: "Book"
+      book_appointment: "Book an appointment"
+    regional_fields:
+      time_zone_hint: "Your schedule and your page show times in this zone."
+      time_zone_change: "Booked appointments keep their moment; working hours are read in the new zone."
+      locale_hint: "The language of your public page and of the emails to your customers."
+      currency_change: "Prices aren't converted: review them after changing the currency."
+    unavailable:
+      title: "Business unavailable"
+      message: "This business is not available right now."

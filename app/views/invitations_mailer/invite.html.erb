@@ -1,0 +1,9 @@
+<p style="margin:0 0 16px;font-weight:600;"><%= t(".greeting") %></p>
+
+<p style="margin:0 0 24px;"><%= t(".body", inviter: @invitation.invited_by.name, business: @business.name, role: Invitation.human_attribute_name("role.#{@invitation.role}").downcase) %></p>
+
+<p style="margin:0 0 24px;"><%= email_button t(".accept"), invitation_url(@invitation.generate_token_for(:acceptance)) %></p>
+
+<p style="margin:0 0 8px;color:#4b5563;font-size:14px;"><%= t(".expires", date: l(@invitation.expires_at.in_time_zone(@business.time_zone), format: :long)) %></p>
+
+<p style="margin:0;color:#6b7280;font-size:13px;"><%= t(".ignore") %></p>

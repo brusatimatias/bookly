@@ -1,0 +1,15 @@
+<%# Page title with optional subtitle and actions. Build actions with capture in
+    the calling view, so its lazy t(".key") lookups resolve against that view:
+      render "shared/page_header", title: t(".title"), subtitle: "...",
+        actions: capture { link_to t(".new"), ..., class: "btn-primary" } %>
+<div class="mb-8 flex flex-wrap items-end justify-between gap-4">
+  <div class="min-w-0">
+    <h1 class="text-2xl font-bold tracking-tight text-gray-900 sm:text-3xl"><%= title %></h1>
+    <% if local_assigns[:subtitle].present? %>
+      <p class="mt-1 text-gray-600"><%= subtitle %></p>
+    <% end %>
+  </div>
+  <% if local_assigns[:actions].present? %>
+    <div class="flex items-center gap-3"><%= actions %></div>
+  <% end %>
+</div>

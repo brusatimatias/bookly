@@ -1,0 +1,12 @@
+es:
+  admin:
+    requests:
+      index:
+        title: "Pedidos"
+        subtitle: "Pedidos de turno esperando respuesta. Los que vencen antes, arriba."
+        subtitle_own: "Tus pedidos de turno esperando respuesta. Los que vencen antes, arriba."
+        expires: "Vence el %{deadline}"
+        confirm: "Confirmar"
+        reject: "Rechazar"
+        empty: "No hay pedidos pendientes."
+        empty_hint: "Cuando un cliente pida un turno, lo vas a ver acá para confirmarlo o rechazarlo."

@@ -1,0 +1,25 @@
+es:
+  activerecord:
+    models:
+      membership:
+        one: "Miembro"
+        other: "Miembros"
+    attributes:
+      membership:
+        business: "Negocio"
+        user: "Usuario"
+        user_id: "Usuario"
+        role: "Rol"
+      membership/role:
+        owner: "Dueño"
+        admin: "Administrador"
+        professional: "Profesional"
+    errors:
+      models:
+        membership:
+          attributes:
+            user_id:
+              taken: "ya es miembro de este negocio"
+            role:
+              owner_taken: "de dueño ya está asignado en este negocio"
+              owner_unchangeable: "no se puede cambiar desde ni hacia dueño"

@@ -1,0 +1,45 @@
+<%# The choices made so far, each with a link to change it. %>
+<div class="card mb-6">
+  <dl class="list-divided">
+    <div class="flex items-center gap-4 px-6 py-4">
+      <span class="flex size-10 shrink-0 items-center justify-center rounded-lg bg-brand-50 text-brand-600"><%= icon "tag", class: "size-5" %></span>
+      <div class="min-w-0 flex-1">
+        <dt class="text-xs font-medium tracking-wide text-gray-500 uppercase"><%= Appointment.human_attribute_name(:service) %></dt>
+        <dd class="font-medium text-gray-900"><%= @service.name %></dd>
+        <dd class="text-sm text-gray-500"><%= format_duration(@service.duration_minutes) %> · <%= format_price(@service.price_cents) %></dd>
+      </div>
+      <% if @services.many? %>
+        <%= link_to t(".change"), new_booking_path, class: "btn-ghost btn-sm" %>
+      <% end %>
+    </div>
+
+    <% if @professional || @any_professional %>
+      <div class="flex items-center gap-4 px-6 py-4">
+        <% if @professional %>
+          <%= professional_avatar(@professional) %>
+        <% else %>
+          <span class="flex size-10 shrink-0 items-center justify-center rounded-full bg-brand-50 text-brand-600"><%= icon "users", class: "size-5" %></span>
+        <% end %>
+        <div class="min-w-0 flex-1">
+          <dt class="text-xs font-medium tracking-wide text-gray-500 uppercase"><%= Appointment.human_attribute_name(:professional) %></dt>
+          <dd class="truncate font-medium text-gray-900"><%= @professional&.name || t(".any_professional") %></dd>
+        </div>
+        <% if @professionals.many? %>
+          <%= link_to t(".change"), new_booking_path(choices(professional_id: nil)), class: "btn-ghost btn-sm" %>
+        <% end %>
+      </div>
+    <% end %>
+
+    <% if @slot %>
+      <div class="flex items-center gap-4 px-6 py-4">
+        <span class="flex size-10 shrink-0 items-center justify-center rounded-lg bg-brand-50 text-brand-600"><%= icon "calendar", class: "size-5" %></span>
+        <div class="min-w-0 flex-1">
+          <dt class="text-xs font-medium tracking-wide text-gray-500 uppercase"><%= t(".time") %></dt>
+          <dd class="font-medium text-gray-900"><%= format_period(@slot.starts_at, @slot.starts_at + @service.duration_minutes.minutes) %></dd>
+          <dd class="text-sm text-gray-500"><%= t("shared.week_navigation.time_zone", zone: time_zone_label) %></dd>
+        </div>
+        <%= link_to t(".change"), new_booking_path(choices(week: @slot.starts_at.to_date)), class: "btn-ghost btn-sm" %>
+      </div>
+    <% end %>
+  </dl>
+</div>

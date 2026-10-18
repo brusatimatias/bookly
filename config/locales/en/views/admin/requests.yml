@@ -1,0 +1,12 @@
+en:
+  admin:
+    requests:
+      index:
+        title: "Requests"
+        subtitle: "Appointment requests waiting for an answer. The ones expiring first, on top."
+        subtitle_own: "Your appointment requests waiting for an answer. The ones expiring first, on top."
+        expires: "Expires %{deadline}"
+        confirm: "Confirm"
+        reject: "Reject"
+        empty: "No pending requests."
+        empty_hint: "When a customer requests an appointment, it shows up here to confirm or reject."

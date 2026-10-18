@@ -1,0 +1,12 @@
+<nav class="flex items-center gap-1 rounded-lg bg-gray-100 p-1 text-xs font-medium" aria-label="<%= t(".label") %>">
+  <% I18n.available_locales.each do |locale| %>
+    <% if locale == I18n.locale %>
+      <span class="rounded-md bg-white px-2 py-1 text-gray-900 shadow-sm" aria-current="true" lang="<%= locale %>">
+        <%= t("locale_names.#{locale}") %>
+      </span>
+    <% else %>
+      <%= button_to t("locale_names.#{locale}"), locale_path, method: :patch, params: { locale: locale },
+            lang: locale, class: "cursor-pointer rounded-md px-2 py-1 text-gray-600 hover:text-gray-900" %>
+    <% end %>
+  <% end %>
+</nav>

@@ -1,13 +1,29 @@
 <!DOCTYPE html>
-<html>
+<html lang="<%= I18n.locale %>">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <style>
-      /* Email styles need to be inline */
-    </style>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
   </head>
 
-  <body>
-    <%= yield %>
+  <%# Email clients ignore stylesheets: keep styles inline. %>
+  <body style="margin:0;padding:0;background:#f9fafb;font-family:Inter,-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;color:#111827;">
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f9fafb;padding:32px 16px;">
+      <tr>
+        <td align="center">
+          <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:560px;">
+            <tr>
+              <td style="padding-bottom:16px;font-size:20px;font-weight:700;color:<%= MailerHelper::BRAND_COLOR %>;">
+                <%= t("app_name") %>
+              </td>
+            </tr>
+            <tr>
+              <td style="background:#ffffff;border:1px solid #e5e7eb;border-radius:12px;padding:32px;font-size:15px;line-height:1.6;">
+                <%= yield %>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </table>
   </body>
 </html>

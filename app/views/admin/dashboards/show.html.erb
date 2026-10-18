@@ -1,0 +1,74 @@
+<% content_for :title, t(".title", business: Current.business.name) %>
+<%= refresh_on_appointment_changes Appointment.panel_stream(Current.business) %>
+
+<%= render "shared/page_header", title: t(".heading", name: Current.user.name), subtitle: t(".subtitle", business: Current.business.name) %>
+
+<%= render "setup", setup: @setup if @setup && !@setup.complete? %>
+
+<% if Current.membership.manager? %>
+  <div class="grid gap-4 sm:grid-cols-2">
+    <%= link_to admin_team_path, class: "card card-body flex items-center gap-4 transition hover:ring-brand-600/40" do %>
+      <span class="flex size-12 items-center justify-center rounded-lg bg-brand-50 text-brand-600"><%= icon "users", class: "size-6" %></span>
+      <div>
+        <p class="text-sm text-gray-600"><%= t(".members") %></p>
+        <p class="text-2xl font-bold text-gray-900"><%= @members_count %></p>
+      </div>
+    <% end %>
+    <%= link_to admin_team_path, class: "card card-body flex items-center gap-4 transition hover:ring-brand-600/40" do %>
+      <span class="flex size-12 items-center justify-center rounded-lg bg-yellow-50 text-yellow-600"><%= icon "envelope", class: "size-6" %></span>
+      <div>
+        <p class="text-sm text-gray-600"><%= t(".pending_invitations") %></p>
+        <p class="text-2xl font-bold text-gray-900"><%= @pending_invitations_count %></p>
+      </div>
+    <% end %>
+    <%= link_to admin_services_path, class: "card card-body flex items-center gap-4 transition hover:ring-brand-600/40" do %>
+      <span class="flex size-12 items-center justify-center rounded-lg bg-green-50 text-green-600"><%= icon "tag", class: "size-6" %></span>
+      <div>
+        <p class="text-sm text-gray-600"><%= t(".active_services") %></p>
+        <p class="text-2xl font-bold text-gray-900"><%= @active_services_count %></p>
+      </div>
+    <% end %>
+    <%= link_to admin_professionals_path, class: "card card-body flex items-center gap-4 transition hover:ring-brand-600/40" do %>
+      <span class="flex size-12 items-center justify-center rounded-lg bg-sky-50 text-sky-600"><%= icon "user", class: "size-6" %></span>
+      <div>
+        <p class="text-sm text-gray-600"><%= t(".active_professionals") %></p>
+        <p class="text-2xl font-bold text-gray-900"><%= @active_professionals_count %></p>
+      </div>
+    <% end %>
+  </div>
+<% end %>
+
+<div class="mt-6 grid gap-6 lg:grid-cols-2">
+  <section class="card min-w-0">
+    <div class="flex items-center justify-between gap-3 border-b border-gray-100 px-6 py-4">
+      <h2 class="flex items-center gap-2 font-semibold text-gray-900"><%= icon "inbox", class: "size-5 text-yellow-600" %><%= t(".requests") %></h2>
+      <% if pending_requests_count.positive? %>
+        <%= link_to t(".all_requests", count: pending_requests_count), admin_requests_path, class: "link text-sm" %>
+      <% end %>
+    </div>
+    <% if @requests.any? %>
+      <div class="list-divided">
+        <% @requests.each do |appointment| %>
+          <%= render "admin/appointments/row", appointment: appointment %>
+        <% end %>
+      </div>
+    <% else %>
+      <p class="px-6 py-8 text-center text-sm text-gray-500"><%= t(".no_requests") %></p>
+    <% end %>
+  </section>
+
+  <section class="card min-w-0">
+    <div class="border-b border-gray-100 px-6 py-4">
+      <h2 class="flex items-center gap-2 font-semibold text-gray-900"><%= icon "calendar", class: "size-5 text-brand-600" %><%= t(".today") %></h2>
+    </div>
+    <% if @today.any? %>
+      <div class="list-divided">
+        <% @today.each do |appointment| %>
+          <%= render "admin/appointments/row", appointment: appointment %>
+        <% end %>
+      </div>
+    <% else %>
+      <p class="px-6 py-8 text-center text-sm text-gray-500"><%= t(".no_appointments_today") %></p>
+    <% end %>
+  </section>
+</div>

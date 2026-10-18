@@ -1,0 +1,19 @@
+<%# Previous and next week around the shown one, within the booking window
+    (shared/week_navigation), and a notice when the whole week has no free
+    times (with a link to the next free day):
+      render "availabilities/week_navigation", availability:, week:, days:,
+        next_free_day:, week_url: ->(date) { ... } %>
+<%= render "shared/week_navigation", week: week, week_url: week_url, first: availability.first_day, last: availability.last_day %>
+
+<% if days.values.none?(&:any?) %>
+  <div class="mb-4 flex flex-wrap items-center gap-x-3 gap-y-1 rounded-lg bg-yellow-50 p-4 text-sm text-yellow-800 ring-1 ring-yellow-600/20 ring-inset">
+    <%= icon "exclamation-circle", class: "text-yellow-600" %>
+    <span><%= t("availabilities.week_navigation.week_empty") %></span>
+    <% if next_free_day %>
+      <%= link_to t("availabilities.week_navigation.next_free_day", date: l(next_free_day, format: :weekday)),
+            week_url.call(next_free_day), class: "link font-medium" %>
+    <% else %>
+      <span><%= t("availabilities.week_navigation.no_free_days") %></span>
+    <% end %>
+  </div>
+<% end %>

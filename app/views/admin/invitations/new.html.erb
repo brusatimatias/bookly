@@ -1,0 +1,33 @@
+<% content_for :title, t(".title") %>
+
+<div class="mx-auto max-w-xl">
+  <%= render "shared/page_header", title: t(".title"), subtitle: t(".instructions", days: Invitation::VALID_FOR.in_days.to_i) %>
+
+  <%= form_with model: @invitation, url: admin_invitations_path, class: "card card-body space-y-5" do |form| %>
+    <%= render "shared/form_errors", record: @invitation %>
+
+    <% if @invitation.professional %>
+      <%= form.hidden_field :professional_id %>
+      <div class="flex items-center gap-4 rounded-lg bg-brand-50 px-4 py-3 ring-1 ring-brand-600/20 ring-inset">
+        <%= professional_avatar(@invitation.professional) %>
+        <p class="text-sm text-brand-900"><%= t(".for_profile_html", name: tag.strong(@invitation.professional.name)) %></p>
+      </div>
+    <% end %>
+
+    <div class="field">
+      <%= form.label :email, class: "label" %>
+      <%= form.email_field :email, required: true, autofocus: true, class: "input" %>
+    </div>
+
+    <div class="field">
+      <%= form.label :role, class: "label" %>
+      <%= form.select :role, Invitation.roles.keys.map { |role| [ Invitation.human_attribute_name("role.#{role}"), role ] }, {}, class: "input" %>
+      <p class="hint"><%= t(".role_hint") %></p>
+    </div>
+
+    <div class="flex items-center justify-end gap-3 border-t border-gray-100 pt-5">
+      <%= link_to t(".cancel"), (@invitation.professional ? admin_professionals_path : admin_team_path), class: "btn-ghost" %>
+      <%= form.submit t(".submit"), class: "btn-primary" %>
+    </div>
+  <% end %>
+</div>

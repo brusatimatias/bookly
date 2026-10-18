@@ -1,0 +1,17 @@
+<%# Validation errors of a record, at the top of its form:
+      render "shared/form_errors", record: @invitation %>
+<% if record.errors.any? %>
+  <div id="errors" role="alert" class="mb-6 rounded-lg bg-red-50 p-4 ring-1 ring-red-600/20 ring-inset">
+    <div class="flex gap-3">
+      <%= icon "exclamation-circle", class: "text-red-500" %>
+      <div class="text-sm text-red-800">
+        <p class="font-semibold"><%= t("shared.form_errors.title", count: record.errors.count) %></p>
+        <ul class="mt-2 list-disc space-y-1 pl-5">
+          <% record.errors.full_messages.each do |message| %>
+            <li><%= message %></li>
+          <% end %>
+        </ul>
+      </div>
+    </div>
+  </div>
+<% end %>

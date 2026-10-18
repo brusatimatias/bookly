@@ -1,0 +1,16 @@
+<% content_for :title, t(".title", business: Current.business.name) %>
+
+<section class="mx-auto max-w-5xl">
+  <%= link_to business_path(Current.business), class: "mb-4 inline-flex items-center gap-1 text-sm text-gray-500 hover:text-gray-700" do %>
+    <span aria-hidden="true">←</span> <%= Current.business.name %>
+  <% end %>
+  <%= render "shared/page_header", title: t(".heading"), subtitle: t(".subtitle") %>
+
+  <%= render "bookings/steps", current: @step %>
+
+  <% if @service %>
+    <%= render "bookings/summary" %>
+  <% end %>
+
+  <%= render "bookings/#{@step}_step" %>
+</section>

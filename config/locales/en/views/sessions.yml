@@ -1,0 +1,13 @@
+en:
+  sessions:
+    new:
+      title: "Sign in"
+      email_address: "Email"
+      password: "Password"
+      submit: "Sign in"
+      forgot_password: "Forgot your password?"
+      no_account: "New to Bookly?"
+      sign_up: "Sign up your business"
+    create:
+      invalid: "Incorrect email or password."
+      rate_limited: "Too many attempts. Try again in a few minutes."

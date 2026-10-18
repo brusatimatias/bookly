@@ -1,0 +1,16 @@
+es:
+  admin:
+    availabilities:
+      show:
+        title: "Disponibilidad"
+        subtitle: "Los horarios libres tal como los ven los clientes, según horarios, bloqueos, turnos y configuración."
+        subtitle_own: "Tus horarios libres tal como los ven los clientes."
+        any_professional: "Cualquiera"
+        apply: "Ver"
+        no_services: "Todavía no hay nada para reservar."
+        no_services_hint: "Hace falta un servicio activo ofrecido por un profesional activo con horario semanal."
+        go_to_professionals: "Ver profesionales"
+        not_bookable: "Tu perfil todavía no recibe turnos."
+        not_bookable_hint: "Necesita al menos un servicio activo y horario semanal: pedíselo al dueño o a un administrador."
+        no_profile: "No tenés un perfil de profesional."
+        no_profile_hint: "Cuando el negocio te vincule a un perfil, vas a ver tu disponibilidad acá."

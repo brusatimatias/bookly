@@ -1,0 +1,41 @@
+es:
+  admin:
+    services:
+      index:
+        title: "Servicios"
+        subtitle: "Lo que ofrece el negocio, con su duración y precio."
+        new: "Nuevo servicio"
+        edit: "Editar"
+        deactivate: "Desactivar"
+        deactivate_confirm: "¿Desactivar %{name}? Deja de mostrarse en la página pública, pero conserva sus profesionales."
+        reactivate: "Reactivar"
+        inactive: "Inactivo"
+        no_professionals: "Sin profesionales"
+        professionals:
+          one: "1 profesional"
+          other: "%{count} profesionales"
+        empty: "Todavía no hay servicios."
+        empty_hint: "Cargá los servicios que ofrece el negocio para que los clientes puedan reservarlos."
+        empty_hint_member: "Cuando el negocio cargue sus servicios, los vas a ver acá."
+      form:
+        duration: "Duración (min)"
+        buffer: "Descanso (min)"
+        price: "Precio (%{currency})"
+        buffer_hint: "Descanso opcional después de cada turno. Si lo dejás vacío se usa el del negocio (%{minutes} min)."
+        description_hint: "Se muestra en la página pública del negocio."
+        cancel: "Cancelar"
+        create: "Crear servicio"
+        update: "Guardar cambios"
+      new:
+        title: "Nuevo servicio"
+        subtitle: "Los clientes lo van a ver al pedir un turno."
+      edit:
+        title: "Editar %{name}"
+      create:
+        created: "Creamos el servicio %{name}."
+      update:
+        updated: "Guardamos los cambios en %{name}."
+      deactivate:
+        deactivated: "Desactivamos %{name}."
+      reactivate:
+        reactivated: "Reactivamos %{name}."

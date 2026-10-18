@@ -1,0 +1,9 @@
+<p style="margin:0 0 16px;font-weight:600;"><%= t(".greeting", name: @user.name) %></p>
+
+<p style="margin:0 0 24px;"><%= t(".instructions") %></p>
+
+<p style="margin:0 0 24px;"><%= email_button t(".link"), edit_password_url(@user.password_reset_token) %></p>
+
+<p style="margin:0 0 8px;color:#4b5563;font-size:14px;"><%= t(".expires", time: distance_of_time_in_words(0, @user.password_reset_token_expires_in)) %></p>
+
+<p style="margin:0;color:#6b7280;font-size:13px;"><%= t(".ignore") %></p>

@@ -1,0 +1,7 @@
+<% content_for :title, t(".title") %>
+
+<div class="text-center">
+  <%= icon "clock", class: "mx-auto size-12 text-gray-400" %>
+  <h1 class="mt-4 text-xl font-bold text-gray-900"><%= t(".title") %></h1>
+  <p class="mt-2 text-sm text-gray-600"><%= t(".message", business: @business.name) %></p>
+</div>

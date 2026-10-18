@@ -1,0 +1,16 @@
+en:
+  admin:
+    availabilities:
+      show:
+        title: "Availability"
+        subtitle: "Free times as customers see them, from working hours, blocks, appointments and settings."
+        subtitle_own: "Your free times as customers see them."
+        any_professional: "Any"
+        apply: "Show"
+        no_services: "There's nothing to book yet."
+        no_services_hint: "It takes an active service offered by an active professional with weekly hours."
+        go_to_professionals: "See professionals"
+        not_bookable: "Your profile can't be booked yet."
+        not_bookable_hint: "It needs at least one active service and weekly hours: ask the owner or an admin."
+        no_profile: "You don't have a professional profile."
+        no_profile_hint: "Once the business links you to a profile, you'll see your availability here."

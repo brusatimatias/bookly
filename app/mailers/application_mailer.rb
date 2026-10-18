@@ -1,4 +1,5 @@
 class ApplicationMailer < ActionMailer::Base
-  default from: "from@example.com"
+  default from: -> { email_address_with_name(Rails.configuration.x.mail_from, "Bookly") }
   layout "mailer"
+  helper MailerHelper
 end

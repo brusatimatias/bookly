@@ -1,0 +1,18 @@
+en:
+  admin:
+    schedules:
+      edit:
+        title: "%{name}'s hours"
+        subtitle: "The ranges they work every week, in %{zone} time."
+        copy_to_weekdays: "Copy to Tuesday–Friday"
+        closed: "Doesn't work"
+        add: "Add range"
+        cancel: "Cancel"
+        submit: "Save hours"
+      range:
+        start_time: "From"
+        end_time: "To"
+        to: "to"
+        remove: "Remove range"
+      update:
+        updated: "%{name}'s hours were saved."

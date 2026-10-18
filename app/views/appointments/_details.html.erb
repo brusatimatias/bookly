@@ -1,0 +1,41 @@
+<%# The appointment's time, service, professional and notes, for the
+  customer's pages. Locals: appointment, professional_note (optional, under
+  the professional's name). %>
+<% professional_note = local_assigns[:professional_note] %>
+<div class="card">
+  <dl class="list-divided">
+    <div class="flex items-center gap-4 px-6 py-4">
+      <span class="flex size-10 shrink-0 items-center justify-center rounded-lg bg-brand-50 text-brand-600"><%= icon "calendar", class: "size-5" %></span>
+      <div class="min-w-0">
+        <dt class="text-xs font-medium tracking-wide text-gray-500 uppercase"><%= t("bookings.summary.time") %></dt>
+        <dd class="font-medium text-gray-900"><%= format_period(appointment.starts_at, appointment.ends_at) %></dd>
+        <dd class="text-sm text-gray-500"><%= t("shared.week_navigation.time_zone", zone: time_zone_label) %></dd>
+      </div>
+    </div>
+    <div class="flex items-center gap-4 px-6 py-4">
+      <span class="flex size-10 shrink-0 items-center justify-center rounded-lg bg-brand-50 text-brand-600"><%= icon "tag", class: "size-5" %></span>
+      <div class="min-w-0 flex-1">
+        <dt class="text-xs font-medium tracking-wide text-gray-500 uppercase"><%= Appointment.human_attribute_name(:service) %></dt>
+        <dd class="font-medium text-gray-900"><%= appointment.service.name %></dd>
+        <dd class="text-sm text-gray-500"><%= format_duration(appointment.service.duration_minutes) %></dd>
+      </div>
+      <span class="shrink-0 font-semibold text-brand-700"><%= format_price(appointment.price_cents) %></span>
+    </div>
+    <div class="flex items-center gap-4 px-6 py-4">
+      <%= professional_avatar(appointment.professional) %>
+      <div class="min-w-0">
+        <dt class="text-xs font-medium tracking-wide text-gray-500 uppercase"><%= Appointment.human_attribute_name(:professional) %></dt>
+        <dd class="truncate font-medium text-gray-900"><%= appointment.professional.name %></dd>
+        <% if professional_note %>
+          <dd class="text-sm text-gray-500"><%= professional_note %></dd>
+        <% end %>
+      </div>
+    </div>
+    <% if appointment.customer_notes.present? %>
+      <div class="px-6 py-4">
+        <dt class="text-xs font-medium tracking-wide text-gray-500 uppercase"><%= Appointment.human_attribute_name(:customer_notes) %></dt>
+        <dd class="mt-1 text-sm whitespace-pre-line text-gray-700"><%= appointment.customer_notes %></dd>
+      </div>
+    <% end %>
+  </dl>
+</div>

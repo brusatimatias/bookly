@@ -1,0 +1,14 @@
+es:
+  admin:
+    agendas:
+      show:
+        title: "Agenda"
+        subtitle: "Los turnos de la semana: pedidos, confirmados y su asistencia."
+        subtitle_own: "Tus turnos de la semana: pedidos, confirmados y su asistencia."
+        filter: "Profesional"
+        all_professionals: "Todos"
+        apply: "Filtrar"
+        today: "Hoy"
+        no_appointments: "Sin turnos"
+        no_profile: "No tenés un perfil de profesional."
+        no_profile_hint: "Cuando el negocio te vincule a un perfil, vas a ver tu agenda acá."

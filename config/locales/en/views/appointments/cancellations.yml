@@ -1,0 +1,19 @@
+en:
+  appointments:
+    cancellations:
+      new:
+        title:
+          withdraw: "Withdraw the request"
+          cancel: "Cancel the appointment"
+        subtitle:
+          withdraw: "The time is released and %{business} won't answer this request anymore."
+          cancel: "The time is released for someone else. If you want another one, you'll need to request it again."
+        note: "Reason (optional)"
+        placeholder: "For example: something came up."
+        hint: "%{business} will see it."
+        back: "Back"
+        submit:
+          withdraw: "Withdraw request"
+          cancel: "Cancel appointment"
+      create:
+        cancelled: "Done, your appointment was cancelled."

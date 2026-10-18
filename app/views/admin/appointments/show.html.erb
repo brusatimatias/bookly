@@ -1,0 +1,116 @@
+<% content_for :title, t(".title", customer: @appointment.customer.name) %>
+<%= refresh_on_appointment_changes Appointment.panel_stream(Current.business) %>
+
+<%= render "shared/page_header", title: @appointment.customer.name, subtitle: format_period(@appointment.starts_at, @appointment.ends_at) %>
+
+<% started = @appointment.started? %>
+<% can_reassign = Current.membership.manager? && @appointment.active? && !started %>
+<div class="grid gap-6 lg:grid-cols-3">
+  <div class="min-w-0 space-y-6 lg:col-span-2">
+    <div class="card">
+      <dl class="list-divided">
+        <div class="flex items-center justify-between gap-4 px-6 py-4">
+          <div class="min-w-0">
+            <dt class="text-xs font-medium tracking-wide text-gray-500 uppercase"><%= Appointment.human_attribute_name(:status) %></dt>
+            <% if @appointment.pending? %>
+              <dd class="text-sm text-gray-600"><%= t(".expires", deadline: l(@appointment.request_expires_at, format: :weekday_hour)) %></dd>
+              <dd><%= appointment_rescheduled_note(@appointment, class: "mt-1 text-sm") %></dd>
+            <% end %>
+          </div>
+          <dd><%= appointment_status_badge(@appointment) %></dd>
+        </div>
+        <div class="flex items-center gap-4 px-6 py-4">
+          <span class="flex size-10 shrink-0 items-center justify-center rounded-lg bg-brand-50 text-brand-600"><%= icon "tag", class: "size-5" %></span>
+          <div class="min-w-0 flex-1">
+            <dt class="text-xs font-medium tracking-wide text-gray-500 uppercase"><%= Appointment.human_attribute_name(:service) %></dt>
+            <dd class="font-medium text-gray-900"><%= @appointment.service.name %></dd>
+            <dd class="text-sm text-gray-500"><%= format_duration(@appointment.service.duration_minutes) %></dd>
+          </div>
+          <span class="shrink-0 font-semibold text-brand-700"><%= format_price(@appointment.price_cents) %></span>
+        </div>
+        <div class="flex items-center gap-4 px-6 py-4">
+          <%= professional_avatar(@appointment.professional) %>
+          <div class="min-w-0">
+            <dt class="text-xs font-medium tracking-wide text-gray-500 uppercase"><%= Appointment.human_attribute_name(:professional) %></dt>
+            <dd class="truncate font-medium text-gray-900"><%= @appointment.professional.name %></dd>
+            <% if @appointment.any_professional? %>
+              <dd class="text-sm text-gray-500"><%= t(".any_professional") %></dd>
+            <% end %>
+          </div>
+        </div>
+        <div class="flex items-start gap-4 px-6 py-4">
+          <span class="avatar"><%= initials(@appointment.customer.name) %></span>
+          <div class="min-w-0 space-y-0.5">
+            <dt class="text-xs font-medium tracking-wide text-gray-500 uppercase"><%= Appointment.human_attribute_name(:customer) %></dt>
+            <dd class="font-medium text-gray-900"><%= @appointment.customer.name %></dd>
+            <dd class="flex items-center gap-2 text-sm"><%= icon "envelope", class: "size-4 text-gray-400" %><%= mail_to @appointment.customer.email, class: "link truncate" %></dd>
+            <% if @appointment.customer.phone.present? %>
+              <dd class="flex items-center gap-2 text-sm"><%= icon "phone", class: "size-4 text-gray-400" %><%= link_to @appointment.customer.phone, "tel:#{@appointment.customer.phone.delete(" -")}", class: "link" %></dd>
+            <% end %>
+          </div>
+        </div>
+        <% if @appointment.customer_notes.present? %>
+          <div class="px-6 py-4">
+            <dt class="text-xs font-medium tracking-wide text-gray-500 uppercase"><%= Appointment.human_attribute_name(:customer_notes) %></dt>
+            <dd class="mt-1 text-sm whitespace-pre-line text-gray-700"><%= @appointment.customer_notes %></dd>
+          </div>
+        <% end %>
+      </dl>
+    </div>
+
+    <div class="card card-body">
+      <h2 class="font-semibold text-gray-900"><%= t(".history") %></h2>
+      <ol class="mt-4 space-y-4">
+        <% @events.each do |event| %>
+          <li class="flex gap-3">
+            <span class="mt-1.5 size-2 shrink-0 rounded-full bg-brand-600"></span>
+            <div class="min-w-0">
+              <p class="text-sm font-medium text-gray-900"><%= appointment_event_title(event, @professional_names) %></p>
+              <p class="text-xs text-gray-500"><%= appointment_event_actor(event) %> · <%= l(event.created_at.in_time_zone, format: :weekday_hour) %></p>
+              <% if event.note.present? %>
+                <p class="mt-1 text-sm whitespace-pre-line text-gray-700"><%= event.note %></p>
+              <% end %>
+            </div>
+          </li>
+        <% end %>
+      </ol>
+    </div>
+  </div>
+
+  <div class="card card-body h-fit space-y-4">
+    <h2 class="font-semibold text-gray-900"><%= t(".actions") %></h2>
+    <%# Flex items, so the inline button_to forms get the gap too. %>
+    <div class="flex flex-col gap-3 empty:hidden">
+    <% if @appointment.pending? %>
+      <%= button_to confirm_admin_appointment_path(@appointment), method: :patch, class: "btn-primary btn-block" do %>
+        <%= icon "check", class: "size-4" %> <%= t(".confirm") %>
+      <% end %>
+      <%= link_to new_admin_appointment_rejection_path(@appointment), class: "btn-secondary btn-block text-red-600" do %>
+        <%= icon "x-circle", class: "size-4" %> <%= t(".reject") %>
+      <% end %>
+    <% elsif @appointment.confirmed? && started %>
+      <%= button_to attended_admin_appointment_path(@appointment), method: :patch, class: "btn-primary btn-block" do %>
+        <%= icon "check-circle", class: "size-4" %> <%= t(".attended") %>
+      <% end %>
+      <%= button_to no_show_admin_appointment_path(@appointment), method: :patch, class: "btn-secondary btn-block",
+            form: { data: { turbo_confirm: t(".no_show_confirm") } } do %>
+        <%= icon "no-symbol", class: "size-4" %> <%= t(".no_show") %>
+      <% end %>
+    <% elsif @appointment.confirmed? %>
+      <%= link_to new_admin_appointment_cancellation_path(@appointment), class: "btn-secondary btn-block text-red-600" do %>
+        <%= icon "x-circle", class: "size-4" %> <%= t(".cancel") %>
+      <% end %>
+    <% end %>
+    <% if can_reassign %>
+      <%= link_to new_admin_appointment_reassignment_path(@appointment), class: "btn-secondary btn-block" do %>
+        <%= icon "arrows-right-left", class: "size-4" %> <%= t(".reassign") %>
+      <% end %>
+    <% end %>
+    </div>
+    <% if @appointment.pending? || @appointment.confirmed? %>
+      <p class="hint"><%= t(".actions_hint.#{@appointment.pending? ? "pending" : (started ? "started" : "confirmed")}") %></p>
+    <% else %>
+      <p class="text-sm text-gray-600"><%= t(".final") %></p>
+    <% end %>
+  </div>
+</div>

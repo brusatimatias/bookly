@@ -1,0 +1,39 @@
+en:
+  activerecord:
+    models:
+      appointment:
+        one: "Appointment"
+        other: "Appointments"
+    attributes:
+      appointment:
+        service: "Service"
+        professional: "Professional"
+        customer: "Customer"
+        status: "Status"
+        starts_at: "Start"
+        ends_at: "End"
+        price_cents: "Price"
+        buffer_minutes: "Break"
+        request_expires_at: "Request expiration"
+        any_professional: "Any professional"
+        customer_notes: "Notes"
+      appointment/status:
+        pending: "Pending"
+        confirmed: "Confirmed"
+        rejected: "Rejected"
+        expired: "Expired"
+        cancelled: "Cancelled"
+        attended: "Attended"
+        no_show: "No show"
+    errors:
+      models:
+        appointment:
+          attributes:
+            service:
+              not_offered: "isn't offered by this professional"
+            professional:
+              inactive: "isn't active"
+              not_working: "doesn't work at that time"
+              blocked: "has a time block at that time"
+            base:
+              overlap: "That time is no longer available for this professional"

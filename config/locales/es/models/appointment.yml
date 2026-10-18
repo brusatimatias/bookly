@@ -1,0 +1,39 @@
+es:
+  activerecord:
+    models:
+      appointment:
+        one: "Turno"
+        other: "Turnos"
+    attributes:
+      appointment:
+        service: "Servicio"
+        professional: "Profesional"
+        customer: "Cliente"
+        status: "Estado"
+        starts_at: "Inicio"
+        ends_at: "Fin"
+        price_cents: "Precio"
+        buffer_minutes: "Descanso"
+        request_expires_at: "Vencimiento de la solicitud"
+        any_professional: "Cualquier profesional"
+        customer_notes: "Comentarios"
+      appointment/status:
+        pending: "Pendiente"
+        confirmed: "Confirmado"
+        rejected: "Rechazado"
+        expired: "Vencido"
+        cancelled: "Cancelado"
+        attended: "Atendido"
+        no_show: "Ausente"
+    errors:
+      models:
+        appointment:
+          attributes:
+            service:
+              not_offered: "no lo ofrece este profesional"
+            professional:
+              inactive: "no está activo"
+              not_working: "no trabaja en ese horario"
+              blocked: "tiene un bloqueo en ese horario"
+            base:
+              overlap: "El horario ya no está disponible para este profesional"

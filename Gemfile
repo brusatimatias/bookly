@@ -22,7 +22,7 @@ gem "tailwindcss-rails"
 gem "jbuilder"
 
 # Use Active Model has_secure_password [https://guides.rubyonrails.org/active_model_basics.html#securepassword]
-# gem "bcrypt", "~> 3.1.7"
+gem "bcrypt", "~> 3.1.7"
 
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem
 gem "tzinfo-data", platforms: %i[ windows jruby ]
@@ -41,8 +41,14 @@ gem "kamal", require: false
 # Add HTTP asset caching/compression and X-Sendfile acceleration to Puma [https://github.com/basecamp/thruster/]
 gem "thruster", require: false
 
+# Locale data (validation messages, dates, numbers) for non-English locales [https://github.com/svenfuchs/rails-i18n]
+gem "rails-i18n", "~> 8.0"
+
 # Use Active Storage variants [https://guides.rubyonrails.org/active_storage_overview.html#transforming-images]
 gem "image_processing", "~> 2.2"
+
+# Calendar files (.ics) for appointments [https://github.com/icalendar/icalendar]
+gem "icalendar", "~> 2.13"
 
 group :development, :test do
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
@@ -60,9 +66,15 @@ group :development, :test do
   # Testing framework and factories
   gem "rspec-rails", "~> 8.0"
   gem "factory_bot_rails", "~> 6.5"
+
+  # Pretty printing of objects in the console and the debugger (ap record) [https://github.com/awesome-print/awesome_print]
+  gem "awesome_print", "~> 1.9"
 end
 
 group :development do
   # Use console on exceptions pages [https://github.com/rails/web-console]
   gem "web-console"
+
+  # Browse emails sent in development at /letter_opener [https://github.com/fgrehm/letter_opener_web]
+  gem "letter_opener_web", "~> 3.0"
 end

@@ -1,0 +1,14 @@
+en:
+  admin:
+    reassignments:
+      new:
+        title: "Reassign appointment"
+        subtitle: "Same time and service, with another professional."
+        choose: "Choose a professional"
+        hint: "They must work at that time, with no blocks or other appointments."
+        submit: "Reassign"
+        back: "Back"
+        empty: "No other professionals for this service."
+        empty_hint: "No other active professional offers this service."
+      create:
+        reassigned: "The appointment was reassigned to %{name}."

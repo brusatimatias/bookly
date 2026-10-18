@@ -1,0 +1,12 @@
+es:
+  activemodel:
+    models:
+      weekly_schedule:
+        one: "Horario semanal"
+        other: "Horario semanal"
+    errors:
+      models:
+        weekly_schedule:
+          attributes:
+            base:
+              invalid_ranges: "Revisá las franjas marcadas."

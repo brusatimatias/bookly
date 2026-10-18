@@ -1,0 +1,12 @@
+en:
+  availabilities:
+    week:
+      today: "Today"
+      past: "Already passed"
+      outside_window: "Outside the booking window"
+      not_working: "Closed"
+      full: "No free times"
+    week_navigation:
+      week_empty: "There are no free times this week."
+      next_free_day: "Go to the next one: %{date}"
+      no_free_days: "Nor in the next 60 days."

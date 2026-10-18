@@ -1,0 +1,17 @@
+es:
+  signups:
+    new:
+      title: "Registrá tu negocio"
+      subtitle: "Creá tu cuenta y tu negocio. Después te guiamos para dejar tu página lista para recibir turnos."
+      signed_in_as: "Vas a administrarlo con tu cuenta %{email}."
+      account: "Tu cuenta"
+      business: "Tu negocio"
+      email_taken: "Ya hay una cuenta con este email."
+      sign_in: "Iniciar sesión"
+      slug_hint: "Tu página:"
+      submit: "Crear negocio"
+      have_account: "¿Ya tenés una cuenta?"
+      back: "Volver a mis negocios"
+    create:
+      created: "¡Listo! %{business} ya está creado."
+      rate_limited: "Demasiados intentos. Probá de nuevo más tarde."

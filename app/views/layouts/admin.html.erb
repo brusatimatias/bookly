@@ -1,0 +1,74 @@
+<%# Business panel: sidebar navigation, collapsible on small screens. %>
+<!DOCTYPE html>
+<html lang="<%= I18n.locale %>" class="h-full">
+  <%= render "layouts/shared/head" %>
+
+  <body class="h-full" data-controller="sidebar" data-action="keydown.esc@window->sidebar#close">
+    <div class="fixed inset-0 z-30 hidden bg-gray-900/50 lg:hidden" data-sidebar-target="overlay" data-action="click->sidebar#close"></div>
+
+    <aside class="fixed inset-y-0 left-0 z-40 flex w-64 -translate-x-full flex-col border-r border-gray-200 bg-white transition-transform lg:translate-x-0"
+           data-sidebar-target="panel" aria-label="<%= t(".navigation") %>">
+      <div class="flex items-center gap-3 border-b border-gray-200 px-5 py-4">
+        <span class="flex size-10 shrink-0 items-center justify-center rounded-lg bg-brand-600 text-white">
+          <%= icon "building" %>
+        </span>
+        <div class="min-w-0">
+          <%= link_to Current.business.name, admin_root_path, class: "block truncate font-semibold text-gray-900" %>
+          <span class="badge-brand mt-1"><%= Membership.human_attribute_name("role.#{Current.membership.role}") %></span>
+        </div>
+        <button type="button" class="btn-ghost btn-sm ml-auto lg:hidden" data-action="sidebar#close" aria-label="<%= t(".close_menu") %>">
+          <%= icon "x-mark" %>
+        </button>
+      </div>
+
+      <nav class="flex-1 space-y-1 overflow-y-auto px-3 py-4">
+        <%= admin_nav_link t(".home"), admin_root_path, icon: "home", active: controller_name == "dashboards" %>
+        <%= admin_nav_link t(".agenda"), admin_agenda_path, icon: "calendar", active: controller_name == "agendas" %>
+        <%= admin_nav_link t(".requests"), admin_requests_path, icon: "inbox", active: controller_name.in?(%w[requests appointments rejections cancellations reassignments]),
+              count: pending_requests_count %>
+        <%= admin_nav_link t(".services"), admin_services_path, icon: "tag", active: controller_name == "services" %>
+        <%= admin_nav_link t(".professionals"), admin_professionals_path, icon: "user", active: controller_name.in?(%w[professionals schedules]) %>
+        <%= admin_nav_link t(".time_blocks"), admin_time_blocks_path, icon: "no-symbol", active: controller_name == "time_blocks" %>
+        <%= admin_nav_link t(".availability"), admin_availability_path, icon: "clock", active: controller_name == "availabilities" %>
+        <% if Current.membership.manager? %>
+          <%= admin_nav_link t(".team"), admin_team_path, icon: "users", active: controller_name.in?(%w[teams invitations]) %>
+        <% end %>
+        <% if Current.membership.owner? %>
+          <%= admin_nav_link t(".settings"), edit_admin_business_path, icon: "cog", active: controller_name.in?(%w[businesses settings]) %>
+        <% end %>
+        <%= admin_nav_link t(".public_page"), business_path(Current.business), icon: "external-link", target: "_blank" %>
+      </nav>
+
+      <div class="border-t border-gray-200 p-4">
+        <div class="flex items-center gap-3">
+          <span class="avatar"><%= initials(Current.user.name) %></span>
+          <div class="min-w-0 text-sm">
+            <p class="truncate font-medium text-gray-900"><%= Current.user.name %></p>
+            <p class="truncate text-gray-500"><%= Current.user.email_address %></p>
+          </div>
+        </div>
+        <div class="mt-3 flex items-center gap-2">
+          <%= link_to t(".my_businesses"), dashboard_path, class: "btn-ghost btn-sm flex-1" %>
+          <%= button_to session_path, method: :delete, class: "btn-ghost btn-sm", title: t(".sign_out") do %>
+            <%= icon "logout", class: "size-4" %>
+            <span class="sr-only"><%= t(".sign_out") %></span>
+          <% end %>
+        </div>
+      </div>
+    </aside>
+
+    <div class="flex min-h-full flex-col lg:pl-64">
+      <header class="sticky top-0 z-20 flex items-center gap-3 border-b border-gray-200 bg-white px-4 py-3 lg:hidden">
+        <button type="button" class="btn-ghost btn-sm" data-action="sidebar#open" aria-label="<%= t(".open_menu") %>">
+          <%= icon "bars" %>
+        </button>
+        <span class="truncate font-semibold text-gray-900"><%= Current.business.name %></span>
+      </header>
+
+      <main class="mx-auto w-full max-w-5xl flex-1 px-4 py-8 sm:px-6 lg:px-8">
+        <%= render "shared/flash" %>
+        <%= yield %>
+      </main>
+    </div>
+  </body>
+</html>

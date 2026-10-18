@@ -1,0 +1,20 @@
+es:
+  activerecord:
+    models:
+      working_hour:
+        one: "Franja horaria"
+        other: "Franjas horarias"
+    attributes:
+      working_hour:
+        professional: "Profesional"
+        day_of_week: "Día"
+        start_time: "Desde"
+        end_time: "Hasta"
+    errors:
+      models:
+        working_hour:
+          attributes:
+            end_time:
+              after_start: "debe ser posterior a la hora de inicio"
+            base:
+              overlap: "La franja se superpone con otra del mismo día"

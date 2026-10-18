@@ -1,0 +1,34 @@
+es:
+  app_name: "Bookly"
+  # Each language is named in itself, so both files hold the same values.
+  locale_names:
+    es: "Español"
+    en: "English"
+  currencies:
+    ARS: "Peso argentino"
+    BRL: "Real brasileño"
+    CLP: "Peso chileno"
+    COP: "Peso colombiano"
+    EUR: "Euro"
+    MXN: "Peso mexicano"
+    PEN: "Sol peruano"
+    USD: "Dólar estadounidense"
+    UYU: "Peso uruguayo"
+  formatting:
+    duration:
+      hours: "%{count} h"
+      minutes: "%{count} min"
+  number:
+    currency:
+      format:
+        # rails-i18n uses "12.000 $"; Argentina writes "$ 12.000".
+        format: "%u %n"
+  # Added to rails-i18n's formats: l(date, format: :weekday), l(time, format: :hour),
+  # l(time, format: :weekday_hour).
+  date:
+    formats:
+      weekday: "%a %-d %b"
+  time:
+    formats:
+      hour: "%H:%M"
+      weekday_hour: "%a %-d %b, %H:%M"

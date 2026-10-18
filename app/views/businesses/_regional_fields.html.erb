@@ -1,0 +1,23 @@
+<%# Time zone, language and currency of a business, for signing up and editing
+    it. changing: true warns what a change does to existing data. %>
+<% changing = local_assigns.fetch(:changing, false) %>
+
+<div class="field">
+  <%= form.label :time_zone, class: "label" %>
+  <%= form.select :time_zone, time_zone_options(form.object.time_zone), {}, class: "input" %>
+  <p class="hint"><%= t(".time_zone_hint") %><%= " #{t(".time_zone_change")}" if changing %></p>
+</div>
+
+<div class="field">
+  <%= form.label :locale, class: "label" %>
+  <%= form.select :locale, locale_options, {}, class: "input" %>
+  <p class="hint"><%= t(".locale_hint") %></p>
+</div>
+
+<div class="field">
+  <%= form.label :currency, class: "label" %>
+  <%= form.select :currency, currency_options, {}, class: "input" %>
+  <% if changing %>
+    <p class="hint"><%= t(".currency_change") %></p>
+  <% end %>
+</div>

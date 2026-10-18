@@ -1,0 +1,17 @@
+<% content_for :title, t(".title") %>
+
+<h1 class="text-xl font-bold text-gray-900"><%= t(".title") %></h1>
+
+<%= form_with url: password_path(params[:token]), method: :put, class: "mt-6 space-y-5" do |form| %>
+  <div class="field">
+    <%= form.label :password, t(".password"), class: "label" %>
+    <%= form.password_field :password, required: true, autofocus: true, autocomplete: "new-password", minlength: 8, maxlength: 72, class: "input" %>
+  </div>
+
+  <div class="field">
+    <%= form.label :password_confirmation, t(".password_confirmation"), class: "label" %>
+    <%= form.password_field :password_confirmation, required: true, autocomplete: "new-password", minlength: 8, maxlength: 72, class: "input" %>
+  </div>
+
+  <%= form.submit t(".submit"), class: "btn-primary btn-block" %>
+<% end %>

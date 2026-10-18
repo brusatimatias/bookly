@@ -1,0 +1,18 @@
+es:
+  activerecord:
+    models:
+      appointment_event:
+        one: "Evento del turno"
+        other: "Eventos del turno"
+    attributes:
+      appointment_event:
+        appointment: "Turno"
+        from_status: "Estado anterior"
+        to_status: "Estado nuevo"
+        actor_kind: "Autor"
+        actor_user: "Usuario"
+        note: "Motivo"
+      appointment_event/actor_kind:
+        customer: "Cliente"
+        user: "Equipo del negocio"
+        system: "Sistema"

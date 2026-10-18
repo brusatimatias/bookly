@@ -1,0 +1,12 @@
+es:
+  shared:
+    locale_switcher:
+      label: "Idioma"
+    form_errors:
+      title:
+        one: "Hay 1 error para corregir:"
+        other: "Hay %{count} errores para corregir:"
+    week_navigation:
+      previous_week: "Semana anterior"
+      next_week: "Semana siguiente"
+      time_zone: "Hora de %{zone}"

@@ -1,0 +1,19 @@
+es:
+  appointments:
+    cancellations:
+      new:
+        title:
+          withdraw: "Retirar el pedido"
+          cancel: "Cancelar el turno"
+        subtitle:
+          withdraw: "El horario se libera y %{business} ya no va a responder este pedido."
+          cancel: "El horario se libera para otra persona. Si querés otro, vas a tener que pedirlo de nuevo."
+        note: "Motivo (opcional)"
+        placeholder: "Por ejemplo: me surgió un imprevisto."
+        hint: "Lo va a ver %{business}."
+        back: "Volver"
+        submit:
+          withdraw: "Retirar pedido"
+          cancel: "Cancelar turno"
+      create:
+        cancelled: "Listo, cancelamos tu turno."

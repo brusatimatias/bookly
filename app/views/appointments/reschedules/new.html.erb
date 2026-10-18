@@ -1,0 +1,32 @@
+<% content_for :title, t(".title") %>
+<% content_for :head, tag.meta(name: "robots", content: "noindex, nofollow") %>
+
+<section class="mx-auto max-w-5xl">
+  <%= link_to appointment_path(token: appointment_token), class: "mb-4 inline-flex items-center gap-1 text-sm text-gray-500 hover:text-gray-700" do %>
+    <span aria-hidden="true">←</span> <%= t(".back") %>
+  <% end %>
+  <%= render "shared/page_header", title: t(".title"), subtitle: t(".subtitle", business: Current.business.name) %>
+
+  <div class="card card-body mb-6 flex items-center gap-4">
+    <span class="flex size-10 shrink-0 items-center justify-center rounded-lg bg-gray-100 text-gray-500"><%= icon "calendar", class: "size-5" %></span>
+    <div class="min-w-0">
+      <p class="text-xs font-medium tracking-wide text-gray-500 uppercase"><%= t(".current") %></p>
+      <p class="font-medium text-gray-900"><%= format_period(@appointment.starts_at, @appointment.ends_at) %></p>
+      <p class="truncate text-sm text-gray-500">
+        <%= [ @appointment.service.name, (@appointment.professional.name unless @appointment.any_professional?) ].compact.join(" · ") %>
+      </p>
+    </div>
+  </div>
+
+  <% if @slot %>
+    <%= render "appointments/reschedules/confirmation" %>
+  <% else %>
+    <%= refresh_on_appointment_changes Appointment.availability_stream(Current.business) %>
+    <h2 class="mb-4 text-lg font-semibold text-gray-900"><%= t(".heading") %></h2>
+    <% week_url = ->(date) { new_appointment_reschedule_path(appointment_token: appointment_token, week: date) } %>
+    <%= render "availabilities/week_navigation", availability: @availability, week: @week, days: @days,
+          next_free_day: @next_free_day, week_url: week_url %>
+    <%= render "availabilities/week", availability: @availability, days: @days, week: @week, show_professionals: false,
+          slot_url: ->(slot) { new_appointment_reschedule_path(appointment_token: appointment_token, starts_at: slot.starts_at.iso8601) } %>
+  <% end %>
+</section>

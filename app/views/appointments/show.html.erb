@@ -1,0 +1,99 @@
+<% content_for :title, t(".title", business: Current.business.name) %>
+<%# A personal link: keep it out of search engines. %>
+<% content_for :head, tag.meta(name: "robots", content: "noindex, nofollow") %>
+<%= refresh_on_appointment_changes @appointment.customer_stream %>
+
+<% professional_note = if @reassigned
+                        t(".reassigned", business: Current.business.name)
+                      elsif @appointment.any_professional? && @appointment.pending?
+                        t(".assigned")
+                      end %>
+
+<section class="mx-auto max-w-2xl space-y-6">
+  <div class="card card-body flex items-start gap-4">
+    <% pending = @appointment.pending? %>
+    <span class="flex size-12 shrink-0 items-center justify-center rounded-full <%= pending ? "bg-yellow-50 text-yellow-600" : "bg-brand-50 text-brand-600" %>">
+      <%= icon pending ? "clock" : "calendar", class: "size-6" %>
+    </span>
+    <div class="min-w-0 space-y-1">
+      <div class="flex flex-wrap items-center gap-2">
+        <h1 class="text-xl font-bold tracking-tight text-gray-900 sm:text-2xl"><%= t(".heading.#{@rescheduled_from ? "rescheduled" : @appointment.status}") %></h1>
+        <%= appointment_status_badge(@appointment) %>
+      </div>
+      <p class="text-gray-600">
+        <% if pending %>
+          <% if @rescheduled_from %>
+            <%= t(".rescheduled_message", from: l(@rescheduled_from, format: :weekday_hour), business: Current.business.name,
+                  deadline: l(@appointment.request_expires_at, format: :weekday_hour)) %>
+          <% else %>
+            <%= t(".pending_message", name: @appointment.customer.name, business: Current.business.name,
+                  deadline: l(@appointment.request_expires_at, format: :weekday_hour)) %>
+          <% end %>
+        <% elsif @cancelled_by_customer %>
+          <%= t(".message.cancelled_by_customer") %>
+        <% else %>
+          <%= t(".message.#{@appointment.status}", business: Current.business.name) %>
+        <% end %>
+      </p>
+      <% if @reason %>
+        <div class="mt-3 rounded-lg bg-gray-50 px-4 py-3 ring-1 ring-gray-900/5 ring-inset">
+          <p class="text-xs font-medium tracking-wide text-gray-500 uppercase"><%= t(".reason", business: Current.business.name) %></p>
+          <p class="mt-1 text-sm whitespace-pre-line text-gray-700"><%= @reason %></p>
+        </div>
+      <% end %>
+    </div>
+  </div>
+
+  <%= render "appointments/details", appointment: @appointment, professional_note: professional_note %>
+
+  <% if @appointment.confirmed? && !@appointment.started? %>
+    <div class="card card-body flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+      <p class="text-sm text-gray-600"><%= t(".calendar.message") %></p>
+      <%= link_to appointment_path(token: appointment_token, format: :ics), class: "btn-secondary shrink-0", data: { turbo: false } do %>
+        <%= icon "calendar", class: "size-4" %>
+        <%= t(".calendar.add") %>
+      <% end %>
+    </div>
+  <% end %>
+
+  <% if @appointment.customer_can_cancel? %>
+    <div class="card card-body flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+      <p class="text-sm text-gray-600">
+        <%= pending ? t(".changes.pending") : t(".changes.confirmed", deadline: l(@appointment.customer_deadline, format: :weekday_hour)) %>
+      </p>
+      <div class="flex shrink-0 flex-wrap gap-2">
+        <% if @appointment.customer_can_reschedule? %>
+          <%= link_to t(".reschedule"), new_appointment_reschedule_path(appointment_token: appointment_token), class: "btn-secondary" %>
+        <% end %>
+        <%= link_to (pending ? t(".withdraw") : t(".cancel")), new_appointment_cancellation_path(appointment_token: appointment_token),
+              class: "btn-ghost text-red-600 hover:bg-red-50" %>
+      </div>
+    </div>
+  <% elsif @appointment.confirmed? && !@appointment.started? %>
+    <div class="card card-body">
+      <p class="text-sm text-gray-600"><%= t(".changes.closed", hours: Current.business.cancellation_window_hours, business: Current.business.name) %></p>
+    </div>
+  <% end %>
+
+  <div class="flex items-start gap-3 rounded-xl bg-brand-50 px-6 py-5 text-sm text-brand-900 ring-1 ring-brand-600/20 ring-inset">
+    <%= icon "exclamation-circle", class: "mt-0.5 size-5 shrink-0 text-brand-600" %>
+    <p><%= t(".keep_link") %></p>
+  </div>
+
+  <% business = Current.business %>
+  <div class="card card-body">
+    <h2 class="font-semibold text-gray-900"><%= t(".contact", business: business.name) %></h2>
+    <ul class="mt-3 space-y-2 text-sm text-gray-600">
+      <% if business.address.present? %>
+        <li class="flex items-center gap-2"><%= icon "map-pin", class: "size-4 text-gray-400" %><%= business.address %></li>
+      <% end %>
+      <% if business.contact_phone.present? %>
+        <li class="flex items-center gap-2"><%= icon "phone", class: "size-4 text-gray-400" %><%= link_to business.contact_phone, "tel:#{business.contact_phone.delete(" -")}", class: "link" %></li>
+      <% end %>
+      <% if business.contact_email.present? %>
+        <li class="flex items-center gap-2"><%= icon "envelope", class: "size-4 text-gray-400" %><%= mail_to business.contact_email, class: "link" %></li>
+      <% end %>
+      <li class="flex items-center gap-2"><%= icon "external-link", class: "size-4 text-gray-400" %><%= link_to t(".business_page"), business_path(business), class: "link" %></li>
+    </ul>
+  </div>
+</section>

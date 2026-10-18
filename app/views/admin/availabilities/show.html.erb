@@ -1,0 +1,39 @@
+<% content_for :title, t(".title") %>
+
+<%= render "shared/page_header", title: t(".title"),
+      subtitle: t(Current.membership.manager? ? ".subtitle" : ".subtitle_own") %>
+
+<% if @service.nil? %>
+  <% if Current.membership.manager? %>
+    <%= render "shared/empty_state", icon: "calendar", title: t(".no_services"), message: t(".no_services_hint"),
+          action: link_to(t(".go_to_professionals"), admin_professionals_path, class: "btn-secondary") %>
+  <% elsif @own_profile %>
+    <%= render "shared/empty_state", icon: "calendar", title: t(".not_bookable"), message: t(".not_bookable_hint") %>
+  <% else %>
+    <%= render "shared/empty_state", icon: "calendar", title: t(".no_profile"), message: t(".no_profile_hint") %>
+  <% end %>
+<% else %>
+  <%= form_with url: admin_availability_path, method: :get, class: "card card-body mb-6 grid gap-4 sm:grid-cols-2",
+        data: { controller: "auto-submit" } do %>
+    <%= hidden_field_tag :week, @week %>
+    <div class="field">
+      <%= label_tag :service_id, Appointment.human_attribute_name(:service), class: "label" %>
+      <%= select_tag :service_id, options_from_collection_for_select(@services, :id, :name, @service.id),
+            class: "input", data: { action: "auto-submit#submit" } %>
+    </div>
+    <% if Current.membership.manager? %>
+      <div class="field">
+        <%= label_tag :professional_id, Appointment.human_attribute_name(:professional), class: "label" %>
+        <%= select_tag :professional_id, options_from_collection_for_select(@professionals, :id, :name, @professional&.id),
+              include_blank: t(".any_professional"), class: "input", data: { action: "auto-submit#submit" } %>
+      </div>
+    <% end %>
+    <noscript><%= submit_tag t(".apply"), name: nil, class: "btn-secondary" %></noscript>
+  <% end %>
+
+  <% navigation = { service_id: @service.id, professional_id: @professional&.id } %>
+  <%= render "availabilities/week_navigation", availability: @availability, week: @week, days: @days,
+        next_free_day: @next_free_day, week_url: ->(date) { admin_availability_path(navigation.merge(week: date)) } %>
+
+  <%= render "availabilities/week", availability: @availability, days: @days, week: @week %>
+<% end %>

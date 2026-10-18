@@ -1,0 +1,9 @@
+<%= t(".greeting") %>
+
+<%= t(".body", inviter: @invitation.invited_by.name, business: @business.name, role: Invitation.human_attribute_name("role.#{@invitation.role}").downcase) %>
+
+<%= t(".accept") %>: <%= invitation_url(@invitation.generate_token_for(:acceptance)) %>
+
+<%= t(".expires", date: l(@invitation.expires_at.in_time_zone(@business.time_zone), format: :long)) %>
+
+<%= t(".ignore") %>
