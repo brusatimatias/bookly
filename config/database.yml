@@ -26,6 +26,10 @@ development:
   primary: &primary_development
     <<: *default
     database: bookly_development
+  cache:
+    <<: *primary_development
+    database: bookly_development_cache
+    migrations_paths: db/cache_migrate
   queue:
     <<: *primary_development
     database: bookly_development_queue
