@@ -104,6 +104,9 @@ RSpec.describe TimeBlock, type: :model do
 
     let(:monday) { Date.new(2026, 10, 19) }
 
+    # The Friday before: blocks can't be created once they ended.
+    before { travel_to Time.zone.local(2026, 10, 16, 10) }
+
     def whole_days(start_date, end_date)
       block(nil, nil, all_day: true, start_date: start_date, end_date: end_date)
     end
