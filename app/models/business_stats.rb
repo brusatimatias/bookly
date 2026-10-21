@@ -9,6 +9,29 @@ class BusinessStats
   TOP_SERVICES = 5
   # The team's answers to a request.
   ANSWER_STATUSES = %w[confirmed rejected].freeze
+  # Part of the cache key: bump it when #to_h changes shape.
+  VERSION = 1
+  # A period still going on changes as appointments do; a closed one barely
+  # does (attendance marked late), so it's kept longer.
+  CURRENT_PERIOD_EXPIRES_IN = 10.minutes
+  CLOSED_PERIOD_EXPIRES_IN = 1.day
+
+  # The numbers from the cache (Solid Cache in production), calculating them
+  # when they're missing or expired, with :calculated_at. Nothing invalidates
+  # them on a change: they're as old as the expiration at most. Members who see
+  # the same appointments share an entry: managers one per business and
+  # period, each professional their own.
+  def self.fetch(membership, period)
+    expires_in = period.current? ? CURRENT_PERIOD_EXPIRES_IN : CLOSED_PERIOD_EXPIRES_IN
+    Rails.cache.fetch(cache_key(membership, period), expires_in: expires_in) do
+      new(membership, period).to_h.merge(calculated_at: Time.current)
+    end
+  end
+
+  def self.cache_key(membership, period)
+    viewer = membership.manager? ? "business" : "professional/#{membership.professional_profile&.id || "none"}"
+    [ "business_stats", VERSION, Current.business!.id, period.cache_key, viewer ]
+  end
 
   def initialize(membership, period)
     @membership = membership
