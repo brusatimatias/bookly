@@ -87,6 +87,59 @@ RSpec.describe "Businesses", type: :request do
     end
   end
 
+  describe "the business's brand" do
+    let(:business) { create(:business, name: "Barbería Centro", brand_color: "#0f766e") }
+
+    before { use_business_host(business) }
+
+    it "heads the public pages with the business's name and colors them with its color" do
+      get business_path
+
+      expect(response.body).to include("--color-brand-600: #0f766e;")
+      header = response.body[%r{<header.*?</header>}m]
+      expect(header).to include("Barbería Centro")
+      expect(header).not_to include("Bookly")
+    end
+
+    it "shows its logo in the header and on its page" do
+      business.logo.attach(io: file_fixture("photo.png").open, filename: "logo.png", content_type: "image/png")
+
+      get new_booking_path
+
+      expect(response.body.scan(%r{<img[^>]*src="[^"]*/rails/active_storage/[^"]*logo\.png}).size).to eq(1)
+
+      get business_path
+
+      expect(response.body.scan(%r{<img[^>]*src="[^"]*/rails/active_storage/[^"]*logo\.png}).size).to eq(2)
+    end
+
+    it "keeps Bookly's without a color" do
+      business.update!(brand_color: nil)
+
+      get business_path
+
+      expect(response.body).not_to include("--color-brand-600")
+    end
+
+    it "shows nothing of a suspended business" do
+      business.suspend!
+
+      get business_path
+
+      expect(response.body).not_to include("--color-brand-600", "Barbería Centro")
+    end
+
+    it "stays out of the panel" do
+      owner = create(:membership, :owner, business: business).user
+      host! "www.example.com"
+      sign_in_as(owner)
+
+      get admin_root_path(business)
+
+      expect(response.body).not_to include("--color-brand-600")
+    end
+  end
+
   describe "hosts" do
     let!(:business) { create(:business, slug: "barberia-centro") }
 

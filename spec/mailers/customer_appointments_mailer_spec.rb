@@ -208,6 +208,25 @@ RSpec.describe CustomerAppointmentsMailer, type: :mailer do
     end
   end
 
+  describe "the business's brand" do
+    it "has the business's name and Bookly's color when it has no brand" do
+      html = mailer.requested.html_part.body.to_s
+
+      expect(html).to match(%r{color:#{MailerHelper::BRAND_COLOR};">\s*<span[^>]*>Barbería Centro</span>})
+      expect(html).to include("background:#{MailerHelper::BRAND_COLOR}")
+    end
+
+    it "has the business's logo and color" do
+      business.update!(brand_color: "#0f766e")
+      business.logo.attach(io: file_fixture("photo.png").open, filename: "logo.png", content_type: "image/png")
+
+      html = mailer.requested.html_part.body.to_s
+
+      expect(html).to include("background:#0f766e", "color:#0f766e", ">Barbería Centro</span>", "http://example.com/rails/active_storage/blobs/")
+      expect(html).not_to include(MailerHelper::BRAND_COLOR)
+    end
+  end
+
   describe "sending in the business's name" do
     it "comes from the platform's address with the business's name, and replies go to its contact" do
       mail = mailer.requested

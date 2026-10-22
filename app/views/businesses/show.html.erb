@@ -2,7 +2,11 @@
 
 <section class="mx-auto max-w-3xl space-y-6">
   <div class="card card-body flex flex-col gap-6 sm:flex-row sm:items-center">
-    <span class="avatar size-16 text-xl"><%= initials(@business.name) %></span>
+    <% if @business.logo.attached? %>
+      <%= image_tag @business.logo, alt: "", class: "h-16 max-w-40 shrink-0 self-start object-contain sm:self-center" %>
+    <% else %>
+      <span class="avatar size-16 text-xl"><%= initials(@business.name) %></span>
+    <% end %>
     <div class="min-w-0">
       <h1 class="text-3xl font-bold tracking-tight text-gray-900"><%= @business.name %></h1>
 

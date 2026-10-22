@@ -8,7 +8,7 @@ es:
           logo: "Logo"
           color: "Color"
           preview: "Vista previa"
-        logo_hint: "JPG, PNG o WebP, hasta %{size} MB. Mejor horizontal y con fondo transparente o blanco."
+        logo_hint: "JPG, PNG o WebP, hasta %{size} MB. Va al lado del nombre del negocio: mejor un ícono, cuadrado y con fondo transparente o blanco."
         remove_logo: "Quitar el logo"
         picker: "Elegir color"
         default_color: "Usar el de Bookly"

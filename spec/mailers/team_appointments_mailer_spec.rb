@@ -54,6 +54,15 @@ RSpec.describe TeamAppointmentsMailer, type: :mailer do
     end
   end
 
+  it "keeps Bookly's brand, whatever the business's" do
+    business.update!(brand_color: "#0f766e")
+
+    html = mailer.new_request.html_part.body.to_s
+
+    expect(html).to include(MailerHelper::BRAND_COLOR, "Bookly")
+    expect(html).not_to include("#0f766e")
+  end
+
   describe "#customer_rescheduled" do
     it "gives the old and new time and the deadline" do
       in_business do

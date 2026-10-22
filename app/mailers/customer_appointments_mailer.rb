@@ -4,11 +4,13 @@
 # .ics, and one that leaves the customer's calendar (cancelled, or moved back
 # to a request) with a cancellation for it. Sent by AppointmentNotifier:
 # CustomerAppointmentsMailer.with(business:, appointment_id:, event_id:).confirmed
+# They wear the business's brand: its logo (or name) and color.
 class CustomerAppointmentsMailer < BusinessMailer
   include AppointmentMail
   include PublicUrlsHelper
 
   before_action do
+    @branded_business = @business
     @appointment_url = appointment_url(@appointment.generate_token_for(:management), public_url_options(@business))
     @button = [ t("customer_appointments_mailer.view"), @appointment_url ]
   end
