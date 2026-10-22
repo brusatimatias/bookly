@@ -4,7 +4,7 @@ Online appointment booking for businesses that work by schedule: barbershops, cl
 
 Built with Rails 8.1, Ruby 3.4, PostgreSQL, Hotwire and Tailwind 4. No Node, no Redis.
 
-![Booking an appointment: the week of free times for a haircut with any professional](doc/screenshots/booking-times.png)
+![Booking an appointment on the barbershop's subdomain: the week of free times for a haircut with any professional, in its colors](doc/screenshots/booking-times.png)
 
 ## Table of Contents
 
@@ -14,6 +14,7 @@ Built with Rails 8.1, Ruby 3.4, PostgreSQL, Hotwire and Tailwind 4. No Node, no 
 - [Data model](#data-model)
 - [Design decisions](#design-decisions)
   - [Multi-tenancy](#multi-tenancy)
+  - [Subdomains and branding](#subdomains-and-branding)
   - [Availability and double booking](#availability-and-double-booking)
   - [Appointment lifecycle](#appointment-lifecycle)
   - [Emails, calendar files and reminders](#emails-calendar-files-and-reminders)
@@ -30,7 +31,7 @@ Built with Rails 8.1, Ruby 3.4, PostgreSQL, Hotwire and Tailwind 4. No Node, no 
 
 **For customers** (no account needed)
 
-- **Booking in four steps** from the business's page: service, professional (or "any"), a free time and contact details. With "any professional" the least busy free one is assigned. The request holds the time until the business answers.
+- **Booking in four steps** from the business's page, on its own subdomain and with its logo and color: service, professional (or "any"), a free time and contact details. With "any professional" the least busy free one is assigned. The request holds the time until the business answers.
 - **A personal link** to follow the appointment: its status, the business's reason if it was rejected or cancelled, a calendar file once it's confirmed, and the business's contact. The page updates by itself when the business answers.
 - **Cancel or reschedule** a confirmed appointment, or withdraw a request, until the business's cancellation window closes. Rescheduling frees the old time at once and waits for the business's confirmation again.
 - **Emails for every change** (request received, confirmed, rejected, cancelled, expired, moved to another professional, change of time received) and a reminder before the appointment, with `.ics` files that keep the customer's calendar up to date.
@@ -44,7 +45,8 @@ Built with Rails 8.1, Ruby 3.4, PostgreSQL, Hotwire and Tailwind 4. No Node, no 
 - **Services and professionals:** duration, price, optional break and rich text description; profiles with photo, offered services and an optional linked account. Neither is ever deleted, only deactivated.
 - **Weekly hours and blocks:** several ranges per day, and blocks for vacations or errands (exact times or whole days).
 - **Team and roles:** the owner invites admins and professionals by email (single use links, valid for 7 days), changes their roles and removes them. Owners and admins manage everything; professionals answer and manage their own appointments.
-- **Settings:** the business's details (name, contact, address, time zone, language, currency) and its booking rules: start interval, break between appointments, minimum notice, booking horizon, request expiration, cancellation window and reminder.
+- **Their own address and brand:** each business's page lives on its subdomain (`barberia-centro.<domain>`), and its logo and color dress its public pages and the emails its customers get.
+- **Settings:** the business's details (name, contact, address, time zone, language, currency), its booking rules (start interval, break between appointments, minimum notice, booking horizon, request expiration, cancellation window and reminder) and its brand (logo and color, with a live preview).
 - **Emails to the team** when customers request, reschedule or cancel; replies go straight to the customer.
 
 **For the platform**
@@ -60,16 +62,20 @@ Built with Rails 8.1, Ruby 3.4, PostgreSQL, Hotwire and Tailwind 4. No Node, no 
 
 | | |
 |---|---|
-| ![The business's public page, with its services and prices](doc/screenshots/business-page.png) | ![The panel's home: pending requests, one of them a change of time, and today's appointments](doc/screenshots/panel-dashboard.png) |
-| **Public page:** services, prices and the business's contact | **Panel home:** requests waiting for an answer and today's appointments |
+| ![The business's public page, with its logo, its color, its services and prices](doc/screenshots/business-page.png) | ![The panel's home: pending requests, one of them a change of time, and today's appointments](doc/screenshots/panel-dashboard.png) |
+| **Public page** on the business's subdomain, with its logo and color | **Panel home:** requests waiting for an answer and today's appointments |
 | ![The weekly agenda with pending and confirmed appointments](doc/screenshots/panel-agenda.png) | ![The setup assistant asking who takes the appointments](doc/screenshots/setup-assistant.png) |
 | **Agenda:** the week, by professional or of everyone, refreshing live | **Setup assistant:** from sign up to a bookable page |
-| ![A confirmed appointment on a phone, with the add to calendar button](doc/screenshots/customer-appointment-mobile.png) | ![The confirmation email of a football court booking](doc/screenshots/email-confirmed.png) |
-| **The customer's link** on a phone: status, details, calendar file, cancel or reschedule | **Confirmation email** in the business's name, with the `.ics` attached |
+| ![A confirmed appointment on a phone, with the add to calendar button](doc/screenshots/customer-appointment-mobile.png) | ![The confirmation email of a football court booking, with its logo and color](doc/screenshots/email-confirmed.png) |
+| **The customer's link** on a phone: status, details, calendar file, cancel or reschedule | **Confirmation email** in the business's name and brand, with the `.ics` attached |
 
 ![The statistics page: attended appointments, revenue, no-shows, response time, appointments by status and each professional's occupancy](doc/screenshots/panel-statistics.png)
 
 **Statistics:** the month's numbers for the whole business, from the cache
+
+![The brand settings: logo, color picker and a preview of the business's header and a button](doc/screenshots/panel-branding.png)
+
+**Brand:** the logo and color, previewed as they're edited
 
 ![The platform panel listing every business with its owner, members and appointments](doc/screenshots/platform.png)
 
@@ -79,8 +85,8 @@ Built with Rails 8.1, Ruby 3.4, PostgreSQL, Hotwire and Tailwind 4. No Node, no 
 
 Bookly is a single Rails app rendering HTML. Hotwire does the rest on the client: Turbo Drive for navigation and forms, Turbo 8 page refreshes for live updates and a few Stimulus controllers.
 
-- **Three areas, one app.** Public pages live under `/:business_slug` (the business page, the booking steps, the customer's link), the business panel under `/:business_slug/admin`, and the platform panel under `/platform`. Global routes (`/session`, `/signup`, `/dashboard`, ...) come first, and their names are reserved so no business can take them as a slug.
-- **The tenant comes from the URL.** `SetCurrentBusiness` finds the business by its slug, sets `Current.business` and wraps the request in its language and time zone. Every per-business model includes `BusinessScoped`, which filters each query by the current business and fails closed: with no business set, a query raises instead of returning everyone's rows.
+- **Three areas, one app.** Public pages live on the business's subdomain (`barberia-centro.<domain>`: the business page, the booking steps, the customer's link); everything else on the app's own domain: the business panel under `/:business_slug/admin`, the platform panel under `/platform` and the global routes (`/session`, `/signup`, `/dashboard`, ...), whose names are reserved so no business can take them as a slug.
+- **The tenant comes from the host or the URL.** `SetCurrentBusiness` finds the business by the subdomain (public pages) or the panel's slug, sets `Current.business` and wraps the request in its language and time zone. Every per-business model includes `BusinessScoped`, which filters each query by the current business and fails closed: with no business set, a query raises instead of returning everyone's rows.
 - **Domain logic in models and form objects.** `Availability` computes free times; `Appointment` owns its transitions (each one locks the row, checks the status, saves and records an `AppointmentEvent` in one transaction); form objects (`AppointmentRequest`, `AppointmentReschedule`, `BusinessRegistration`, `SetupHours`) handle what spans several records.
 - **Side effects after commit.** An `AppointmentEvent` notifies the right people when its transaction commits, and an appointment broadcasts a refresh. A rolled back change emails nobody and refreshes nothing.
 - **Solid Queue, Solid Cable and Solid Cache** replace Redis: jobs, websocket messages and cache live in their own PostgreSQL databases. `bin/jobs` runs the job workers and two recurring jobs: `ExpireRequestsJob` every minute and `SendRemindersJob` every five minutes. The cache holds the statistics and the rate limits' counters.
@@ -106,9 +112,15 @@ One database with shared tables, a `business_id` on every per-business row, and 
 
 1. **Queries:** `BusinessScoped` filters by the current business and assigns it to new records. It fails closed (`Current::MissingBusiness`), also through associations, so a job or console session that forgets to set the tenant breaks loudly instead of touching every business.
 2. **Database:** composite foreign keys make mixed rows impossible, whatever the code does.
-3. **Requests:** the business comes from the URL, never from a parameter; panel queries also go through the member's permissions (`Membership#visible_appointments`), and anything outside them is a 404.
+3. **Requests:** the business comes from the host or the path, never from a parameter; panel queries also go through the member's permissions (`Membership#visible_appointments`), and anything outside them is a 404.
 
 Code that legitimately spans businesses (the expiration and reminder jobs, the platform panel) opts out explicitly with `BusinessScoped.across_businesses { ... }`, so cross-tenant access stays greppable. A schema-per-business version is on the roadmap as a comparative exercise.
+
+### Subdomains and branding
+
+A business's public pages are served from its subdomain, so its customers get an address of its own. Two route blocks split the hosts: one constrained to subdomains that could be a business's (a valid slug that isn't reserved: `www`, `mail`, `admin`, ...) and one to the app's own domain. Only the public pages moved; the panel stays on the app's domain at `/:business_slug/admin`, so the session cookie lives on a single host and is never shared with pages a business's customers visit. The old `/:business_slug/...` paths, which emails already sent still link to, redirect permanently to the same page on the subdomain. The domain comes from `BOOKLY_HOST` (`*.localhost` in development, which browsers resolve on their own), and links to a public page from another host (the panel, the platform, emails) add the subdomain with `public_url_options(business)`.
+
+The brand is a logo and one color. The color replaces the theme's `brand-*` scale on the business's pages: Tailwind's utilities read it from CSS variables, so the layout sets the color itself as `brand-600` and derives lighter and darker shades with `color-mix()`, and every existing button, link and badge follows without touching a view. Buttons carry white text, so the color must contrast with white at least 4.5:1 (WCAG AA), checked when it's saved. Customer emails take the logo and the color in inline styles; the panel and the team's emails keep Bookly's. Custom domains (`turnos.mibarberia.com`) are left for after deployment, since they need a certificate per domain and DNS verification.
 
 ### Availability and double booking
 
@@ -158,19 +170,22 @@ Instants are stored in UTC and shown in the business's time zone; inside a reque
 
 ## Security
 
-- **Authentication** comes from the Rails 8 generator: bcrypt passwords, a signed, `httponly` session cookie and password reset by email. Authentication is required by default; public controllers opt out explicitly.
+- **Authentication** comes from the Rails 8 generator: bcrypt passwords, a signed, `httponly` session cookie and password reset by email. Sign in and the panel only answer on the app's own domain, so the cookie is never sent to a business's subdomain. Authentication is required by default; public controllers opt out explicitly.
 - **Access is checked per area.** Non-members get a 404 from a business's panel, and anyone without `platform_admin` gets a 404 from `/platform`, so neither reveals what exists. Inside the panel, owner and manager actions are guarded per action, and professionals only see their own appointments.
 - **Tokens instead of stored secrets.** Invitation and appointment links use `generates_token_for`: invitations embed their acceptance and expiration, so a link works once and resending voids the previous one; nothing reusable is stored in the database.
 - **Rate limits** per IP on sign in, password reset, sign up, booking, cancelling and rescheduling.
 - **The customer's pages** aren't indexed by search engines (`noindex`), and websocket streams only accept signed names.
+- **Uploads** are limited by type and size: photos and logos are JPG, PNG or WebP, never SVG, which can carry scripts. Brand colors are validated as `#rrggbb` (and by a check constraint) before they're written into a page's CSS.
+- **Hosts:** in production, only the app's domain and its subdomains are accepted (`config.hosts`).
 - **The database enforces the invariants** the code relies on: composite foreign keys between businesses, exclusion constraints against double booking and check constraints mirroring the validations.
 - **CI** runs Brakeman, bundler-audit and importmap audit on every push.
 
 ## Testing
 
-- **RSpec** with FactoryBot: about 830 examples covering models, form objects, jobs, mailers, helpers and requests. Request specs exercise the full stack (routing, tenancy, permissions, rendering) against a real PostgreSQL database, with no mocks of the database: the exclusion and check constraints are tested too.
+- **RSpec** with FactoryBot: about 870 examples covering models, form objects, jobs, mailers, helpers and requests. Request specs exercise the full stack (routing, tenancy, permissions, rendering) against a real PostgreSQL database, with no mocks of the database: the exclusion and check constraints are tested too.
 - **Time is frozen** (`travel_to`) wherever the result depends on it: availability, expiration, reminders, the agenda, the statistics' periods.
 - **The statistics** are tested metric by metric against hand-built histories (the period's edges in the business's time zone, prices copied at booking, reassignments that don't restart the response clock), and their cache by its hits, its expirations and the entries each member and business gets.
+- **Hosts** are tested explicitly: what each one serves (a business's subdomain, the app's domain with or without `www`, reserved and unknown subdomains) and the old paths' redirects.
 - **Live updates** are tested by checking which signed streams each page subscribes to, and the broadcasts each change makes.
 - **Emails** are tested in both languages and time zones, including their `.ics` attachments, and every email has a preview at `/rails/mailers` built from the seeded data.
 - **CI** (GitHub Actions, mirrored locally by `bin/ci`) runs RuboCop, the three audits and the suite.
@@ -183,7 +198,7 @@ Instants are stored in UTC and shown in the business's time zone; inside a reque
 - Tailwind CSS 4 (`tailwindcss-rails`), Propshaft
 - Solid Queue, Solid Cable and Solid Cache
 - Action Mailer with `letter_opener_web` in development, `icalendar` for the `.ics` files
-- Action Text (service descriptions) and Active Storage (professionals' photos)
+- Action Text (service descriptions) and Active Storage (professionals' photos and business logos)
 - `rails-i18n`, with Spanish and English
 - RSpec, FactoryBot, RuboCop (rails-omakase), Brakeman, bundler-audit
 - Kamal, Docker and Thruster for deployment
@@ -205,15 +220,19 @@ bin/dev                   # web server on http://localhost:3000, background jobs
 
 Background jobs (Solid Queue, `bin/jobs`), live updates (Solid Cable) and the cache (Solid Cache) use their own databases in development too (`bookly_development_queue`, `bookly_development_cable` and `bookly_development_cache`, created by `bin/setup`). `bin/dev` runs the jobs; without them requests don't expire, reminders aren't sent and no email goes out.
 
+Businesses' public pages are on subdomains of `localhost` (http://barberia-centro.localhost:3000), which browsers resolve without touching `/etc/hosts`; the panel and everything else stay on http://localhost:3000. Set `BOOKLY_HOST` to use another domain.
+
 Caching is off in development until `bin/rails dev:cache` turns it on (run it again to turn it off). While it's off, the statistics are calculated on every visit and rate limits don't count.
 
 ### Sample data
 
 Sample businesses:
 
-- http://localhost:3000/barberia-centro — a barbershop, in Spanish (Buenos Aires)
-- http://localhost:3000/downtown-studio — a hair studio, in English (New York)
-- http://localhost:3000/el-potrero — a football court, in Spanish (Buenos Aires), whose "professionals" are its pitches, booked by the hour
+- http://barberia-centro.localhost:3000 — a barbershop, in Spanish (Buenos Aires)
+- http://downtown-studio.localhost:3000 — a hair studio, in English (New York)
+- http://el-potrero.localhost:3000 — a football court, in Spanish (Buenos Aires), whose "professionals" are its pitches, booked by the hour
+
+Each has a brand color, and Barbería Centro and El Potrero a logo too.
 
 Sample users, all with the password `password` (sign in at http://localhost:3000/session/new):
 
@@ -259,6 +278,7 @@ bin/ci              # RuboCop, bundler-audit, importmap audit, Brakeman and RSpe
 After the MVP, step by step:
 
 - [x] Business statistics, cached with Solid Cache
-- [ ] Subdomains and branding
+- [x] Subdomains and branding
 - [ ] Schema-per-business migration (comparative exercise)
 - [ ] Deployment
+- [ ] Custom domains for businesses
