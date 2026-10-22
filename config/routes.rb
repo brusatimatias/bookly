@@ -78,6 +78,7 @@ Rails.application.routes.draw do
       resource :availability, only: :show
       resources :requests, only: :index
       resource :agenda, only: :show
+      resource :statistics, only: :show
       resources :appointments, only: :show do
         member do
           patch :confirm

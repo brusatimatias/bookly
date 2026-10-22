@@ -1,0 +1,50 @@
+en:
+  admin:
+    statistics:
+      show:
+        title: "Statistics"
+        subtitle: "How the business is doing: appointments, revenue, occupancy and customers."
+        subtitle_own: "How you're doing: your appointments, revenue, occupancy and customers."
+        period: "Period"
+        periods:
+          this_month: "This month"
+          last_month: "Last month"
+          last_90_days: "Last 90 days"
+        range: "From %{from} to %{to}"
+        calculated: "Updated %{time} ago"
+        attended: "Attended appointments"
+        attended_of:
+          one: "of %{count} appointment in the period"
+          other: "of %{count} appointments in the period"
+        revenue: "Revenue"
+        revenue_hint: "From attended appointments"
+        no_show_rate: "No-shows"
+        no_shows:
+          one: "%{count} appointment missed"
+          other: "%{count} appointments missed"
+        response_time: "Response time"
+        answered:
+          one: "Median of %{count} answered request"
+          other: "Median of %{count} answered requests"
+        outcomes: "Appointments by status"
+        outcomes_hint:
+          one: "%{count} appointment starting in the period."
+          other: "%{count} appointments starting in the period."
+        customers: "Customers"
+        customers_hint: "New: their first appointment is in this period. Returning: they had come before."
+        new_customers: "New"
+        returning_customers: "Returning"
+        top_services: "Most requested services"
+        top_services_hint: "With what their attended appointments made."
+        appointments:
+          one: "%{count} appointment"
+          other: "%{count} appointments"
+        occupancy: "Occupancy"
+        occupancy_hint: "Booked time against each professional's weekly hours, less their blocks."
+        booked_of: "%{booked} booked of %{available}"
+        no_hours: "No hours in the period"
+        peak_hours: "Peak days and hours"
+        peak_hours_hint: "Booked appointments by day and start time (%{zone} time)."
+        no_data: "No data in this period yet."
+        no_profile: "You don't have a professional profile."
+        no_profile_hint: "Once the business links you to a profile, you'll see your statistics here."

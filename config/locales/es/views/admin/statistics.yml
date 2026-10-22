@@ -1,0 +1,50 @@
+es:
+  admin:
+    statistics:
+      show:
+        title: "Estadísticas"
+        subtitle: "Cómo le va al negocio: turnos, ingresos, ocupación y clientes."
+        subtitle_own: "Cómo te va: tus turnos, ingresos, ocupación y clientes."
+        period: "Período"
+        periods:
+          this_month: "Este mes"
+          last_month: "El mes pasado"
+          last_90_days: "Últimos 90 días"
+        range: "Del %{from} al %{to}"
+        calculated: "Actualizado hace %{time}"
+        attended: "Turnos atendidos"
+        attended_of:
+          one: "de %{count} turno en el período"
+          other: "de %{count} turnos en el período"
+        revenue: "Ingresos"
+        revenue_hint: "De los turnos atendidos"
+        no_show_rate: "Ausencias"
+        no_shows:
+          one: "%{count} turno sin asistencia"
+          other: "%{count} turnos sin asistencia"
+        response_time: "Tiempo de respuesta"
+        answered:
+          one: "Mediana de %{count} pedido respondido"
+          other: "Mediana de %{count} pedidos respondidos"
+        outcomes: "Turnos por estado"
+        outcomes_hint:
+          one: "%{count} turno que empieza en el período."
+          other: "%{count} turnos que empiezan en el período."
+        customers: "Clientes"
+        customers_hint: "Nuevos: su primer turno es de este período. Recurrentes: ya habían venido."
+        new_customers: "Nuevos"
+        returning_customers: "Recurrentes"
+        top_services: "Servicios más pedidos"
+        top_services_hint: "Con lo que facturaron sus turnos atendidos."
+        appointments:
+          one: "%{count} turno"
+          other: "%{count} turnos"
+        occupancy: "Ocupación"
+        occupancy_hint: "Tiempo reservado sobre el horario semanal de cada profesional, sin sus bloqueos."
+        booked_of: "%{booked} reservadas de %{available}"
+        no_hours: "Sin horario en el período"
+        peak_hours: "Días y horas pico"
+        peak_hours_hint: "Turnos reservados por día y hora de inicio (hora de %{zone})."
+        no_data: "Todavía no hay datos en este período."
+        no_profile: "No tenés un perfil de profesional."
+        no_profile_hint: "Cuando el negocio te vincule a un perfil, vas a ver tus estadísticas acá."
