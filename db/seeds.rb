@@ -29,6 +29,18 @@ Business.find_or_create_by!(slug: "el-potrero") do |business|
   business.reminder_hours_before = 3
 end
 
+# Brands: a color each and a logo for two of them (db/seeds/logos), unless the
+# business already has its own.
+{ "barberia-centro" => [ "#0f766e", "barberia-centro.png" ],
+  "downtown-studio" => [ "#be185d", nil ],
+  "el-potrero" => [ "#15803d", "el-potrero.png" ] }.each do |slug, (color, logo)|
+  business = Business.find_by!(slug: slug)
+  business.update!(brand_color: color) if business.brand_color.nil?
+  if logo && !business.logo.attached?
+    business.logo.attach(io: Rails.root.join("db/seeds/logos", logo).open, filename: logo, content_type: "image/png")
+  end
+end
+
 # Users sign in with the password "password".
 def seed_member(business, role:, name:, email_address:)
   user = User.find_or_create_by!(email_address: email_address) do |new_user|

@@ -18,6 +18,7 @@ RSpec.describe "Appointment reschedules", type: :request do
   let(:token) { in_business { appointment.generate_token_for(:management) } }
 
   around { |example| travel_to(now) { example.run } }
+  before { use_business_host(business) }
 
   before do
     in_business do
@@ -34,29 +35,29 @@ RSpec.describe "Appointment reschedules", type: :request do
   end
 
   def reschedule_to(starts_at)
-    post appointment_reschedule_path(business, token), params: { starts_at: starts_at.iso8601 }
+    post appointment_reschedule_path(token), params: { starts_at: starts_at.iso8601 }
   end
 
   it "is offered on a confirmed appointment's page" do
-    get appointment_path(business, token)
+    get appointment_path(token)
 
     expect(response.body).to include("Podés cancelarlo o cambiar el horario hasta el jue 15 oct, 15:00.", "Cambiar horario",
-                                     new_appointment_reschedule_path(business, token))
+                                     new_appointment_reschedule_path(token))
   end
 
   it "is not offered on a request" do
     in_business { appointment.update_columns(status: "pending", request_expires_at: now + 1.day) }
 
-    get appointment_path(business, token)
+    get appointment_path(token)
 
-    expect(response.body).not_to include(new_appointment_reschedule_path(business, token))
+    expect(response.body).not_to include(new_appointment_reschedule_path(token))
   end
 
   describe "choosing a time" do
     it "shows the week of the appointment with the professional's free times, except the current one" do
       book(martin, friday_three + 1.hour)
 
-      get new_appointment_reschedule_path(business, token)
+      get new_appointment_reschedule_path(token)
 
       expect(response).to have_http_status(:ok)
       expect(response.body).to include("Cambiar el horario", "Tu horario actual", "vie 16 oct, 15:00 – 15:30", "Corte de pelo · Martín Gómez",
@@ -69,20 +70,20 @@ RSpec.describe "Appointment reschedules", type: :request do
       in_business { appointment.update_column(:any_professional, true) }
       book(martin, friday_three + 1.hour)
 
-      get new_appointment_reschedule_path(business, token)
+      get new_appointment_reschedule_path(token)
 
       expect(response.body).to include(">16:00<")
       expect(response.body).not_to include("· Martín Gómez")
     end
 
     it "refreshes itself when an appointment changes" do
-      get new_appointment_reschedule_path(business, token)
+      get new_appointment_reschedule_path(token)
 
       expect(response.body).to include(%(signed-stream-name="#{signed_turbo_stream_name(Appointment.availability_stream(business))}"))
     end
 
     it "asks to confirm the chosen time, warning what it means" do
-      get new_appointment_reschedule_path(business, token, starts_at: (friday_three + 1.hour).iso8601)
+      get new_appointment_reschedule_path(token, starts_at: (friday_three + 1.hour).iso8601)
 
       expect(response.body).to include("Horario nuevo", "vie 16 oct, 16:00 – 16:30", "Tu horario actual se libera ahora", "Pedir el cambio")
       expect(response.body).not_to include("turbo-cable-stream-source")
@@ -92,7 +93,7 @@ RSpec.describe "Appointment reschedules", type: :request do
       book(sofia, friday_three + 1.hour)
       book(martin, friday_three + 1.hour)
 
-      get new_appointment_reschedule_path(business, token, starts_at: (friday_three + 1.hour).iso8601)
+      get new_appointment_reschedule_path(token, starts_at: (friday_three + 1.hour).iso8601)
 
       expect(response.body).to include("Ese horario ya no está disponible. Elegí otro.", "¿Cuándo te queda mejor?")
     end
@@ -102,7 +103,7 @@ RSpec.describe "Appointment reschedules", type: :request do
     it "moves the appointment back to pending at the new time" do
       reschedule_to(friday_three + 1.hour)
 
-      expect(response).to redirect_to(appointment_path(business, token))
+      expect(response).to redirect_to(appointment_path(token))
       expect(flash[:notice]).to eq("Listo, pedimos el cambio de horario. El negocio lo va a confirmar.")
       in_business { expect(appointment.reload).to have_attributes(status: "pending", starts_at: friday_three + 1.hour, professional: martin) }
 
@@ -116,7 +117,7 @@ RSpec.describe "Appointment reschedules", type: :request do
 
       reschedule_to(friday_three + 1.hour)
 
-      expect(response).to redirect_to(new_appointment_reschedule_path(business, token, week: "2026-10-16"))
+      expect(response).to redirect_to(new_appointment_reschedule_path(token, week: "2026-10-16"))
       expect(flash[:alert]).to eq("Ese horario ya no está disponible. Elegí otro.")
       expect(in_business { appointment.reload }).to have_attributes(status: "confirmed", starts_at: friday_three)
     end
@@ -136,12 +137,12 @@ RSpec.describe "Appointment reschedules", type: :request do
     appointment
     travel_to(zone.local(2026, 10, 15, 15, 1))
 
-    get new_appointment_reschedule_path(business, token)
-    expect(response).to redirect_to(appointment_path(business, token))
+    get new_appointment_reschedule_path(token)
+    expect(response).to redirect_to(appointment_path(token))
     expect(flash[:alert]).to eq("Este turno ya no se puede cambiar desde acá.")
 
     reschedule_to(friday_three + 1.hour)
-    expect(response).to redirect_to(appointment_path(business, token))
+    expect(response).to redirect_to(appointment_path(token))
     expect(in_business { appointment.reload }.starts_at).to eq(friday_three)
   end
 
@@ -155,7 +156,8 @@ RSpec.describe "Appointment reschedules", type: :request do
   end
 
   it "doesn't find another business's appointment" do
-    post appointment_reschedule_path(create(:business), token), params: { starts_at: (friday_three + 1.hour).iso8601 }
+    use_business_host(create(:business))
+    post appointment_reschedule_path(token), params: { starts_at: (friday_three + 1.hour).iso8601 }
 
     expect(response).to have_http_status(:not_found)
   end
@@ -163,7 +165,7 @@ RSpec.describe "Appointment reschedules", type: :request do
   it "is in the business's language" do
     business.update!(locale: "en")
 
-    get new_appointment_reschedule_path(business, token)
+    get new_appointment_reschedule_path(token)
 
     expect(response.body).to include('lang="en"', "Change the time", "When suits you best?")
   end

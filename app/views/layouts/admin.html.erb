@@ -35,9 +35,9 @@
           <%= admin_nav_link t(".team"), admin_team_path, icon: "users", active: controller_name.in?(%w[teams invitations]) %>
         <% end %>
         <% if Current.membership.owner? %>
-          <%= admin_nav_link t(".settings"), edit_admin_business_path, icon: "cog", active: controller_name.in?(%w[businesses settings]) %>
+          <%= admin_nav_link t(".settings"), edit_admin_business_path, icon: "cog", active: controller_name.in?(%w[businesses settings brandings]) %>
         <% end %>
-        <%= admin_nav_link t(".public_page"), business_path(Current.business), icon: "external-link", target: "_blank" %>
+        <%= admin_nav_link t(".public_page"), business_url(public_url_options(Current.business)), icon: "external-link", target: "_blank" %>
       </nav>
 
       <div class="border-t border-gray-200 p-4">

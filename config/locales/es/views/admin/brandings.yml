@@ -1,0 +1,23 @@
+es:
+  admin:
+    brandings:
+      edit:
+        title: "Marca"
+        subtitle: "Tu logo y tu color en tu página, en las reservas y en los emails a tus clientes."
+        sections:
+          logo: "Logo"
+          color: "Color"
+          preview: "Vista previa"
+        logo_hint: "JPG, PNG o WebP, hasta %{size} MB. Va al lado del nombre del negocio: mejor un ícono, cuadrado y con fondo transparente o blanco."
+        remove_logo: "Quitar el logo"
+        picker: "Elegir color"
+        default_color: "Usar el de Bookly"
+        color_hint: "Se usa en los botones y los links. Tiene que ser lo bastante oscuro para leer texto blanco encima; vacío, queda el de Bookly."
+        preview_hint: "Así se ve la cabecera de tu página y un botón."
+        sample_service: "Corte de pelo"
+        sample_link: "Ver mi turno"
+        sample_button: "Reservar turno"
+        cancel: "Cancelar"
+        submit: "Guardar marca"
+      update:
+        updated: "Guardamos la marca."

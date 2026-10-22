@@ -12,6 +12,7 @@ RSpec.describe "Appointment cancellations", type: :request do
   let(:token) { in_business { appointment.generate_token_for(:management) } }
 
   around { |example| travel_to(now) { example.run } }
+  before { use_business_host(business) }
 
   def in_business(&block)
     with_business(business, &block)
@@ -22,11 +23,11 @@ RSpec.describe "Appointment cancellations", type: :request do
   end
 
   def cancel(note: "")
-    post appointment_cancellation_path(business, token), params: { cancellation: { note: note } }
+    post appointment_cancellation_path(token), params: { cancellation: { note: note } }
   end
 
   it "asks to confirm withdrawing a request" do
-    get new_appointment_cancellation_path(business, token)
+    get new_appointment_cancellation_path(token)
 
     expect(response).to have_http_status(:ok)
     expect(response.body).to include("Retirar el pedido", "Corte de pelo", "vie 16 oct, 15:00 – 15:30", "Motivo (opcional)")
@@ -36,7 +37,7 @@ RSpec.describe "Appointment cancellations", type: :request do
   it "withdraws a request, with an optional reason" do
     cancel(note: "Me surgió algo")
 
-    expect(response).to redirect_to(appointment_path(business, token))
+    expect(response).to redirect_to(appointment_path(token))
     expect(flash[:notice]).to eq("Listo, cancelamos tu turno.")
     in_business do
       expect(appointment.reload).to be_cancelled
@@ -47,7 +48,7 @@ RSpec.describe "Appointment cancellations", type: :request do
   it "cancels a confirmed appointment without a reason" do
     confirm
 
-    get new_appointment_cancellation_path(business, token)
+    get new_appointment_cancellation_path(token)
     expect(response.body).to include("Cancelar el turno")
 
     cancel
@@ -67,12 +68,12 @@ RSpec.describe "Appointment cancellations", type: :request do
     confirm
     travel_to(zone.local(2026, 10, 15, 15, 1))
 
-    get new_appointment_cancellation_path(business, token)
-    expect(response).to redirect_to(appointment_path(business, token))
+    get new_appointment_cancellation_path(token)
+    expect(response).to redirect_to(appointment_path(token))
     expect(flash[:alert]).to eq("Este turno ya no se puede cambiar desde acá.")
 
     cancel
-    expect(response).to redirect_to(appointment_path(business, token))
+    expect(response).to redirect_to(appointment_path(token))
     expect(in_business { appointment.reload }).to be_confirmed
   end
 
@@ -95,10 +96,11 @@ RSpec.describe "Appointment cancellations", type: :request do
   end
 
   it "doesn't find a tampered token or another business's appointment" do
-    post appointment_cancellation_path(business, "#{token}x")
+    post appointment_cancellation_path("#{token}x")
     expect(response).to have_http_status(:not_found)
 
-    post appointment_cancellation_path(create(:business), token)
+    use_business_host(create(:business))
+    post appointment_cancellation_path(token)
     expect(response).to have_http_status(:not_found)
     expect(in_business { appointment.reload }).to be_pending
   end
@@ -106,7 +108,7 @@ RSpec.describe "Appointment cancellations", type: :request do
   it "is in the business's language" do
     business.update!(locale: "en")
 
-    get new_appointment_cancellation_path(business, token)
+    get new_appointment_cancellation_path(token)
 
     expect(response.body).to include('lang="en"', "Withdraw the request", "Reason (optional)")
   end

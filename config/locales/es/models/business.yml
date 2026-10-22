@@ -21,6 +21,8 @@ es:
         request_expiration_hours: "Vencimiento de solicitudes (horas)"
         min_booking_notice_hours: "Aviso mínimo de reserva (horas)"
         booking_horizon_days: "Horizonte máximo de reserva (días)"
+        brand_color: "Color de marca"
+        logo: "Logo"
         status: "Estado"
         suspended_at: "Suspendido el"
         created_at: "Alta"
@@ -31,5 +33,10 @@ es:
       models:
         business:
           attributes:
+            brand_color:
+              low_contrast: "tiene poco contraste con el blanco: probá con un tono más oscuro"
+            logo:
+              invalid_content_type: "debe ser una imagen JPG, PNG o WebP"
+              too_large: "no puede pesar más de %{count} MB"
             slug:
               reserved: "está reservada por el sistema"

@@ -1,0 +1,7 @@
+<%# A business's logo (when it has one) and name, heading its public pages. %>
+<%= link_to business_path, class: "flex min-w-0 items-center gap-3 text-gray-900" do %>
+  <% if business.logo.attached? %>
+    <%= image_tag business.logo, alt: "", class: "h-9 max-w-36 shrink-0 object-contain" %>
+  <% end %>
+  <span class="truncate text-lg font-bold tracking-tight"><%= business.name %></span>
+<% end %>

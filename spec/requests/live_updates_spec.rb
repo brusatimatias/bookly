@@ -55,7 +55,8 @@ RSpec.describe "Live updates", type: :request do
 
   describe "on the public booking page" do
     it "subscribes the week of free times to the business's availability stream, not the panel's" do
-      get new_booking_path(business, service_id: service.id, professional_id: professional.id)
+      use_business_host(business)
+      get new_booking_path(service_id: service.id, professional_id: professional.id)
 
       expect(response.body).to include("09:00")
       expect(subscribed_to?(Appointment.availability_stream(business))).to be(true)
@@ -67,7 +68,8 @@ RSpec.describe "Live updates", type: :request do
       token = in_business { appointment.generate_token_for(:management) }
       other = in_business { create(:appointment, service: service, professional: professional, starts_at: appointment.starts_at + 1.hour) }
 
-      get appointment_path(business, token)
+      use_business_host(business)
+      get appointment_path(token)
 
       expect(subscribed_to?(appointment.customer_stream)).to be(true)
       expect(subscribed_to?(other.customer_stream)).to be(false)
@@ -78,13 +80,15 @@ RSpec.describe "Live updates", type: :request do
     it "leaves the cancellation and reschedule forms out" do
       token = in_business { appointment.generate_token_for(:management) }
 
-      get new_appointment_cancellation_path(business, token)
+      use_business_host(business)
+      get new_appointment_cancellation_path(token)
 
       expect(response.body).not_to include("turbo-cable-stream-source")
     end
 
     it "leaves the other steps out" do
-      get new_booking_path(business)
+      use_business_host(business)
+      get new_booking_path
 
       expect(response.body).not_to include("turbo-cable-stream-source")
     end

@@ -157,7 +157,7 @@ RSpec.describe "Admin setup assistant", type: :request do
       get admin_setup_step_path(business, "done")
 
       expect(response).to have_http_status(:ok)
-      expect(response.body).to include("¡Tu página está lista!", business_url(business), admin_team_path(business))
+      expect(response.body).to include("¡Tu página está lista!", "http://#{business_host(business)}/", admin_team_path(business))
     end
   end
 

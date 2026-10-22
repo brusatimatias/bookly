@@ -40,7 +40,7 @@ RSpec.describe CustomerAppointmentsMailer, type: :mailer do
   end
 
   def link_token(mail)
-    text(mail)[%r{/appointments/(\S+)}, 1]
+    text(mail)[%r{http://barberia-centro\.example\.com/appointments/(\S+)}, 1]
   end
 
   describe "#requested" do
@@ -85,7 +85,7 @@ RSpec.describe CustomerAppointmentsMailer, type: :mailer do
 
       expect(mail.subject).to eq("Barbería Centro no pudo confirmar tu pedido de turno")
       expect(text(mail)).to include("Motivo de Barbería Centro:\nEse día cerramos por inventario.", "Pedir otro turno")
-      expect(text(mail)).to include("/barberia-centro/book?service_id=#{service.id}")
+      expect(text(mail)).to include("http://barberia-centro.example.com/book?service_id=#{service.id}")
     end
   end
 
@@ -205,6 +205,25 @@ RSpec.describe CustomerAppointmentsMailer, type: :mailer do
       in_business { appointment.cancel!(by: :customer) }
 
       expect { mailer.reminder.deliver_now }.not_to change(ActionMailer::Base.deliveries, :size)
+    end
+  end
+
+  describe "the business's brand" do
+    it "has the business's name and Bookly's color when it has no brand" do
+      html = mailer.requested.html_part.body.to_s
+
+      expect(html).to match(%r{color:#{MailerHelper::BRAND_COLOR};">\s*<span[^>]*>Barbería Centro</span>})
+      expect(html).to include("background:#{MailerHelper::BRAND_COLOR}")
+    end
+
+    it "has the business's logo and color" do
+      business.update!(brand_color: "#0f766e")
+      business.logo.attach(io: file_fixture("photo.png").open, filename: "logo.png", content_type: "image/png")
+
+      html = mailer.requested.html_part.body.to_s
+
+      expect(html).to include("background:#0f766e", "color:#0f766e", ">Barbería Centro</span>", "http://example.com/rails/active_storage/blobs/")
+      expect(html).not_to include(MailerHelper::BRAND_COLOR)
     end
   end
 

@@ -37,8 +37,14 @@ Rails.application.configure do
   # ActionMailer::Base.deliveries array.
   config.action_mailer.delivery_method = :test
 
-  # Set host to be used by links generated in mailer templates.
-  config.action_mailer.default_url_options = { host: "example.com" }
+  # The app's domain: businesses' public pages are served from its subdomains.
+  # Request specs run on www.example.com (the domain itself) unless they
+  # switch to a business's host (host! "slug.example.com").
+  config.x.app_host = "example.com"
+  config.action_dispatch.tld_length = 1
+
+  # Host used by links generated in mailer templates.
+  config.action_mailer.default_url_options = { host: config.x.app_host }
 
   # Print deprecation notices to the stderr.
   config.active_support.deprecation = :stderr

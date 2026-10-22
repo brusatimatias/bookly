@@ -67,14 +67,14 @@
 
   <rect x="65" y="400" width="280" height="118" rx="10" fill="#f8fafc" stroke="#94a3b8" stroke-width="1.5"/>
   <text x="205" y="425" text-anchor="middle" font-size="17" font-weight="bold" fill="#111">Public pages</text>
-  <text x="205" y="449" text-anchor="middle" font-size="13" fill="#444">/:slug · /:slug/book</text>
-  <text x="205" y="469" text-anchor="middle" font-size="13" fill="#444">/:slug/appointments/:token</text>
-  <text x="205" y="489" text-anchor="middle" font-size="13" fill="#444">token link, no account</text>
+  <text x="205" y="449" text-anchor="middle" font-size="13" fill="#444">slug.domain: / · /book</text>
+  <text x="205" y="469" text-anchor="middle" font-size="13" fill="#444">/appointments/:token</text>
+  <text x="205" y="489" text-anchor="middle" font-size="13" fill="#444">business's logo and color</text>
   <text x="205" y="509" text-anchor="middle" font-size="13" fill="#444">writes rate limited per IP</text>
 
   <rect x="370" y="400" width="280" height="118" rx="10" fill="#f8fafc" stroke="#94a3b8" stroke-width="1.5"/>
   <text x="510" y="425" text-anchor="middle" font-size="17" font-weight="bold" fill="#111">Business panel</text>
-  <text x="510" y="449" text-anchor="middle" font-size="13" fill="#444">/:slug/admin · Admin::</text>
+  <text x="510" y="449" text-anchor="middle" font-size="13" fill="#444">domain/:slug/admin · Admin::</text>
   <text x="510" y="469" text-anchor="middle" font-size="13" fill="#444">members only (404 otherwise)</text>
   <text x="510" y="489" text-anchor="middle" font-size="13" fill="#444">require_owner / require_manager</text>
   <text x="510" y="509" text-anchor="middle" font-size="13" fill="#444">professionals see their own</text>
@@ -88,10 +88,10 @@
 
   <rect x="65" y="533" width="280" height="118" rx="10" fill="#f8fafc" stroke="#94a3b8" stroke-width="1.5"/>
   <text x="205" y="558" text-anchor="middle" font-size="17" font-weight="bold" fill="#111">Tenant context</text>
-  <text x="205" y="582" text-anchor="middle" font-size="13" fill="#444">SetCurrentBusiness: slug →</text>
-  <text x="205" y="602" text-anchor="middle" font-size="13" fill="#444">Current.business, locale, zone</text>
-  <text x="205" y="622" text-anchor="middle" font-size="13" fill="#444">BusinessScoped filters queries</text>
-  <text x="205" y="642" text-anchor="middle" font-size="13" fill="#444">and fails closed without one</text>
+  <text x="205" y="582" text-anchor="middle" font-size="13" fill="#444">SetCurrentBusiness: subdomain</text>
+  <text x="205" y="602" text-anchor="middle" font-size="13" fill="#444">or slug → Current.business</text>
+  <text x="205" y="622" text-anchor="middle" font-size="13" fill="#444">(locale, zone); BusinessScoped</text>
+  <text x="205" y="642" text-anchor="middle" font-size="13" fill="#444">filters queries, fails closed</text>
 
   <rect x="370" y="533" width="280" height="118" rx="10" fill="#f8fafc" stroke="#94a3b8" stroke-width="1.5"/>
   <text x="510" y="558" text-anchor="middle" font-size="17" font-weight="bold" fill="#111">Booking domain</text>

@@ -52,7 +52,7 @@
           data: { slug_target: "slug", action: "slug#edit" } %>
     <p class="hint">
       <%= t(".slug_hint") %>
-      <span class="font-medium text-gray-700"><%= request.host_with_port %>/<span data-slug-target="preview"><%= @registration.slug %></span></span>
+      <span class="font-medium text-gray-700"><span data-slug-target="preview"><%= @registration.slug %></span>.<%= request.domain %><%= request.port_string %></span>
     </p>
   </div>
 

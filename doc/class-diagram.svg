@@ -55,10 +55,10 @@
   <text class="field" x="430" y="210">one owner per business</text>
 
   <!-- Business -->
-  <rect class="box" x="800" y="70" width="310" height="310"/>
+  <rect class="box" x="800" y="70" width="310" height="346"/>
   <rect class="head" x="800" y="70" width="310" height="30"/>
   <text class="title" x="955" y="90" text-anchor="middle">Business</text>
-  <text class="field" x="810" y="118">slug  (unique: /:business_slug)</text>
+  <text class="field" x="810" y="118">slug  (unique: its subdomain)</text>
   <text class="field" x="810" y="136">name</text>
   <text class="field" x="810" y="154">time_zone · locale (es | en)</text>
   <text class="field" x="810" y="172">currency</text>
@@ -73,6 +73,8 @@
   <text class="field" x="810" y="334">reminder_hours_before</text>
   <text class="field" x="810" y="352">status: active | suspended</text>
   <text class="field" x="810" y="370">suspended_at</text>
+  <text class="field" x="810" y="388">brand_color  (#rrggbb, readable)</text>
+  <text class="note" x="810" y="406">logo: Active Storage</text>
 
   <!-- Invitation -->
   <rect class="box" x="1170" y="90" width="230" height="184"/>
@@ -227,9 +229,9 @@
   <text class="mult" x="158" y="232" text-anchor="start">0..1</text>
   <text class="mult" x="983" y="1116" text-anchor="start">*</text>
   <text class="label" x="500" y="1196" text-anchor="middle">actor_user: who in the team made the change</text>
-  <path class="rel" d="M955,374 L955,500"/>
-  <text class="mult" x="965" y="392">1</text>
-  <text class="label" x="965" y="440">has many: every per-business table</text>
+  <path class="rel" d="M955,416 L955,500"/>
+  <text class="mult" x="965" y="432">1</text>
+  <text class="label" x="965" y="462">has many: every per-business table</text>
   <text class="mult" x="965" y="495">*</text>
 
   <text class="legend" x="40" y="1230">─── association (multiplicity at each end)    - - - reference across zones    <tspan fill="#b45309">⊘ exclusion constraint (btree_gist)</tspan>: overlapping ranges are rejected by the database</text>

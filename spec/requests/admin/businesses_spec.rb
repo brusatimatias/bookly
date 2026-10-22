@@ -22,7 +22,7 @@ RSpec.describe "Admin business details", type: :request do
 
       expect(response).to have_http_status(:ok)
       expect(response.body).to include("Datos del negocio", 'value="Barbería Centro"', 'value="hola@centro.example"',
-                                       business_url(business), "La dirección web no se puede cambiar",
+                                       "http://#{business_host(business)}/", "La dirección web no se puede cambiar",
                                        "Los precios no se convierten", edit_admin_settings_path(business))
     end
 

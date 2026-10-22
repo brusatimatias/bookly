@@ -1,0 +1,76 @@
+<% content_for :title, t(".title") %>
+
+<div class="mx-auto max-w-2xl">
+  <%= render "shared/page_header", title: t(".title"), subtitle: t(".subtitle") %>
+  <%= render "admin/settings/tabs" %>
+
+  <% saved_logo = Current.business.logo %>
+  <%= form_with model: @business, url: admin_branding_path, method: :patch, class: "card card-body space-y-8",
+        data: { controller: "brand-preview", brand_preview_default_value: BrandColor::DEFAULT } do |form| %>
+    <%= render "shared/form_errors", record: @business %>
+
+    <section class="space-y-5">
+      <h2 class="border-b border-gray-100 pb-2 font-semibold text-gray-900"><%= t(".sections.logo") %></h2>
+
+      <div class="field">
+        <%= form.label :logo, class: "label" %>
+        <%= form.file_field :logo, accept: Business::LOGO_CONTENT_TYPES.join(","),
+              data: { brand_preview_target: "logoInput", action: "brand-preview#showLogo" },
+              class: "block w-full text-sm text-gray-600 file:mr-3 file:cursor-pointer file:rounded-lg file:border-0 file:bg-brand-50 file:px-3 file:py-2 file:text-sm file:font-semibold file:text-brand-700 hover:file:bg-brand-100" %>
+        <p class="hint"><%= t(".logo_hint", size: Business::LOGO_MAX_SIZE / 1.megabyte) %></p>
+      </div>
+
+      <% if saved_logo.attached? %>
+        <label class="flex items-center gap-2 text-sm text-gray-700">
+          <%= check_box_tag "business[remove_logo]", "1", params.dig(:business, :remove_logo) == "1",
+                data: { brand_preview_target: "removeLogo", action: "brand-preview#showLogo" },
+                class: "size-4 rounded border-gray-300 text-brand-600 focus:ring-brand-600" %>
+          <%= t(".remove_logo") %>
+        </label>
+      <% end %>
+    </section>
+
+    <section class="space-y-5">
+      <h2 class="border-b border-gray-100 pb-2 font-semibold text-gray-900"><%= t(".sections.color") %></h2>
+
+      <div class="field">
+        <%= form.label :brand_color, class: "label" %>
+        <div class="flex flex-wrap items-center gap-3">
+          <input type="color" value="<%= @business.brand_color || BrandColor::DEFAULT %>" aria-label="<%= t(".picker") %>"
+                 class="h-10 w-14 cursor-pointer rounded-lg border border-gray-300 bg-white p-1"
+                 data-brand-preview-target="picker" data-action="brand-preview#pick">
+          <%= form.text_field :brand_color, placeholder: BrandColor::DEFAULT, maxlength: 7, spellcheck: false, autocapitalize: "none",
+                class: "input w-32 font-mono", data: { brand_preview_target: "hex", action: "brand-preview#type" } %>
+          <button type="button" class="btn-ghost btn-sm" data-action="brand-preview#reset"><%= t(".default_color") %></button>
+        </div>
+        <p class="hint"><%= t(".color_hint") %></p>
+      </div>
+    </section>
+
+    <section class="space-y-3">
+      <h2 class="border-b border-gray-100 pb-2 font-semibold text-gray-900"><%= t(".sections.preview") %></h2>
+      <p class="text-sm text-gray-500"><%= t(".preview_hint") %></p>
+
+      <div class="overflow-hidden rounded-lg ring-1 ring-gray-200">
+        <div class="flex items-center gap-3 border-b border-gray-200 bg-white px-4 py-3">
+          <% saved_logo_url = url_for(saved_logo) if saved_logo.attached? %>
+          <%= tag.img src: saved_logo_url, alt: "", class: [ "h-8 max-w-32 object-contain", ("hidden" unless saved_logo_url) ],
+                data: { brand_preview_target: "logo", saved_url: saved_logo_url } %>
+          <span class="truncate font-semibold text-gray-900"><%= Current.business.name %></span>
+        </div>
+        <div class="flex flex-wrap items-center justify-between gap-3 bg-gray-50 p-4">
+          <div>
+            <p class="font-medium text-gray-900"><%= t(".sample_service") %></p>
+            <p class="text-sm font-medium" data-brand-preview-target="text"><%= t(".sample_link") %></p>
+          </div>
+          <span class="rounded-lg px-4 py-2 text-sm font-semibold text-white shadow-sm" data-brand-preview-target="button"><%= t(".sample_button") %></span>
+        </div>
+      </div>
+    </section>
+
+    <div class="flex items-center justify-end gap-3 border-t border-gray-100 pt-5">
+      <%= link_to t(".cancel"), admin_root_path, class: "btn-ghost" %>
+      <%= form.submit t(".submit"), class: "btn-primary" %>
+    </div>
+  <% end %>
+</div>
