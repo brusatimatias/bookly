@@ -1,6 +1,7 @@
-<%# The settings pages: the business's details and its booking rules. %>
+<%# The settings pages: the business's details, its booking rules and its brand. %>
 <nav class="-mt-4 mb-6 flex gap-6 border-b border-gray-200 text-sm font-medium" aria-label="<%= t(".label") %>">
-  <% [ [ t(".business"), edit_admin_business_path, "businesses" ], [ t(".booking"), edit_admin_settings_path, "settings" ] ].each do |label, path, controller| %>
+  <% [ [ t(".business"), edit_admin_business_path, "businesses" ], [ t(".booking"), edit_admin_settings_path, "settings" ],
+        [ t(".branding"), edit_admin_branding_path, "brandings" ] ].each do |label, path, controller| %>
     <% active = controller_name == controller %>
     <%= link_to label, path, "aria-current": (active ? "page" : nil),
           class: [ "-mb-px border-b-2 pb-3 transition-colors",

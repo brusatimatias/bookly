@@ -21,6 +21,8 @@ en:
         request_expiration_hours: "Request expiration (hours)"
         min_booking_notice_hours: "Minimum booking notice (hours)"
         booking_horizon_days: "Maximum booking horizon (days)"
+        brand_color: "Brand color"
+        logo: "Logo"
         status: "Status"
         suspended_at: "Suspended at"
         created_at: "Signed up"
@@ -31,5 +33,10 @@ en:
       models:
         business:
           attributes:
+            brand_color:
+              low_contrast: "doesn't contrast enough with white: try a darker shade"
+            logo:
+              invalid_content_type: "must be a JPG, PNG or WebP image"
+              too_large: "can't be larger than %{count} MB"
             slug:
               reserved: "is reserved by the system"

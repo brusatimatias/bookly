@@ -64,6 +64,7 @@ Rails.application.routes.draw do
         get "setup/:step", to: "setups#show", as: :setup_step, constraints: { step: Regexp.union(BusinessSetup::STEPS) }
         patch "setup/:step", to: "setups#update", constraints: { step: Regexp.union(BusinessSetup::STEPS - [ "done" ]) }
         resource :settings, only: %i[edit update]
+        resource :branding, only: %i[edit update]
         resources :memberships, only: %i[update destroy]
         resources :invitations, only: %i[new create destroy] do
           post :resend, on: :member
