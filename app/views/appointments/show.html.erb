@@ -93,7 +93,7 @@
       <% if business.contact_email.present? %>
         <li class="flex items-center gap-2"><%= icon "envelope", class: "size-4 text-gray-400" %><%= mail_to business.contact_email, class: "link" %></li>
       <% end %>
-      <li class="flex items-center gap-2"><%= icon "external-link", class: "size-4 text-gray-400" %><%= link_to t(".business_page"), business_path(business), class: "link" %></li>
+      <li class="flex items-center gap-2"><%= icon "external-link", class: "size-4 text-gray-400" %><%= link_to t(".business_page"), business_path, class: "link" %></li>
     </ul>
   </div>
 </section>

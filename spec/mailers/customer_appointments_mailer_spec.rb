@@ -40,7 +40,7 @@ RSpec.describe CustomerAppointmentsMailer, type: :mailer do
   end
 
   def link_token(mail)
-    text(mail)[%r{/appointments/(\S+)}, 1]
+    text(mail)[%r{http://barberia-centro\.example\.com/appointments/(\S+)}, 1]
   end
 
   describe "#requested" do
@@ -85,7 +85,7 @@ RSpec.describe CustomerAppointmentsMailer, type: :mailer do
 
       expect(mail.subject).to eq("Barbería Centro no pudo confirmar tu pedido de turno")
       expect(text(mail)).to include("Motivo de Barbería Centro:\nEse día cerramos por inventario.", "Pedir otro turno")
-      expect(text(mail)).to include("/barberia-centro/book?service_id=#{service.id}")
+      expect(text(mail)).to include("http://barberia-centro.example.com/book?service_id=#{service.id}")
     end
   end
 

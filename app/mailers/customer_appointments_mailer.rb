@@ -6,9 +6,10 @@
 # CustomerAppointmentsMailer.with(business:, appointment_id:, event_id:).confirmed
 class CustomerAppointmentsMailer < BusinessMailer
   include AppointmentMail
+  include PublicUrlsHelper
 
   before_action do
-    @appointment_url = appointment_url(@business, @appointment.generate_token_for(:management))
+    @appointment_url = appointment_url(@appointment.generate_token_for(:management), public_url_options(@business))
     @button = [ t("customer_appointments_mailer.view"), @appointment_url ]
   end
 
@@ -94,7 +95,7 @@ class CustomerAppointmentsMailer < BusinessMailer
 
     # For an appointment that's over: the button books again the same service.
     def offer_new_booking
-      @button = [ t("customer_appointments_mailer.book_again"), new_booking_url(@business, service_id: @appointment.service_id) ]
+      @button = [ t("customer_appointments_mailer.book_again"), new_booking_url(**public_url_options(@business), service_id: @appointment.service_id) ]
     end
 
     def attach_calendar(cancelled: false)

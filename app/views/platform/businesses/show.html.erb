@@ -5,7 +5,7 @@
 <% end %>
 
 <% actions = capture do %>
-  <%= link_to business_path(@business), class: "btn-secondary", target: "_blank" do %>
+  <%= link_to business_url(public_url_options(@business)), class: "btn-secondary", target: "_blank" do %>
     <%= icon "external-link", class: "size-4" %> <%= t(".public_page") %>
   <% end %>
   <% if @business.suspended? %>

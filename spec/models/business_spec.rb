@@ -59,11 +59,13 @@ RSpec.describe Business do
       end
     end
 
-    it "rejects reserved slugs" do
-      business = build(:business, slug: "admin")
+    it "rejects reserved slugs: the app's routes and the subdomains it needs" do
+      %w[admin signup www mail].each do |slug|
+        business = build(:business, slug: slug)
 
-      expect(business).not_to be_valid
-      expect(business.errors).to be_of_kind(:slug, :exclusion)
+        expect(business).not_to be_valid
+        expect(business.errors).to be_of_kind(:slug, :exclusion)
+      end
     end
 
     it "translates the reserved slug error" do
@@ -77,6 +79,16 @@ RSpec.describe Business do
 
     it "is used as the URL param" do
       expect(build(:business, slug: "centro").to_param).to eq("centro")
+    end
+  end
+
+  describe ".subdomain?" do
+    it "accepts what could be a business's slug" do
+      expect(described_class.subdomain?("barberia-centro")).to be(true)
+    end
+
+    it "rejects the app's own subdomains, nested ones and invalid slugs" do
+      expect([ "", "www", "mail", "centro.mail", "Centro", "-centro" ].map { |subdomain| described_class.subdomain?(subdomain) }).to all(be(false))
     end
   end
 

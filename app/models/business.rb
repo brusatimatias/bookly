@@ -2,11 +2,14 @@ class Business < ApplicationRecord
   # Lowercase words joined by single dashes. Unanchored so routes can reuse it.
   SLUG_FORMAT = /[a-z0-9]+(?:-[a-z0-9]+)*/
 
-  # Slugs that would collide with the app's own top-level routes, since public
-  # business pages live at /:business_slug.
+  # Slugs no business can take. A business's slug is the subdomain of its
+  # public pages and the first segment of its panel's path (/:slug/admin), so
+  # this covers the subdomains the app or its domain need (www is the domain
+  # itself) and the app's own top-level routes.
   RESERVED_SLUGS = %w[
-    admin api assets cable dashboard invitations locale login logout new
-    passwords platform rails session sessions signup up
+    admin api app assets blog cable dashboard docs ftp help invitations locale
+    login logout mail new passwords platform rails session sessions signup
+    smtp static status support up www
   ].freeze
 
   # Currencies a business can charge in (ISO 4217 codes).
@@ -63,6 +66,13 @@ class Business < ApplicationRecord
     numericality: { only_integer: true, greater_than_or_equal_to: 0 }
   BOOKING_LIMITS.each do |attribute, maximum|
     validates attribute, numericality: { less_than_or_equal_to: maximum }, allow_nil: true
+  end
+
+  # Whether a host's subdomain could be a business's (it may not exist): a
+  # valid slug that isn't reserved. Used by the routes to tell a business's
+  # host from the app's own.
+  def self.subdomain?(subdomain)
+    subdomain.match?(/\A#{SLUG_FORMAT}\z/) && RESERVED_SLUGS.exclude?(subdomain)
   end
 
   def to_param

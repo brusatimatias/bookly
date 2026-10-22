@@ -20,5 +20,5 @@
   </div>
 <% else %>
   <%= render "shared/empty_state", icon: "tag", title: t(".empty"), message: t(".empty_hint"),
-        action: link_to(Current.business.name, business_path(Current.business), class: "btn-secondary") %>
+        action: link_to(Current.business.name, business_path, class: "btn-secondary") %>
 <% end %>

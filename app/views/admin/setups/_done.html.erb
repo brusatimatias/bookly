@@ -2,10 +2,10 @@
   <span class="mx-auto flex size-14 items-center justify-center rounded-full bg-green-50 text-green-600"><%= icon "check-circle", class: "size-8" %></span>
   <h2 class="mt-4 text-xl font-bold text-gray-900"><%= t(".title") %></h2>
   <p class="mt-2 text-sm text-gray-600"><%= t(".message") %></p>
-  <p class="mt-4 break-all"><%= link_to business_url(Current.business), business_url(Current.business), class: "link font-medium", target: "_blank" %></p>
+  <p class="mt-4 break-all"><%= link_to business_url(public_url_options(Current.business)), business_url(public_url_options(Current.business)), class: "link font-medium", target: "_blank" %></p>
 
   <div class="mt-6 flex flex-wrap justify-center gap-3">
-    <%= link_to business_path(Current.business), class: "btn-primary", target: "_blank" do %>
+    <%= link_to business_url(public_url_options(Current.business)), class: "btn-primary", target: "_blank" do %>
       <%= icon "external-link", class: "size-4" %> <%= t(".view_page") %>
     <% end %>
     <%= link_to t(".panel"), admin_root_path, class: "btn-secondary" %>

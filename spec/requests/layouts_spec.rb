@@ -11,7 +11,8 @@ RSpec.describe "Layouts", type: :request do
     end
 
     it "credits Bookly on business pages, without sign in link" do
-      get business_path(business)
+      use_business_host(business)
+      get business_path
 
       expect(response.body).to include("Reservas online con Bookly")
       expect(response.body).not_to include(new_session_path)
@@ -41,6 +42,7 @@ RSpec.describe "Layouts", type: :request do
 
       expect(response.body).to include("Barbería Centro", "Dueño", "Lucía Fernández", "LF", "Inicio", "Servicios", "Profesionales", "Bloqueos", "Disponibilidad", "Equipo", "Configuración", "Página pública")
       expect(response.body).to include('data-controller="sidebar"')
+      expect(response.body).to include(%(href="http://#{business.slug}.example.com/"))
     end
 
     it "highlights the current section" do

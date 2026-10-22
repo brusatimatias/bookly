@@ -1,11 +1,12 @@
 require "rails_helper"
 
 RSpec.describe "Businesses", type: :request do
-  describe "GET /:business_slug" do
+  describe "the public page, on the business's subdomain" do
     it "renders the public page of the business" do
-      business = create(:business, name: "Barbería Centro", address: "Av. Corrientes 1234", contact_email: "hola@centro.example")
+      business = create(:business, slug: "barberia-centro", name: "Barbería Centro", address: "Av. Corrientes 1234", contact_email: "hola@centro.example")
 
-      get business_path(business)
+      host! "barberia-centro.example.com"
+      get business_path
 
       expect(response).to have_http_status(:ok)
       expect(response.body).to include("Barbería Centro", "Av. Corrientes 1234", "hola@centro.example")
@@ -24,14 +25,16 @@ RSpec.describe "Businesses", type: :request do
         create(:professional, name: "Juan sin horario", services: [ haircut, nails ])
       end
 
-      get business_path(business)
+      use_business_host(business)
+      get business_path
 
       expect(response.body).to include("Corte de pelo", "1 h 30 min", "$ 12.000", "Lavado incluido", "Sofía Torres")
       expect(response.body).not_to include("Coloración", "Barba sin profesionales", "Uñas sin horario", "Pablo sin servicios", "Ana inactiva", "Juan sin horario")
     end
 
     it "explains when there are no services yet" do
-      get business_path(create(:business))
+      use_business_host(create(:business))
+      get business_path
 
       expect(response.body).to include("Todavía no hay servicios publicados.")
     end
@@ -40,15 +43,18 @@ RSpec.describe "Businesses", type: :request do
       spanish = create(:business, locale: "es")
       english = create(:business, locale: "en")
 
-      get business_path(spanish)
+      use_business_host(spanish)
+      get business_path
       expect(response.body).to include('lang="es"', "Todavía no hay servicios publicados.")
 
-      get business_path(english)
+      use_business_host(english)
+      get business_path
       expect(response.body).to include('lang="en"', "No services published yet.")
     end
 
-    it "responds not found for an unknown slug" do
-      get business_path("unknown")
+    it "responds not found for an unknown subdomain" do
+      host! "unknown.example.com"
+      get business_path
 
       expect(response).to have_http_status(:not_found)
     end
@@ -56,7 +62,8 @@ RSpec.describe "Businesses", type: :request do
     it "shows a suspended business as unavailable, without its details" do
       business = create(:business, :suspended, name: "Barbería Centro", contact_email: "hola@centro.example")
 
-      get business_path(business)
+      use_business_host(business)
+      get business_path
 
       expect(response).to have_http_status(:service_unavailable)
       expect(response.body).to include("Este negocio no está disponible en este momento.")
@@ -66,15 +73,57 @@ RSpec.describe "Businesses", type: :request do
     it "shows the unavailable page in the business locale" do
       business = create(:business, :suspended, locale: "en")
 
-      get business_path(business)
+      use_business_host(business)
+      get business_path
 
       expect(response.body).to include("This business is not available right now.")
     end
 
     it "does not leak the current business past the request" do
-      get business_path(create(:business))
+      use_business_host(create(:business))
+      get business_path
 
       expect(Current.business).to be_nil
+    end
+  end
+
+  describe "hosts" do
+    let!(:business) { create(:business, slug: "barberia-centro") }
+
+    it "serves the app itself on its domain, with or without www" do
+      %w[example.com www.example.com].each do |host|
+        host! host
+        get root_path
+
+        expect(response.body).to include("Tu agenda, siempre en orden")
+      end
+    end
+
+    it "doesn't serve a business's public pages on the app's domain" do
+      get "/book"
+      expect(response).to have_http_status(:not_found)
+
+      get "/barberia-centro"
+      expect(response).to have_http_status(:not_found)
+    end
+
+    it "doesn't serve the app's pages or the panel on a business's subdomain" do
+      host! "barberia-centro.example.com"
+
+      [ new_session_path, new_signup_path, "/barberia-centro/admin" ].each do |path|
+        get path
+        expect(response).to have_http_status(:not_found)
+      end
+    end
+
+    it "doesn't treat reserved or nested subdomains as businesses" do
+      create(:business, slug: "centro")
+
+      %w[mail.example.com centro.mail.example.com].each do |host|
+        host! host
+        get "/"
+        expect(response).to have_http_status(:not_found)
+      end
     end
   end
 end

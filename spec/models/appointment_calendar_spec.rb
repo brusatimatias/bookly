@@ -14,7 +14,7 @@ RSpec.describe AppointmentCalendar, type: :model do
   around { |example| travel_to(zone.local(2026, 10, 14, 8)) { with_business(business) { example.run } } }
 
   def ical(**options)
-    described_class.new(appointment, url: "https://bookly.test/barberia-centro/appointments/abc", **options).to_ical
+    described_class.new(appointment, url: "https://barberia-centro.bookly.test/appointments/abc", **options).to_ical
   end
 
   # The value of a property, with long lines unfolded.
@@ -30,7 +30,7 @@ RSpec.describe AppointmentCalendar, type: :model do
     expect(property(ics, "DTEND")).to eq("20261016T183000Z")
     expect(property(ics, "SUMMARY")).to eq("Corte de pelo – Barbería Centro")
     expect(property(ics, "LOCATION")).to eq("Av. Corrientes 1234\\, CABA")
-    expect(property(ics, "DESCRIPTION")).to eq("Profesional: Martín Gómez\\nVer\\, cancelar o cambiar el turno: https://bookly.test/barberia-centro/appointments/abc")
+    expect(property(ics, "DESCRIPTION")).to eq("Profesional: Martín Gómez\\nVer\\, cancelar o cambiar el turno: https://barberia-centro.bookly.test/appointments/abc")
     expect(property(ics, "STATUS")).to eq("CONFIRMED")
     expect(property(ics, "ORGANIZER")).to eq("CN=Barbería Centro:mailto:no-reply@bookly.test")
   end
