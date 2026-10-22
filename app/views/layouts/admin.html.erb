@@ -30,6 +30,7 @@
         <%= admin_nav_link t(".professionals"), admin_professionals_path, icon: "user", active: controller_name.in?(%w[professionals schedules]) %>
         <%= admin_nav_link t(".time_blocks"), admin_time_blocks_path, icon: "no-symbol", active: controller_name == "time_blocks" %>
         <%= admin_nav_link t(".availability"), admin_availability_path, icon: "clock", active: controller_name == "availabilities" %>
+        <%= admin_nav_link t(".statistics"), admin_statistics_path, icon: "chart-bar", active: controller_name == "statistics" %>
         <% if Current.membership.manager? %>
           <%= admin_nav_link t(".team"), admin_team_path, icon: "users", active: controller_name.in?(%w[teams invitations]) %>
         <% end %>

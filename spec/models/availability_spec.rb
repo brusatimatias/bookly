@@ -78,7 +78,11 @@ RSpec.describe Availability, type: :model do
   end
 
   describe "blocks" do
-    before { works(professional, 1, "09:00", "13:00") }
+    # Blocks can't be created once they ended.
+    before do
+      travel_to now
+      works(professional, 1, "09:00", "13:00")
+    end
 
     it "remove the times whose service they overlap" do
       create(:time_block, professional: professional, starts_at: local(monday, "10:00"), ends_at: local(monday, "11:00"))

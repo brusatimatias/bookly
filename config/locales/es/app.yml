@@ -23,11 +23,12 @@ es:
       format:
         # rails-i18n uses "12.000 $"; Argentina writes "$ 12.000".
         format: "%u %n"
-  # Added to rails-i18n's formats: l(date, format: :weekday), l(time, format: :hour),
+  # Added to rails-i18n's formats: l(date, format: :weekday), l(date, format: :day_month), l(time, format: :hour),
   # l(time, format: :weekday_hour).
   date:
     formats:
       weekday: "%a %-d %b"
+      day_month: "%-d de %B"
   time:
     formats:
       hour: "%H:%M"

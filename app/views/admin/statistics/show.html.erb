@@ -1,0 +1,174 @@
+<% content_for :title, t(".title") %>
+
+<% manager = Current.membership.manager? %>
+<%= render "shared/page_header", title: t(".title"), subtitle: t(manager ? ".subtitle" : ".subtitle_own"),
+      actions: capture {
+        tag.nav(class: "flex rounded-lg bg-white p-1 shadow-card ring-1 ring-gray-200", aria: { label: t(".period") }) do
+          safe_join(StatsPeriod::KEYS.map { |key|
+            link_to t(".periods.#{key}"), admin_statistics_path(period: key),
+              class: "rounded-md px-3 py-1.5 text-sm font-medium #{key == @period.key ? "bg-brand-600 text-white" : "text-gray-600 hover:bg-gray-50"}",
+              aria: { current: (key == @period.key ? "page" : nil) }
+          })
+        end
+      } %>
+
+<% if @stats.nil? %>
+  <%= render "shared/empty_state", icon: "chart-bar", title: t(".no_profile"), message: t(".no_profile_hint") %>
+<% else %>
+  <% outcomes = @stats[:outcomes] %>
+  <% total = outcomes.values.sum %>
+
+  <p class="-mt-4 mb-6 text-sm text-gray-500">
+    <%= t(".range", from: l(@period.days.first, format: :day_month), to: l(@period.days.last, format: :day_month)) %> ·
+    <%= t(".calculated", time: time_ago_in_words(@stats[:calculated_at])) %>
+  </p>
+
+  <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+    <% [
+         [ "check-circle", "bg-green-50 text-green-600", t(".attended"), outcomes["attended"], t(".attended_of", count: total) ],
+         [ "tag", "bg-brand-50 text-brand-600", t(".revenue"), format_price(@stats[:revenue_cents]), t(".revenue_hint") ],
+         [ "x-circle", "bg-red-50 text-red-600", t(".no_show_rate"), format_rate(@stats[:no_show_rate]), t(".no_shows", count: outcomes["no_show"]) ],
+         [ "clock", "bg-yellow-50 text-yellow-600", t(".response_time"),
+           @stats[:response_time][:median_seconds] ? format_duration([ @stats[:response_time][:median_seconds] / 60, 1 ].max) : "—",
+           t(".answered", count: @stats[:response_time][:answered]) ]
+       ].each do |icon_name, colors, label, value, hint| %>
+      <div class="card card-body">
+        <div class="flex items-center gap-3">
+          <span class="flex size-9 shrink-0 items-center justify-center rounded-lg <%= colors %>"><%= icon icon_name, class: "size-5" %></span>
+          <p class="text-sm font-medium text-gray-600"><%= label %></p>
+        </div>
+        <p class="mt-3 whitespace-nowrap text-2xl font-bold text-gray-900"><%= value %></p>
+        <p class="mt-1 text-xs text-gray-500"><%= hint %></p>
+      </div>
+    <% end %>
+  </div>
+
+  <div class="mt-6 grid gap-6 lg:grid-cols-2">
+    <section class="card card-body" id="outcomes">
+      <h2 class="font-semibold text-gray-900"><%= t(".outcomes") %></h2>
+      <p class="mt-1 text-sm text-gray-500"><%= t(".outcomes_hint", count: total) %></p>
+      <ul class="mt-4 space-y-3">
+        <% busiest = [ outcomes.values.max, 1 ].max %>
+        <% %w[attended confirmed pending no_show cancelled rejected expired].each do |status| %>
+          <li>
+            <div class="flex items-center justify-between text-sm">
+              <span class="<%= AppointmentsHelper::STATUS_BADGES.fetch(status) %>"><%= Appointment.human_attribute_name("status.#{status}") %></span>
+              <span class="font-semibold text-gray-900"><%= outcomes[status] %></span>
+            </div>
+            <div class="mt-1.5 h-1.5 rounded-full bg-gray-100">
+              <div class="h-1.5 rounded-full bg-brand-500" style="width: <%= (outcomes[status] * 100.0 / busiest).round %>%"></div>
+            </div>
+          </li>
+        <% end %>
+      </ul>
+    </section>
+
+    <section class="card card-body" id="occupancy">
+      <h2 class="font-semibold text-gray-900"><%= t(".occupancy") %></h2>
+      <p class="mt-1 text-sm text-gray-500"><%= t(".occupancy_hint") %></p>
+      <% if @stats[:occupancy].empty? %>
+        <p class="mt-4 text-sm text-gray-500"><%= t(".no_data") %></p>
+      <% else %>
+        <ul class="mt-4 space-y-4">
+          <% @stats[:occupancy].each do |row| %>
+            <li>
+              <div class="flex items-baseline justify-between gap-3 text-sm">
+                <span class="truncate font-medium text-gray-900"><%= row[:name] %></span>
+                <span class="shrink-0 font-semibold text-gray-900"><%= format_rate(row[:rate]) %></span>
+              </div>
+              <div class="mt-1.5 h-2 rounded-full bg-gray-100">
+                <div class="h-2 rounded-full bg-brand-500" style="width: <%= ((row[:rate] || 0).clamp(0, 1) * 100).round %>%"></div>
+              </div>
+              <p class="mt-1 text-xs text-gray-500">
+                <%= row[:available_minutes].zero? ? t(".no_hours") :
+                      t(".booked_of", booked: format_duration(row[:booked_minutes]), available: format_duration(row[:available_minutes])) %>
+              </p>
+            </li>
+          <% end %>
+        </ul>
+      <% end %>
+    </section>
+
+    <section class="card" id="top-services">
+      <div class="card-body pb-0">
+        <h2 class="font-semibold text-gray-900"><%= t(".top_services") %></h2>
+        <p class="mt-1 text-sm text-gray-500"><%= t(".top_services_hint") %></p>
+      </div>
+      <% if @stats[:top_services].empty? %>
+        <p class="card-body text-sm text-gray-500"><%= t(".no_data") %></p>
+      <% else %>
+        <ol class="list-divided mt-4">
+          <% @stats[:top_services].each_with_index do |service, index| %>
+            <li class="flex items-center gap-4 px-6 py-3 text-sm">
+              <span class="w-4 text-gray-400"><%= index + 1 %></span>
+              <div class="min-w-0 flex-1">
+                <p class="truncate font-medium text-gray-900"><%= service[:name] %></p>
+                <p class="text-xs text-gray-500"><%= t(".appointments", count: service[:count]) %></p>
+              </div>
+              <span class="shrink-0 font-semibold text-gray-900"><%= format_price(service[:revenue_cents]) %></span>
+            </li>
+          <% end %>
+        </ol>
+      <% end %>
+    </section>
+
+    <section class="card card-body" id="customers">
+      <h2 class="font-semibold text-gray-900"><%= t(".customers") %></h2>
+      <p class="mt-1 text-sm text-gray-500"><%= t(".customers_hint") %></p>
+      <% customers = @stats[:customers] %>
+      <% if customers.values.sum.zero? %>
+        <p class="mt-4 text-sm text-gray-500"><%= t(".no_data") %></p>
+      <% else %>
+        <dl class="mt-4 grid grid-cols-2 gap-4">
+          <div class="rounded-lg bg-brand-50 p-4">
+            <dt class="text-sm text-brand-800"><%= t(".new_customers") %></dt>
+            <dd class="text-2xl font-bold text-brand-900"><%= customers[:new] %></dd>
+          </div>
+          <div class="rounded-lg bg-gray-50 p-4">
+            <dt class="text-sm text-gray-600"><%= t(".returning_customers") %></dt>
+            <dd class="text-2xl font-bold text-gray-900"><%= customers[:returning] %></dd>
+          </div>
+        </dl>
+        <div class="mt-4 flex h-2 overflow-hidden rounded-full bg-gray-200">
+          <div class="bg-brand-500" style="width: <%= (customers[:new] * 100.0 / customers.values.sum).round %>%"></div>
+        </div>
+      <% end %>
+    </section>
+
+  </div>
+
+  <section class="card card-body mt-6" id="peak-hours">
+    <h2 class="font-semibold text-gray-900"><%= t(".peak_hours") %></h2>
+    <p class="mt-1 text-sm text-gray-500"><%= t(".peak_hours_hint", zone: time_zone_label) %></p>
+    <% peak_hours = @stats[:peak_hours] %>
+    <% if peak_hours.empty? %>
+      <p class="mt-4 text-sm text-gray-500"><%= t(".no_data") %></p>
+    <% else %>
+      <% hours = peak_hours.keys.map(&:last) %>
+      <% busiest = peak_hours.values.max %>
+      <div class="mt-4 overflow-x-auto">
+        <table class="w-full min-w-[18rem] table-fixed border-separate border-spacing-0.5 sm:border-spacing-1 text-center text-xs">
+          <thead>
+            <tr>
+              <th class="w-12 sm:w-14"></th>
+              <% weekdays_from_monday.each do |wday| %>
+                <th class="font-medium text-gray-600" scope="col"><%= t("date.abbr_day_names")[wday] %></th>
+              <% end %>
+            </tr>
+          </thead>
+          <tbody>
+            <% (hours.min..hours.max).each do |hour| %>
+              <tr>
+                <th class="pr-1 text-right font-normal text-gray-500 sm:pr-2" scope="row"><%= format("%02d:00", hour) %></th>
+                <% weekdays_from_monday.each do |wday| %>
+                  <% count = peak_hours.fetch([ wday, hour ], 0) %>
+                  <td class="h-7 rounded sm:h-8 <%= peak_hour_cell_class(count, busiest) %>"><%= count if count.positive? %></td>
+                <% end %>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    <% end %>
+  </section>
+<% end %>
