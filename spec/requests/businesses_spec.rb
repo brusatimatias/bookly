@@ -100,10 +100,8 @@ RSpec.describe "Businesses", type: :request do
     end
 
     it "doesn't serve a business's public pages on the app's domain" do
-      get "/book"
-      expect(response).to have_http_status(:not_found)
+      get "/appointments/abc"
 
-      get "/barberia-centro"
       expect(response).to have_http_status(:not_found)
     end
 

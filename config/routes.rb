@@ -98,6 +98,18 @@ Rails.application.routes.draw do
           resource :reassignment, only: %i[new create]
         end
       end
+
+      # The public pages' old paths, from before subdomains (emails already
+      # sent link to them): moved permanently to the same page, with the same
+      # query, on the business's subdomain. Reserved slugs aren't redirected.
+      to_subdomain = redirect do |params, request|
+        rest = request.fullpath.delete_prefix("/#{params[:business_slug]}")
+        rest = "/#{rest}" unless rest.start_with?("/")
+        "#{request.protocol}#{params[:business_slug]}.#{request.domain}#{request.port_string}#{rest}"
+      end
+      %w[/ book appointments/:token appointments/:token/cancellation/new appointments/:token/reschedule/new].each do |path|
+        get path, to: to_subdomain, as: nil, constraints: ->(request) { Business.subdomain?(request.path_parameters[:business_slug]) }
+      end
     end
   end
 end
