@@ -1,4 +1,6 @@
-<%# Public layout: landing page, business pages and the user's business list. %>
+<%# Public layout: landing page, business pages and the user's business list.
+    A business's pages wear its brand: its color, its logo and its name. %>
+<% content_for :head, brand_style_tag(branded_business) %>
 <!DOCTYPE html>
 <html lang="<%= I18n.locale %>" class="h-full">
   <%= render "layouts/shared/head" %>
@@ -6,7 +8,11 @@
   <body class="flex min-h-full flex-col">
     <header class="border-b border-gray-200 bg-white">
       <div class="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-3 sm:px-6">
-        <%= render "layouts/shared/logo" %>
+        <% if branded_business %>
+          <%= render "layouts/shared/business_logo", business: branded_business %>
+        <% else %>
+          <%= render "layouts/shared/logo" %>
+        <% end %>
 
         <div class="flex items-center gap-2 sm:gap-4">
           <% if locale_switchable? %>

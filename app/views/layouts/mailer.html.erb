@@ -12,8 +12,12 @@
         <td align="center">
           <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:560px;">
             <tr>
-              <td style="padding-bottom:16px;font-size:20px;font-weight:700;color:<%= MailerHelper::BRAND_COLOR %>;">
-                <%= t("app_name") %>
+              <td style="padding-bottom:16px;font-size:20px;font-weight:700;color:<%= email_brand_color %>;">
+                <% if @branded_business&.logo&.attached? %>
+                  <img src="<%= rails_blob_url(@branded_business.logo) %>" alt="" height="40"
+                       style="display:inline-block;vertical-align:middle;height:40px;width:auto;max-width:160px;border:0;margin-right:10px;">
+                <% end %>
+                <span style="vertical-align:middle;"><%= @branded_business&.name || t("app_name") %></span>
               </td>
             </tr>
             <tr>

@@ -29,6 +29,18 @@ Business.find_or_create_by!(slug: "el-potrero") do |business|
   business.reminder_hours_before = 3
 end
 
+# Brands: a color each and a logo for two of them (db/seeds/logos), unless the
+# business already has its own.
+{ "barberia-centro" => [ "#0f766e", "barberia-centro.png" ],
+  "downtown-studio" => [ "#be185d", nil ],
+  "el-potrero" => [ "#15803d", "el-potrero.png" ] }.each do |slug, (color, logo)|
+  business = Business.find_by!(slug: slug)
+  business.update!(brand_color: color) if business.brand_color.nil?
+  if logo && !business.logo.attached?
+    business.logo.attach(io: Rails.root.join("db/seeds/logos", logo).open, filename: logo, content_type: "image/png")
+  end
+end
+
 # Users sign in with the password "password".
 def seed_member(business, role:, name:, email_address:)
   user = User.find_or_create_by!(email_address: email_address) do |new_user|
@@ -233,6 +245,64 @@ def seed_past_outcomes(professional:, service:)
   end
 end
 
+# The last 90 days of appointments, for the statistics page, unless there
+# already are attended ones: around half of each professional's working
+# hours, with their outcomes and history (the request, the team's answer a few
+# hours later, then attendance, a cancellation or the expiration). The
+# customers grow from 20 to 60 along the way, so there are new ones every
+# month. Always the same, from a fixed random seed.
+def seed_history(professionals)
+  return if Appointment.attended.exists?
+
+  random = Random.new(42)
+  zone = Time.find_zone!(Current.business.time_zone)
+  owner = Current.business.owner
+  customers = %w[Diego Paula Tomás Valentina Nicolás Camila Federico Julieta Matías Agustina Lucas Florencia]
+    .product(%w[Herrera Méndez Acosta Ruiz Romero]).shuffle(random: random).map do |first_name, last_name|
+      email = "#{first_name}.#{last_name}@example.com".downcase.tr("áéíóú", "aeiou")
+      Customer.find_or_create_by!(email: email) { |customer| customer.name = "#{first_name} #{last_name}" }
+    end
+  outcomes = { attended: 75, no_show: 7, cancelled: 10, rejected: 5, expired: 3 }.flat_map { |status, weight| [ status ] * weight }
+
+  ((zone.today - 90)...zone.today).each_with_index do |date, day|
+    regulars = customers.first(20 + day * 40 / 89)
+    professionals.each do |professional|
+      professional.working_hours.where(day_of_week: date.wday).find_each do |range|
+        opens_at = zone.local(date.year, date.month, date.day, range.start_time.hour, range.start_time.min)
+        closes_at = zone.local(date.year, date.month, date.day, range.end_time.hour, range.end_time.min)
+        free_from = opens_at
+        # Every half hour, once the previous appointment and its break are over.
+        ((closes_at - opens_at) / 30.minutes).to_i.times.map { |slot| opens_at + slot * 30.minutes }.each do |starts_at|
+          next if starts_at < free_from || random.rand >= 0.6
+
+          requested_at = starts_at - random.rand(1..10).days - random.rand(0..600).minutes
+          answered_at = requested_at + random.rand(10..360).minutes
+          status = outcomes.sample(random: random)
+          appointment = Appointment.create!(service: professional.services.active.sample(random: random), professional: professional,
+            customer: regulars.sample(random: random), status: status, starts_at: starts_at, created_at: requested_at)
+          free_from = appointment.buffer_ends_at
+
+          appointment.events.create!(to_status: "pending", actor_kind: :customer, created_at: requested_at)
+          case status
+          when :rejected
+            appointment.events.create!(from_status: "pending", to_status: "rejected", actor_kind: :user, actor_user: owner,
+              note: "Ese horario ya no está disponible.", created_at: answered_at)
+          when :expired
+            appointment.events.create!(from_status: "pending", to_status: "expired", actor_kind: :system, created_at: [ starts_at, requested_at + 1.day ].min)
+          else
+            appointment.events.create!(from_status: "pending", to_status: "confirmed", actor_kind: :user, actor_user: owner, created_at: answered_at)
+            if status == :cancelled
+              appointment.events.create!(from_status: "confirmed", to_status: "cancelled", actor_kind: :customer, created_at: starts_at - 1.day)
+            else
+              appointment.events.create!(from_status: "confirmed", to_status: status.to_s, actor_kind: :user, actor_user: owner, created_at: starts_at + 30.minutes)
+            end
+          end
+        end
+      end
+    end
+  end
+end
+
 # The history of appointments without one: requested by the customer, then
 # confirmed by the owner and, for cancelled ones, cancelled by the customer.
 def seed_appointment_events
@@ -266,6 +336,7 @@ AppointmentNotifier.silence do
     ])
     seed_panel_examples(professional: martin, service: haircut)
     seed_past_outcomes(professional: Professional.find_by!(name: "Sofía Torres"), service: haircut)
+    seed_history([ martin, lucia, Professional.find_by!(name: "Sofía Torres") ])
     seed_appointment_events
   end
 

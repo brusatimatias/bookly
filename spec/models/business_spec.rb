@@ -59,11 +59,13 @@ RSpec.describe Business do
       end
     end
 
-    it "rejects reserved slugs" do
-      business = build(:business, slug: "admin")
+    it "rejects reserved slugs: the app's routes and the subdomains it needs" do
+      %w[admin signup www mail].each do |slug|
+        business = build(:business, slug: slug)
 
-      expect(business).not_to be_valid
-      expect(business.errors).to be_of_kind(:slug, :exclusion)
+        expect(business).not_to be_valid
+        expect(business.errors).to be_of_kind(:slug, :exclusion)
+      end
     end
 
     it "translates the reserved slug error" do
@@ -77,6 +79,16 @@ RSpec.describe Business do
 
     it "is used as the URL param" do
       expect(build(:business, slug: "centro").to_param).to eq("centro")
+    end
+  end
+
+  describe ".subdomain?" do
+    it "accepts what could be a business's slug" do
+      expect(described_class.subdomain?("barberia-centro")).to be(true)
+    end
+
+    it "rejects the app's own subdomains, nested ones and invalid slugs" do
+      expect([ "", "www", "mail", "centro.mail", "Centro", "-centro" ].map { |subdomain| described_class.subdomain?(subdomain) }).to all(be(false))
     end
   end
 
@@ -151,6 +163,64 @@ RSpec.describe Business do
     end
   end
 
+  describe "brand" do
+    it "has none by default" do
+      expect(build(:business).brand_color).to be_nil
+    end
+
+    it "normalizes the color, and leaves none when it's blank" do
+      expect(build(:business, brand_color: " #1D4ED8 ").brand_color).to eq("#1d4ed8")
+      expect(build(:business, brand_color: " ").brand_color).to be_nil
+    end
+
+    it "rejects colors that aren't #rrggbb" do
+      %w[1d4ed8 #1d4 #1d4ed8ff blue].each do |color|
+        business = build(:business, brand_color: color)
+
+        expect(business).not_to be_valid
+        expect(business.errors).to be_of_kind(:brand_color, :invalid)
+      end
+    end
+
+    it "rejects colors too light for white text" do
+      business = build(:business, brand_color: "#fde047")
+
+      expect(business).not_to be_valid
+      expect(business.errors).to be_of_kind(:brand_color, :low_contrast)
+      expect(build(:business, brand_color: "#1d4ed8")).to be_valid
+    end
+
+    def attach_logo(business, file, content_type)
+      business.logo.attach(io: file_fixture(file).open, filename: file, content_type: content_type)
+    end
+
+    it "accepts a JPG, PNG or WebP logo" do
+      business = build(:business)
+      attach_logo(business, "photo.png", "image/png")
+
+      expect(business).to be_valid
+    end
+
+    it "rejects other files as the logo, SVG included" do
+      { "notes.txt" => "text/plain", "logo.svg" => "image/svg+xml" }.each do |file, content_type|
+        business = build(:business)
+        attach_logo(business, file, content_type)
+
+        expect(business).not_to be_valid
+        expect(business.errors).to be_of_kind(:logo, :invalid_content_type)
+      end
+    end
+
+    it "rejects large logos" do
+      stub_const("Business::LOGO_MAX_SIZE", 10)
+      business = build(:business)
+      attach_logo(business, "photo.png", "image/png")
+
+      expect(business).not_to be_valid
+      expect(business.errors).to be_of_kind(:logo, :too_large)
+    end
+  end
+
   describe "database constraints" do
     let(:business) { create(:business) }
 
@@ -163,7 +233,8 @@ RSpec.describe Business do
       cancellation_window_hours: -1,
       request_expiration_hours: 0,
       min_booking_notice_hours: -1,
-      booking_horizon_days: 0
+      booking_horizon_days: 0,
+      brand_color: "blue"
     }.each do |column, value|
       it "rejects an invalid #{column} even when skipping validations" do
         expect { business.update_column(column, value) }.to raise_error(ActiveRecord::StatementInvalid, /check constraint/)

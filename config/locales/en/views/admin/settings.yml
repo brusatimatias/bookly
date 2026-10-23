@@ -4,6 +4,7 @@ en:
       tabs:
         label: "Settings"
         business: "Business"
+        branding: "Brand"
         booking: "Booking"
       edit:
         title: "Booking settings"

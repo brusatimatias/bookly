@@ -18,7 +18,7 @@
       <div class="field">
         <span class="label"><%= Business.human_attribute_name(:slug) %></span>
         <p class="text-sm">
-          <%= link_to business_url(@business), business_url(@business), class: "link", target: "_blank" %>
+          <%= link_to business_url(public_url_options(@business)), business_url(public_url_options(@business)), class: "link", target: "_blank" %>
         </p>
         <p class="hint"><%= t(".slug_hint") %></p>
       </div>

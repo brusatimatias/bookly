@@ -96,8 +96,11 @@ RSpec.describe "Platform businesses", type: :request do
       expect(flash[:notice]).to eq("Suspendimos Barbería Centro.")
       expect(centro.reload).to be_suspended
 
-      get business_path(centro)
+      use_business_host(centro)
+      get business_path
       expect(response).to have_http_status(:service_unavailable)
+
+      host! "www.example.com"
 
       patch reactivate_platform_business_path(centro)
 

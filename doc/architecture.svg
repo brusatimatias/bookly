@@ -33,7 +33,7 @@
   <text x="495" y="108" text-anchor="middle" font-size="17" fill="#dc2626">owner · admin · professional</text>
   <text x="495" y="138" text-anchor="middle" font-size="14" fill="#444">sign up · setup assistant</text>
   <text x="495" y="160" text-anchor="middle" font-size="14" fill="#444">requests · live agenda · settings</text>
-  <text x="495" y="182" text-anchor="middle" font-size="14" fill="#444">team invitations</text>
+  <text x="495" y="182" text-anchor="middle" font-size="14" fill="#444">statistics · team invitations</text>
 
   <rect x="660" y="40" width="290" height="165" rx="16" fill="#fff" stroke="#dc2626" stroke-width="4"/>
   <text x="805" y="78" text-anchor="middle" font-size="21" font-weight="bold" fill="#111">Platform admin</text>
@@ -67,14 +67,14 @@
 
   <rect x="65" y="400" width="280" height="118" rx="10" fill="#f8fafc" stroke="#94a3b8" stroke-width="1.5"/>
   <text x="205" y="425" text-anchor="middle" font-size="17" font-weight="bold" fill="#111">Public pages</text>
-  <text x="205" y="449" text-anchor="middle" font-size="13" fill="#444">/:slug · /:slug/book</text>
-  <text x="205" y="469" text-anchor="middle" font-size="13" fill="#444">/:slug/appointments/:token</text>
-  <text x="205" y="489" text-anchor="middle" font-size="13" fill="#444">token link, no account</text>
+  <text x="205" y="449" text-anchor="middle" font-size="13" fill="#444">slug.domain: / · /book</text>
+  <text x="205" y="469" text-anchor="middle" font-size="13" fill="#444">/appointments/:token</text>
+  <text x="205" y="489" text-anchor="middle" font-size="13" fill="#444">business's logo and color</text>
   <text x="205" y="509" text-anchor="middle" font-size="13" fill="#444">writes rate limited per IP</text>
 
   <rect x="370" y="400" width="280" height="118" rx="10" fill="#f8fafc" stroke="#94a3b8" stroke-width="1.5"/>
   <text x="510" y="425" text-anchor="middle" font-size="17" font-weight="bold" fill="#111">Business panel</text>
-  <text x="510" y="449" text-anchor="middle" font-size="13" fill="#444">/:slug/admin · Admin::</text>
+  <text x="510" y="449" text-anchor="middle" font-size="13" fill="#444">domain/:slug/admin · Admin::</text>
   <text x="510" y="469" text-anchor="middle" font-size="13" fill="#444">members only (404 otherwise)</text>
   <text x="510" y="489" text-anchor="middle" font-size="13" fill="#444">require_owner / require_manager</text>
   <text x="510" y="509" text-anchor="middle" font-size="13" fill="#444">professionals see their own</text>
@@ -88,10 +88,10 @@
 
   <rect x="65" y="533" width="280" height="118" rx="10" fill="#f8fafc" stroke="#94a3b8" stroke-width="1.5"/>
   <text x="205" y="558" text-anchor="middle" font-size="17" font-weight="bold" fill="#111">Tenant context</text>
-  <text x="205" y="582" text-anchor="middle" font-size="13" fill="#444">SetCurrentBusiness: slug →</text>
-  <text x="205" y="602" text-anchor="middle" font-size="13" fill="#444">Current.business, locale, zone</text>
-  <text x="205" y="622" text-anchor="middle" font-size="13" fill="#444">BusinessScoped filters queries</text>
-  <text x="205" y="642" text-anchor="middle" font-size="13" fill="#444">and fails closed without one</text>
+  <text x="205" y="582" text-anchor="middle" font-size="13" fill="#444">SetCurrentBusiness: subdomain</text>
+  <text x="205" y="602" text-anchor="middle" font-size="13" fill="#444">or slug → Current.business</text>
+  <text x="205" y="622" text-anchor="middle" font-size="13" fill="#444">(locale, zone); BusinessScoped</text>
+  <text x="205" y="642" text-anchor="middle" font-size="13" fill="#444">filters queries, fails closed</text>
 
   <rect x="370" y="533" width="280" height="118" rx="10" fill="#f8fafc" stroke="#94a3b8" stroke-width="1.5"/>
   <text x="510" y="558" text-anchor="middle" font-size="17" font-weight="bold" fill="#111">Booking domain</text>
@@ -172,15 +172,22 @@
   <text x="375" y="960" font-size="14" fill="#444">check constraints mirror the validations</text>
 
   <line x1="880" y1="802" x2="880" y2="874" stroke="#336791" stroke-width="2.5" marker-end="url(#arrow-db)"/>
-  <text x="895" y="844" font-size="14" font-weight="bold" fill="#336791">Solid Cable pub/sub</text>
+  <text x="865" y="844" text-anchor="end" font-size="14" font-weight="bold" fill="#336791">Solid Cable pub/sub</text>
   <path d="M825,892 L825,962 A55,14 0 0 0 935,962 L935,892" fill="#336791"/>
   <ellipse cx="880" cy="892" rx="55" ry="14" fill="#4a86b5"/>
   <text x="880" y="1000" text-anchor="middle" font-size="18" fill="#111">bookly_cable</text>
+
+  <path d="M960,802 L960,846 L1025,846 L1025,874" fill="none" stroke="#336791" stroke-width="2.5" marker-start="url(#arrow-db)" marker-end="url(#arrow-db)"/>
+  <text x="1035" y="832" font-size="14" font-weight="bold" fill="#336791">Solid Cache</text>
+  <path d="M970,892 L970,962 A55,14 0 0 0 1080,962 L1080,892" fill="#336791"/>
+  <ellipse cx="1025" cy="892" rx="55" ry="14" fill="#4a86b5"/>
+  <text x="1025" y="1000" text-anchor="middle" font-size="18" fill="#111">bookly_cache</text>
+  <text x="1025" y="1022" text-anchor="middle" font-size="13" fill="#444">statistics · rate limits</text>
 
   <line x1="1225" y1="732" x2="1225" y2="874" stroke="#336791" stroke-width="2.5" marker-start="url(#arrow-db)" marker-end="url(#arrow-db)"/>
   <text x="1240" y="810" font-size="14" font-weight="bold" fill="#336791">jobs, recurring tasks</text>
   <path d="M1170,892 L1170,962 A55,14 0 0 0 1280,962 L1280,892" fill="#336791"/>
   <ellipse cx="1225" cy="892" rx="55" ry="14" fill="#4a86b5"/>
   <text x="1225" y="1000" text-anchor="middle" font-size="18" fill="#111">bookly_queue</text>
-  <text x="1225" y="1030" text-anchor="middle" font-size="13" fill="#444">(+ bookly_cache in production; no Redis)</text>
+  <text x="1225" y="1022" text-anchor="middle" font-size="13" fill="#444">one database each, no Redis</text>
 </svg>

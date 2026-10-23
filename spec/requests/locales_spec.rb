@@ -60,7 +60,8 @@ RSpec.describe "Locales", type: :request do
       business = create(:business, locale: "es")
       patch locale_path, params: { locale: "en" }
 
-      get business_path(business), headers: { "Accept-Language" => "en" }
+      use_business_host(business)
+      get business_path, headers: { "Accept-Language" => "en" }
 
       expect(lang_of(response.body)).to eq("es")
       expect(response.body).not_to include("English")

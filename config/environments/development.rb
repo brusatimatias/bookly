@@ -21,12 +21,12 @@ Rails.application.configure do
     config.action_controller.perform_caching = true
     config.action_controller.enable_fragment_cache_logging = true
     config.public_file_server.headers = { "cache-control" => "public, max-age=#{2.days.to_i}" }
+    # Solid Cache in its own database, like production.
+    config.cache_store = :solid_cache_store
   else
     config.action_controller.perform_caching = false
+    config.cache_store = :null_store
   end
-
-  # Change to :null_store to avoid any caching.
-  config.cache_store = :memory_store
 
   # Store uploaded files on the local file system (see config/storage.yml for options).
   config.active_storage.service = :local
@@ -41,8 +41,13 @@ Rails.application.configure do
   # Make template changes take effect immediately.
   config.action_mailer.perform_caching = false
 
-  # Set localhost to be used by links generated in mailer templates.
-  config.action_mailer.default_url_options = { host: "localhost", port: 3000 }
+  # The app's domain: businesses' public pages are served from its subdomains
+  # (barberia-centro.localhost:3000; browsers resolve *.localhost on their own).
+  config.x.app_host = ENV.fetch("BOOKLY_HOST", "localhost")
+  config.action_dispatch.tld_length = config.x.app_host.count(".")
+
+  # Host used by links generated in mailer templates.
+  config.action_mailer.default_url_options = { host: config.x.app_host, port: 3000 }
 
   # Print deprecation notices to the Rails logger.
   config.active_support.deprecation = :log

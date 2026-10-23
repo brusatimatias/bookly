@@ -4,6 +4,7 @@ es:
       tabs:
         label: "Configuración"
         business: "Negocio"
+        branding: "Marca"
         booking: "Reservas"
       edit:
         title: "Configuración de reservas"

@@ -1,0 +1,23 @@
+en:
+  admin:
+    brandings:
+      edit:
+        title: "Brand"
+        subtitle: "Your logo and color on your page, in bookings and in the emails your customers get."
+        sections:
+          logo: "Logo"
+          color: "Color"
+          preview: "Preview"
+        logo_hint: "JPG, PNG or WebP, up to %{size} MB. It goes next to the business's name: ideally an icon, square, with a transparent or white background."
+        remove_logo: "Remove the logo"
+        picker: "Pick a color"
+        default_color: "Use Bookly's"
+        color_hint: "Used on buttons and links. It must be dark enough to read white text on it; left empty, Bookly's stays."
+        preview_hint: "How your page's header and a button look."
+        sample_service: "Haircut"
+        sample_link: "View my appointment"
+        sample_button: "Book an appointment"
+        cancel: "Cancel"
+        submit: "Save brand"
+      update:
+        updated: "Brand saved."

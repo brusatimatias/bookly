@@ -14,7 +14,7 @@ RSpec.describe "Signups", type: :request do
 
       expect(response).to have_http_status(:ok)
       expect(response.body).to include("Registrá tu negocio", "Tu cuenta", "Tu nombre", "Nombre del negocio", "Dirección web",
-                                       "(GMT-03:00) Buenos Aires", "ARS — Peso argentino")
+                                       "(GMT-03:00) Buenos Aires", "ARS — Peso argentino", ".example.com</span>")
     end
 
     it "creates the account and the business, signs in and opens the new business's panel" do
