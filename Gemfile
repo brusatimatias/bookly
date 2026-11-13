@@ -64,7 +64,7 @@ group :development, :test do
   gem "rubocop-rails-omakase", require: false
 
   # Testing framework and factories
-  gem "rspec-rails", "~> 8.0"
+  gem "rspec-rails", "~> 8.1"
   gem "factory_bot_rails", "~> 6.5"
 
   # Pretty printing of objects in the console and the debugger (ap record) [https://github.com/awesome-print/awesome_print]
